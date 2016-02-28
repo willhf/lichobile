@@ -46,6 +46,8 @@ export default function controller(cfg, onFeatured, onTVChannelChange, userTv, o
   this.vm = {
     flip: false,
     showingActions: false,
+    loading: false,
+    loadingTimeout: null,
     headerHash: '',
     replayHash: '',
     buttonsHash: '',
@@ -54,6 +56,25 @@ export default function controller(cfg, onFeatured, onTVChannelChange, userTv, o
     ply: this.lastPly(),
     moveToSubmit: null
   };
+
+  this.setLoading = function(v) {
+    clearTimeout(this.vm.loadingTimeout);
+    if (v) {
+      this.vm.loading = true;
+      this.vm.loadingTimeout = setTimeout(function() {
+        this.vm.loading = false;
+        m.redraw();
+      }.bind(this), 1000);
+    } else {
+      this.vm.loading = false;
+    }
+    m.redraw();
+  }.bind(this);
+
+  this.sendLoading = function(...args) {
+    this.setLoading(true);
+    socket.send(...args);
+  }.bind(this);
 
   const connectSocket = function() {
     if (utils.hasNetwork()) {
@@ -181,7 +202,7 @@ export default function controller(cfg, onFeatured, onTVChannelChange, userTv, o
       setTimeout(function() {
         backbutton.stack.push(this.cancelMove);
         this.vm.moveToSubmit = move;
-        m.redraw(false, true);
+        m.redraw();
       }.bind(this), this.data.pref.animationDuration || 0);
     } else {
       socket.send('move', move, { ackable: true });
@@ -370,7 +391,8 @@ export default function controller(cfg, onFeatured, onTVChannelChange, userTv, o
     if (this.clock) this.clock.update(this.data.clock.white, this.data.clock.black);
     this.setTitle();
     if (!this.replaying()) ground.reload(this.chessground, this.data, rCfg.game.fen, this.vm.flip);
-    m.redraw(false, true);
+    this.setLoading(false);
+    m.redraw();
   }.bind(this);
 
   var reloadGameData = function() {

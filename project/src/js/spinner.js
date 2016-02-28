@@ -30,5 +30,15 @@ export default {
         while (spinners[0]) document.body.removeChild(spinners[0]);
       }, 500);
     }
+  },
+
+  getVdom() {
+    return (
+      <div class="spinner">
+        <svg viewBox="0 0 40 40">
+          <circle cx="20" cy="20" r="18" fill="none"></circle>
+        </svg>
+      </div>
+    );
   }
 };
