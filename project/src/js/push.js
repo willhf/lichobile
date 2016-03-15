@@ -10,7 +10,7 @@ let push;
 export default {
   register() {
 
-    if (window.cordova.platformId === 'android' && settings.general.notifications()) {
+    if (session.isConnected() && settings.general.notifications()) {
 
       push = window.PushNotification.init({
         android: {
@@ -25,10 +25,11 @@ export default {
       });
 
       push.on('registration', function(data) {
+        // we won't try to register again on failure for now
         if (session.isConnected()) {
-          // we won't try to register again on failure for now
           const platform = window.cordova.platformId;
           const deviceId = encodeURIComponent(data.registrationId);
+          console.log(deviceId);
           request(`/mobile/register/${platform}/${deviceId}`, {
             method: 'POST',
             deserialize: v => v
@@ -37,6 +38,7 @@ export default {
       });
 
       push.on('notification', function(data) {
+        console.log(data);
         // if app was foreground we don't want to disturb too much so we'll
         // just refresh nb of turns in board icon
         const payload = data.additionalData;

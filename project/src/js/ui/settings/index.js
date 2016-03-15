@@ -77,12 +77,12 @@ function renderBody() {
       m('li.list_item', {
         key: 'sound'
       }, formWidgets.renderCheckbox(i18n('sound'), 'sound', settings.general.sound, sound.onSettingChange)),
-      window.cordova.platformId === 'android' ? m('li.list_item', {
+      m('li.list_item', {
         key: 'notifications'
       }, formWidgets.renderCheckbox('Allow notifications', 'notifications', settings.general.notifications, isOn => {
         if (isOn) push.register();
         else push.unregister();
-      })) : null,
+      })),
       m('li.list_item', {
         key: 'analytics'
       }, formWidgets.renderCheckbox(i18n('allowAnalytics'), 'analytics', settings.general.analytics))
