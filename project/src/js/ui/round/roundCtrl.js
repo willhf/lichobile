@@ -8,7 +8,7 @@ import ground from './ground';
 import promotion from './promotion';
 import chat from './chat';
 import notes from './notes';
-import clockCtrl from './clock/clockCtrl';
+import clockCtrl from '../shared/clock/clockCtrl';
 import i18n from '../../i18n';
 import gameStatus from '../../lichess/status';
 import correspondenceClockCtrl from './correspondenceClock/corresClockCtrl';

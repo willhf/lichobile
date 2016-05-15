@@ -6,13 +6,14 @@ import { setResult } from '../shared/offlineRound';
 import sound from '../../sound';
 import vibrate from '../../vibrate';
 import replayCtrl from '../shared/offlineRound/replayCtrl';
+import clockCtrl from '../shared/clock/clockCtrl';
 import storage from '../../storage';
 import settings from '../../settings';
 import actions from './actions';
 import engineCtrl from './engine';
 import helper from '../helper';
 import newGameMenu from './newAiGame';
-import { askWorker, getRandomArbitrary, oppositeColor, aiName } from '../../utils';
+import { askWorker, getRandomArbitrary, oppositeColor, aiName, noop } from '../../utils';
 import { setCurrentAIGame, getCurrentAIGame } from '../../utils/offlineGames';
 import i18n from '../../i18n';
 import socket from '../../socket';
@@ -129,6 +130,22 @@ export default function controller() {
     this.save();
     this.onGameEnd();
   }.bind(this);
+
+  this.clock = settings.ai.clock() ? new clockCtrl(
+    this.data.clock,
+    noop,
+    this.data.player.color
+  ) : null;
+
+  this.isClockRunning = function() {
+    return this.data.clock && gameApi.playable(this.data) &&
+      ((this.data.game.turns - this.data.game.startedAtTurn) > 1 || this.data.clock.running);
+  }.bind(this);
+
+  this.clockTick = function() {
+    if (this.isClockRunning()) this.clock.tick(this.data.game.player);
+  }.bind(this);
+
 
   this.init = function(data, situations, ply) {
     this.newGameMenu.close();

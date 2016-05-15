@@ -106,6 +106,9 @@ export default {
     color: localstorageprop('settings.ai.color', 'white'),
     opponent: localstorageprop('settings.ai.opponent', '1'),
     variant: localstorageprop('settings.ai.variant', 'standard'),
+    clock: localstorageprop('settings.ai.clock', false),
+    time: localstorageprop('settings.ai.time', '5'),
+    increment: localstorageprop('settings.ai.increment', '0'),
     availableVariants: [
       ['Standard', 'standard'],
       ['Chess960', 'chess960'],

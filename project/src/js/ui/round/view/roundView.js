@@ -13,7 +13,7 @@ import { backButton, menuButton, loader, headerBtns, miniUser } from '../../shar
 import Board from '../../shared/Board';
 import popupWidget from '../../shared/popup';
 import formWidgets from '../../shared/form';
-import { view as renderClock } from '../clock/clockView';
+import { view as renderClock } from '../../shared/clock/clockView';
 import promotion from '../promotion';
 import helper from '../../helper';
 import button from './button';
