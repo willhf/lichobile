@@ -1,5 +1,6 @@
 import menu from './menu';
 import menuView from './menu/menuView';
+import notifyView from './notify/notifyView';
 import gamesMenu from './gamesMenu';
 import newGameForm from './newGameForm';
 import challengeForm from './challengeForm';
@@ -33,6 +34,7 @@ export default {
         {gamesMenu.view()}
         {loginModal.view()}
         {signupModal.view()}
+        {notifyView()}
         {newGameForm.view()}
         {challengeForm.view()}
         {friendsPopup.view()}
@@ -60,6 +62,7 @@ export default {
         {gamesMenu.view()}
         {loginModal.view()}
         {signupModal.view()}
+        {notifyView()}
         {newGameForm.view()}
         {challengeForm.view()}
         {friendsPopup.view()}

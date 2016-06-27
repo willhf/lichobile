@@ -11,7 +11,7 @@ import * as utils from './utils';
 import session from './session';
 import { loadPreferredLanguage } from './i18n';
 import settings from './settings';
-import { status as xhrStatus, setServerLang } from './xhr';
+import { status as xhrStatus, setServerLang, notify } from './xhr';
 import challengesApi from './lichess/challenges';
 import helper from './ui/helper';
 import backbutton from './backbutton';
@@ -25,6 +25,8 @@ function main() {
 
   routes.init();
   deepLinks.init();
+
+  notify().then(console.log.bind(console));
 
   // cache viewport dims
   helper.viewportDim();

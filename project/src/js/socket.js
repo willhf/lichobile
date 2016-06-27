@@ -5,6 +5,7 @@ import * as xhr from './xhr';
 import i18n from './i18n';
 import friendsApi from './lichess/friends';
 import challengesApi from './lichess/challenges';
+import notifyApi from './lichess/notify';
 import session from './session';
 import m from 'mithril';
 
@@ -25,6 +26,10 @@ const defaultHandlers = {
   following_leaves: name => autoredraw(friendsApi.remove.bind(undefined, name)),
   challenges: data => {
     challengesApi.set(data);
+    m.redraw();
+  },
+  notifications: data => {
+    notifyApi.update(data, true);
     m.redraw();
   }
 };

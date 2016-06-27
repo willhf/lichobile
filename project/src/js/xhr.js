@@ -90,6 +90,10 @@ export function acceptChallenge(id) {
   return request(`/challenge/${id}/accept`, { method: 'POST'}, true);
 }
 
+export function notify(page) {
+  return request('/notify', { page: page || 1 }, true);
+}
+
 export function lobby(feedback) {
   return request('/', null, feedback);
 }
