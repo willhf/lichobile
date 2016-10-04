@@ -100,31 +100,9 @@ export function chatView(ctrl) {
           el.scrollTop = el.scrollHeight;
         }
       }, [
-        m('ul.chat_messages', ctrl.messages.map(function(msg, i, all) {
-          var player = ctrl.root.data.player;
-
-          var lichessTalking = msg.u === 'lichess';
-          var playerTalking = msg.c ? msg.c === player.color :
-          player.user && msg.u === player.user.username;
-
-          var closeBalloon = true;
-          var next = all[i + 1];
-          var nextTalking;
-          if (next) {
-            nextTalking = next.c ? next.c === player.color :
-            player.user && next.u === player.user.username;
-          }
-          if (nextTalking !== undefined) closeBalloon = nextTalking !== playerTalking;
-
-          return m('li.chat_msg.allow_select', {
-            className: helper.classSet({
-              system: lichessTalking,
-              player: playerTalking,
-              opponent: !lichessTalking && !playerTalking,
-              'close_balloon': closeBalloon
-            })
-          }, msg.t);
-        }))
+        m('ul.chat_messages',
+          selectLines(ctrl).map(renderLine.bind(undefined, ctrl))
+        )
       ]),
       m('form.chat_form', {
         onsubmit: e => {
@@ -154,4 +132,46 @@ export function chatView(ctrl) {
 
 function inputListener(ctrl, e) {
   ctrl.inputValue = e.target.value;
+}
+
+function sameLines(l1, l2) {
+  return l1.d && l2.d && l1.u === l2.u;
+}
+
+function selectLines(ctrl) {
+  var prev, ls = [];
+  ctrl.messages.forEach(line => {
+    if (!line.d &&
+      (!prev || !sameLines(prev, line)) &&
+      (!line.r || ctrl.vm.isTroll)
+    ) ls.push(line);
+    prev = line;
+  });
+  return ls;
+}
+
+function renderLine(ctrl, msg, i, all) {
+  var player = ctrl.root.data.player;
+
+  var lichessTalking = msg.u === 'lichess';
+  var playerTalking = msg.c ? msg.c === player.color :
+  player.user && msg.u === player.user.username;
+
+  var closeBalloon = true;
+  var next = all[i + 1];
+  var nextTalking;
+  if (next) {
+    nextTalking = next.c ? next.c === player.color :
+    player.user && next.u === player.user.username;
+  }
+  if (nextTalking !== undefined) closeBalloon = nextTalking !== playerTalking;
+
+  return m('li.chat_msg.allow_select', {
+    className: helper.classSet({
+      system: lichessTalking,
+      player: playerTalking,
+      opponent: !lichessTalking && !playerTalking,
+      'close_balloon': closeBalloon
+    })
+  }, msg.t);
 }
