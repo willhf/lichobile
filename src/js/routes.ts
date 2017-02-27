@@ -26,7 +26,7 @@ import userVariantPerf from './ui/user/variantperf';
 import userTV from './ui/user/tv';
 import players from './ui/players';
 import ranking from './ui/players/ranking';
-import training from './ui/training';
+import puzzle from './ui/puzzle';
 import tournamentDetail from './ui/tournament/detail';
 import tournament from './ui/tournament';
 import editor from './ui/editor';
@@ -87,8 +87,8 @@ export default {
       'settings/themes/piece': pieceThemes,
       'settings/lang': settingsLang,
       'settings/kidMode': settingsKidMode,
-      'training': training,
-      'training/:id': training,
+      'puzzle': puzzle,
+      'puzzle/:id': puzzle,
       'tournament': tournament,
       'tournament/:id': tournamentDetail
     });
