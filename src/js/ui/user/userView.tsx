@@ -1,17 +1,18 @@
-import userPerfs from '../../lichess/perfs';
-import { dropShadowHeader, backButton as renderBackbutton } from '../shared/common';
-import { getLanguageNativeName } from '../../utils/langs';
-import * as xhr from '../../xhr';
-import perf from '../shared/perf';
-import i18n from '../../i18n';
-import countries from '../../utils/countries';
-import * as helper from '../helper';
-import session from '../../session';
-import { UserFullProfile } from '../../lichess/interfaces/user';
-import { UserCtrl } from './userCtrl';
+import userPerfs from '../../lichess/perfs'
+import { dropShadowHeader, backButton as renderBackbutton } from '../shared/common'
+import { getLanguageNativeName } from '../../utils/langs'
+import { lichessAssetSrc } from '../../utils'
+import * as xhr from '../../xhr'
+import renderPerf from '../shared/perf'
+import i18n from '../../i18n'
+import countries from '../../utils/countries'
+import * as helper from '../helper'
+import session from '../../session'
+import { UserFullProfile } from '../../lichess/interfaces/user'
+import { UserCtrl } from './userCtrl'
 
 export function header(user: UserFullProfile, ctrl: UserCtrl) {
-  const status = user.online ? 'online' : 'offline';
+  const status = user.online ? 'online' : 'offline'
   const icon = user.patron ?
     <span className={'userStatus patron ' + status} data-icon="" /> :
     <span className={'fa fa-circle userStatus ' + status} />
@@ -21,8 +22,8 @@ export function header(user: UserFullProfile, ctrl: UserCtrl) {
     <span>{(user.title ? `${user.title} ` : '') + user.username}</span>
   ]
 
-  const backButton = !ctrl.isMe() ? renderBackbutton(title) : null;
-  return dropShadowHeader(backButton ? null : title, backButton);
+  const backButton = !ctrl.isMe() ? renderBackbutton(title) : null
+  return dropShadowHeader(backButton ? null : title, backButton)
 }
 
 export function profile(user: UserFullProfile, ctrl: UserCtrl) {
@@ -33,13 +34,13 @@ export function profile(user: UserFullProfile, ctrl: UserCtrl) {
       {renderStats(user)}
       {renderPatron(user)}
       {renderRatings(user)}
-      {renderActions(ctrl)}
+      {renderActions(ctrl, user)}
     </div>
   )
 }
 
 function renderWarnings(user: UserFullProfile) {
-  if (!user.engine && !user.booster) return null;
+  if (!user.engine && !user.booster) return null
 
   return (
     <section className="warnings">
@@ -50,18 +51,18 @@ function renderWarnings(user: UserFullProfile) {
       <div className="warning" data-icon="j">{i18n('thisPlayerArtificiallyIncreasesTheirRating')}</div> : null
       }
     </section>
-  );
+  )
 }
 
 function renderProfile(user: UserFullProfile) {
   if (user.profile) {
-    let fullname = '';
-    if (user.profile.firstName) fullname += user.profile.firstName;
-    if (user.profile.lastName) fullname += (user.profile.firstName ? ' ' : '') + user.profile.lastName;
-    const country = countries[user.profile.country];
-    const location = user.profile.location;
-    const memberSince = i18n('memberSince') + ' ' + window.moment(user.createdAt).format('LL');
-    const seenAt = user.seenAt ? 'Last login ' + window.moment(user.seenAt).calendar() : null;
+    let fullname = ''
+    if (user.profile.firstName) fullname += user.profile.firstName
+    if (user.profile.lastName) fullname += (user.profile.firstName ? ' ' : '') + user.profile.lastName
+    const country = countries[user.profile.country]
+    const location = user.profile.location
+    const memberSince = i18n('memberSince') + ' ' + window.moment(user.createdAt).format('LL')
+    const seenAt = user.seenAt ? 'Last login ' + window.moment(user.seenAt).calendar() : null
     return (
       <section className="profile">
         {fullname ?
@@ -82,7 +83,7 @@ function renderProfile(user: UserFullProfile) {
             {location}
             {country ?
             <span className="country">
-              {location ? ',' : ''} <img className="flag" src={'images/flags/' + user.profile.country + '.png'} />
+              {location ? ',' : ''} <img className="flag" src={lichessAssetSrc('images/flags/' + user.profile.country + '.png')} />
               {country}
             </span> : null
             }
@@ -93,9 +94,9 @@ function renderProfile(user: UserFullProfile) {
           }
         </div>
       </section>
-    );
+    )
   } else
-    return null;
+    return null
 }
 
 function renderPatron(user: UserFullProfile) {
@@ -108,14 +109,14 @@ function renderPatron(user: UserFullProfile) {
         Lichess Patron
         <span className="fa fa-external-link" />
       </p>
-    );
+    )
   else
-    return null;
+    return null
 }
 
 function renderStats(user: UserFullProfile) {
-  const totalPlayTime = user.playTime ? 'Time spent playing: ' + window.moment.duration(user.playTime.total, 'seconds').humanize() : null;
-  const tvTime = user.playTime && user.playTime.tv > 0 ? 'Time on TV: ' + window.moment.duration(user.playTime.tv, 'seconds').humanize() : null;
+  const totalPlayTime = user.playTime ? 'Time spent playing: ' + window.moment.duration(user.playTime.total, 'seconds').humanize() : null
+  const tvTime = user.playTime && user.playTime.tv > 0 ? 'Time on TV: ' + window.moment.duration(user.playTime.tv, 'seconds').humanize() : null
 
   return (
     <section className="userStats">
@@ -138,13 +139,12 @@ function renderRatings(user: UserFullProfile) {
 
   return (
     <section id="userProfileRatings" className="perfs">
-      {userPerfs(user).filter(isShowing).map(p => perf(p.key, p.name, p.perf, user))}
+      {userPerfs(user).filter(isShowing).map(p => renderPerf(p.key, p.name, p.perf, user))}
     </section>
   )
 }
 
-function renderActions(ctrl: UserCtrl) {
-  const user = ctrl.user()
+function renderActions(ctrl: UserCtrl, user: UserFullProfile) {
   return (
     <section id="userProfileActions" className="items_list_block noPadding">
       <div className="list_item nav"
