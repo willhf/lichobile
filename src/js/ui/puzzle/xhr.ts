@@ -1,4 +1,4 @@
-import { fetchJSON } from '../../http';
+import { fetchJSON } from '../../http'
 
 export function attempt(id: string, win: boolean) {
   return fetchJSON(`/training/${id}/round2`, {
@@ -6,13 +6,13 @@ export function attempt(id: string, win: boolean) {
     body: JSON.stringify({
       win: win ? 1 : 0
     })
-  });
+  })
 }
 
 export function loadPuzzle(id: string) {
-  return fetchJSON(`/training/${id}/load`);
+  return fetchJSON(`/training/${id}/load`)
 }
 
 export function newPuzzle() {
-  return fetchJSON('/training/new');
+  return fetchJSON('/training/new')
 }

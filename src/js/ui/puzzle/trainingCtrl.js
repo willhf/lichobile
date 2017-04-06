@@ -324,7 +324,6 @@ export default function ctrl(vnode) {
 
   signals.afterLogin.add(this.retry)
 
-  window.plugins.insomnia.keepAwake()
 }
 
 function pushState(cfg) {

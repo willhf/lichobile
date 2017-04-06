@@ -1,5 +1,5 @@
 import chessground from '../../chessground'
-import { batchRequestAnimationFrame } from '../../utils/batchRAF';
+import { batchRequestAnimationFrame } from '../../utils/batchRAF'
 
 export default function(data, config, pref, onMove) {
   return new chessground.controller({
@@ -37,5 +37,5 @@ export default function(data, config, pref, onMove) {
       duration: pref.animation.duration
     },
     disableContextMenu: true
-  });
-};
+  })
+}
