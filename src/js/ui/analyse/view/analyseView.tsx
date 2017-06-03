@@ -13,7 +13,6 @@ import ViewOnlyBoard from '../../shared/ViewOnlyBoard'
 import { Shape } from '../../shared/BoardBrush'
 import * as helper from '../../helper'
 import { notesView } from '../../shared/round/notes'
-import { formatClockTime } from '../../shared/round/clock/clockView'
 import menu from '../menu'
 import analyseSettings from '../analyseSettings'
 import { renderEval, isSynthetic } from '../util'
@@ -343,6 +342,27 @@ function renderSyntheticPockets(ctrl: AnalyseCtrl) {
   )
 }
 
+function clockContent(centis: number) {
+  if (centis === null) return '-'
+  const date = new Date(centis * 10)
+  const millis = date.getUTCMilliseconds()
+  const sep = ':'
+  const baseStr = pad2(date.getUTCMinutes()) + sep + pad2(date.getUTCSeconds())
+  if (centis >= 360000) {
+    const hours = Math.floor(centis / 360000)
+    return hours + sep + baseStr;
+  }
+  const tenthsStr = Math.floor(millis / 100).toString()
+  return [
+    baseStr,
+    h('tenths', '.' + tenthsStr)
+  ]
+}
+
+function pad2(num: number) {
+  return (num < 10 ? '0' : '') + num;
+}
+
 const OpponentsBox: Mithril.Component<{ ctrl: AnalyseCtrl, isPortrait: boolean }, {}> = {
   onbeforeupdate({ attrs }) {
     return !attrs.ctrl.vm.replaying
@@ -369,7 +389,7 @@ const OpponentsBox: Mithril.Component<{ ctrl: AnalyseCtrl, isPortrait: boolean }
           {ctrl.data.clock && (!isCrazy || !isPortrait) ?
             <div className="analyseClock">
               <span className="fa fa-clock-o" />
-              {formatClockTime(ctrl.data.clock[player.color] * 1000, false)}
+              {clockContent(ctrl.data.clock[player.color] * 100)}
             </div> : null
           }
           {isCrazy && ctrl.vm.step && ctrl.vm.step.crazy ? h(CrazyPocket, {
@@ -391,7 +411,7 @@ const OpponentsBox: Mithril.Component<{ ctrl: AnalyseCtrl, isPortrait: boolean }
           {ctrl.data.clock && (!isCrazy || !isPortrait) ?
             <div className="analyseClock">
               <span className="fa fa-clock-o" />
-              {formatClockTime(ctrl.data.clock[opponent.color] * 1000, false)}
+              {clockContent(ctrl.data.clock[opponent.color] * 1000)}
             </div> : null
           }
           {isCrazy && ctrl.vm.step && ctrl.vm.step.crazy ? h(CrazyPocket, {

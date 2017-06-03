@@ -313,13 +313,19 @@ line
         height 'calc(((100vw - (100vh - %s - 12vh)) * 40 / 100) / 6 + 10px)' % headerHeight
 
 .analyseClock
+  display inline-block
   font-family Cousine
+  font-size 1.1em
   background lighten(bgdark, 5%)
   border 1px solid lighten(bgdark, 10%)
-  padding 5px 2px
-  display inline-block
-  > span
-    margin-left 5px
+  padding 0 5px
+  line-height 2em
+  margin-top 5px
+  width 85px
+  tenths
+    font-size 0.8em
+  > .fa
+    opacity 0.5
 
 .analysePlayerName
   overflow hidden
