@@ -343,59 +343,73 @@ function renderSyntheticPockets(ctrl: AnalyseCtrl) {
   )
 }
 
+const OpponentsBox: Mithril.Component<{ ctrl: AnalyseCtrl, isPortrait: boolean }, {}> = {
+  onbeforeupdate({ attrs }) {
+    return !attrs.ctrl.vm.replaying
+  },
+  view({ attrs }) {
+    const { ctrl, isPortrait } = attrs
+    const player = ctrl.data.player
+    const opponent = ctrl.data.opponent
+    if (!player || !opponent) return null
+
+    const isCrazy = ctrl.data.game.variant.key === 'crazyhouse'
+
+    return (
+      <div>
+        <div className="analyseOpponent">
+          <div className={'analysePlayerName' + (isCrazy ? ' crazy' : '')}>
+            <span className={'color-icon ' + player.color} />
+            {playerName(player, true)}
+            {helper.renderRatingDiff(player)}
+            { ctrl.data.game.variant.key === 'threeCheck' && ctrl.vm.step && ctrl.vm.step.checkCount ?
+              ' +' + getChecksCount(ctrl, player.color) : null
+            }
+          </div>
+          {ctrl.data.clock && (!isCrazy || !isPortrait) ?
+            <div className="analyseClock">
+              <span className="fa fa-clock-o" />
+              {formatClockTime(ctrl.data.clock[player.color] * 1000, false)}
+            </div> : null
+          }
+          {isCrazy && ctrl.vm.step && ctrl.vm.step.crazy ? h(CrazyPocket, {
+            ctrl: { chessground: ctrl.chessground, canDrop: ctrl.canDrop },
+            crazyData: ctrl.vm.step.crazy,
+            color: player.color,
+            position: 'top'
+          }) : null}
+        </div>
+        <div className="analyseOpponent">
+          <div className={'analysePlayerName' + (isCrazy ? ' crazy' : '')}>
+            <span className={'color-icon ' + opponent.color} />
+            {playerName(opponent, true)}
+            {helper.renderRatingDiff(opponent)}
+            { ctrl.data.game.variant.key === 'threeCheck' && ctrl.vm.step && ctrl.vm.step.checkCount ?
+              ' +' + getChecksCount(ctrl, opponent.color) : null
+            }
+          </div>
+          {ctrl.data.clock && (!isCrazy || !isPortrait) ?
+            <div className="analyseClock">
+              <span className="fa fa-clock-o" />
+              {formatClockTime(ctrl.data.clock[opponent.color] * 1000, false)}
+            </div> : null
+          }
+          {isCrazy && ctrl.vm.step && ctrl.vm.step.crazy ? h(CrazyPocket, {
+            ctrl: { chessground: ctrl.chessground, canDrop: ctrl.canDrop },
+            crazyData: ctrl.vm.step.crazy,
+            color: opponent.color,
+            position: 'bottom'
+          }) : null}
+        </div>
+      </div>
+    )
+  }
+}
+
 function renderGameInfos(ctrl: AnalyseCtrl, isPortrait: boolean) {
-  const player = ctrl.data.player
-  const opponent = ctrl.data.opponent
-  if (!player || !opponent) return null
-
-  const isCrazy = ctrl.data.game.variant.key === 'crazyhouse'
-
   return (
     <div className="analyse-gameInfosWrapper">
-      <div className="analyseOpponent">
-        <div className={'analysePlayerName' + (isCrazy ? ' crazy' : '')}>
-          <span className={'color-icon ' + player.color} />
-          {playerName(player, true)}
-          {helper.renderRatingDiff(player)}
-          { ctrl.data.game.variant.key === 'threeCheck' && ctrl.vm.step && ctrl.vm.step.checkCount ?
-            ' +' + getChecksCount(ctrl, player.color) : null
-          }
-        </div>
-        {ctrl.data.clock && (!isCrazy || !isPortrait) ?
-          <div className="analyseClock">
-            {formatClockTime(ctrl.data.clock[player.color] * 1000, false)}
-            <span className="fa fa-clock-o" />
-          </div> : null
-        }
-        {isCrazy && ctrl.vm.step && ctrl.vm.step.crazy ? h(CrazyPocket, {
-          ctrl: { chessground: ctrl.chessground, canDrop: ctrl.canDrop },
-          crazyData: ctrl.vm.step.crazy,
-          color: player.color,
-          position: 'top'
-        }) : null}
-      </div>
-      <div className="analyseOpponent">
-        <div className={'analysePlayerName' + (isCrazy ? ' crazy' : '')}>
-          <span className={'color-icon ' + opponent.color} />
-          {playerName(opponent, true)}
-          {helper.renderRatingDiff(opponent)}
-          { ctrl.data.game.variant.key === 'threeCheck' && ctrl.vm.step && ctrl.vm.step.checkCount ?
-            ' +' + getChecksCount(ctrl, opponent.color) : null
-          }
-        </div>
-        {ctrl.data.clock && (!isCrazy || !isPortrait) ?
-          <div className="analyseClock">
-            {formatClockTime(ctrl.data.clock[opponent.color] * 1000, false)}
-            <span className="fa fa-clock-o" />
-          </div> : null
-        }
-        {isCrazy && ctrl.vm.step && ctrl.vm.step.crazy ? h(CrazyPocket, {
-          ctrl: { chessground: ctrl.chessground, canDrop: ctrl.canDrop },
-          crazyData: ctrl.vm.step.crazy,
-          color: opponent.color,
-          position: 'bottom'
-        }) : null}
-      </div>
+      {h(OpponentsBox, { ctrl, isPortrait })}
       <div className="gameInfos">
         {ctrl.vm.formattedDate ? ctrl.vm.formattedDate : null}
         { ctrl.data.game.source === 'import' && ctrl.data.game.importedBy ?
