@@ -1,5 +1,6 @@
 import * as merge from 'lodash/merge'
 import spinner from './spinner'
+import redraw from './utils/redraw'
 import { buildQueryString } from './utils/querystring'
 
 export const apiVersion = 2
@@ -99,12 +100,48 @@ export function request(url: string, opts?: RequestOpts, feedback = false): Prom
     .catch(onError)
 }
 
-export function fetchJSON<T>(url: string, opts?: RequestOpts, feedback = false): Promise<T> {
-  return request(url, opts, feedback)
-  .then(r => r.json() as Promise<T>)
+// funtion finalizer taken from mithril:
+// https://github.com/MithrilJS/mithril.js/blob/next/request/request.js
+function finalizer<T>() {
+  let count = 0
+
+  function complete() {
+    if (--count === 0) redraw()
+  }
+
+  return function finalize(promise: Promise<T>): Promise<T> {
+    const then = promise.then
+    promise.then = function() {
+      count++
+      const next = then.apply(promise, arguments)
+      next.then(complete, (e: Error) => {
+        complete()
+        if (count === 0) throw e
+      })
+      return finalize(next)
+    }
+    return promise
+  }
 }
 
-export function fetchText(url: string, opts?: RequestOpts, feedback = false): Promise<string> {
-  return request(url, opts, feedback)
-  .then(r => r.text())
+export function fetchJSON<T>(
+  url: string,
+  opts?: RequestOpts,
+  feedback = false,
+  background = false
+): Promise<T> {
+  const p = request(url, opts, feedback).then(r => r.json() as Promise<T>)
+  if (background) return p
+  else return finalizer()(p)
+}
+
+export function fetchText(
+  url: string,
+  opts?: RequestOpts,
+  feedback = false,
+  background = false
+): Promise<string> {
+  const p = request(url, opts, feedback).then(r => r.text())
+  if (background) return p
+  else return finalizer()(p)
 }

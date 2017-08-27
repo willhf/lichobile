@@ -109,12 +109,10 @@ export default function oninit(vnode: Mithril.Vnode<TournamentAttrs, TournamentS
     clockInterval(setInterval(tick, 1000))
     const featuredGame = data.featured ? data.featured.id : undefined
     socket.createTournament(id, tournament().socketVersion, handlers, featuredGame)
-    redraw()
   })
   .catch(err => {
     if (utils.isFetchError(err) && err.response.status === 404) {
       notFound(true)
-      redraw()
     } else {
       utils.handleXhrError(err)
     }
