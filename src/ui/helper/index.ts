@@ -31,17 +31,25 @@ export function onPageEnter(anim: (el: HTMLElement) => void) {
 // because mithril will call 'onremove' asynchronously when the component has
 // an 'onbeforeremove' hook, some cleanup tasks must be done in the latter hook
 // thus this helper
-export function onPageLeave(anim: (el: HTMLElement) => Promise<void>, cleanup?: () => void) {
+export function onPageLeave(
+  anim: (el: HTMLElement) => Promise<void>,
+  cleanup?: () => void
+) {
   return function({ dom }: Mithril.DOMNode, done: () => void) {
     if (cleanup) cleanup()
     return anim(dom as HTMLElement)
-    .then(done)
-    .catch(done)
+      .then(done)
+      .catch(done)
   }
 }
 
 // el fade in transition, can be applied to any element
-export function elFadeIn(el: HTMLElement, duration = animDuration, origOpacity = '0.5', endOpacity = '1') {
+export function elFadeIn(
+  el: HTMLElement,
+  duration = animDuration,
+  origOpacity = '0.5',
+  endOpacity = '1'
+) {
   let tId: number
 
   el.style.opacity = origOpacity
@@ -96,11 +104,13 @@ export function elFadeOut(el: HTMLElement) {
 }
 
 function computeTransformProp() {
-  return 'transform' in document.body.style ?
-    'transform' : 'webkitTransform' in document.body.style ?
-    'webkitTransform' : 'mozTransform' in document.body.style ?
-    'mozTransform' : 'oTransform' in document.body.style ?
-    'oTransform' : 'msTransform'
+  return 'transform' in document.body.style
+    ? 'transform'
+    : 'webkitTransform' in document.body.style
+      ? 'webkitTransform'
+      : 'mozTransform' in document.body.style
+        ? 'mozTransform'
+        : 'oTransform' in document.body.style ? 'oTransform' : 'msTransform'
 }
 
 function collectionHas(coll: NodeListOf<Element>, el: HTMLElement): boolean {
@@ -110,11 +120,14 @@ function collectionHas(coll: NodeListOf<Element>, el: HTMLElement): boolean {
   return false
 }
 
-export function findParentBySelector(el: HTMLElement, selector: string): HTMLElement {
+export function findParentBySelector(
+  el: HTMLElement,
+  selector: string
+): HTMLElement {
   const matches = document.querySelectorAll(selector)
   let cur = el as HTMLElement
   while (cur && !collectionHas(matches, cur)) {
-    cur = (cur.parentNode as HTMLElement)
+    cur = cur.parentNode as HTMLElement
   }
   return cur
 }
@@ -123,10 +136,10 @@ export function viewportDim(): ViewportDim {
   if (cachedViewportDim) return cachedViewportDim
 
   let e = document.documentElement
-  let vpd = cachedViewportDim = {
+  let vpd = (cachedViewportDim = {
     vw: e.clientWidth,
     vh: e.clientHeight
-  }
+  })
   return vpd
 }
 
@@ -146,20 +159,24 @@ export function clearCachedViewportDim(): void {
 }
 
 export function slidesInUp(vnode: Mithril.DOMNode): Promise<HTMLElement> {
-  const el = (vnode.dom as HTMLElement)
+  const el = vnode.dom as HTMLElement
   el.style.transform = 'translateY(100%)'
   // force reflow hack
   vnode.state.lol = el.offsetHeight
-  return Zanimo(el, 'transform', 'translateY(0)', 250, 'ease-out')
-  .catch(console.log.bind(console))
+  return Zanimo(el, 'transform', 'translateY(0)', 250, 'ease-out').catch(
+    console.log.bind(console)
+  )
 }
 
-export function slidesOutDown(callback: (fromBB?: string) => void, elID: string): () => Promise<HTMLElement> {
+export function slidesOutDown(
+  callback: (fromBB?: string) => void,
+  elID: string
+): () => Promise<HTMLElement> {
   return function(fromBB?: string) {
     const el = document.getElementById(elID)
     return Zanimo(el, 'transform', 'translateY(100%)', 250, 'ease-out')
-    .then(() => utils.autoredraw(() => callback(fromBB)))
-    .catch(console.log.bind(console))
+      .then(() => utils.autoredraw(() => callback(fromBB)))
+      .catch(console.log.bind(console))
   }
 }
 
@@ -168,40 +185,60 @@ export function slidesInLeft(vnode: Mithril.DOMNode): Promise<HTMLElement> {
   el.style.transform = 'translateX(100%)'
   // force reflow hack
   vnode.state.lol = el.offsetHeight
-  return Zanimo(el, 'transform', 'translateX(0)', 250, 'ease-out')
-  .catch(console.log.bind(console))
+  return Zanimo(el, 'transform', 'translateX(0)', 250, 'ease-out').catch(
+    console.log.bind(console)
+  )
 }
 
-export function slidesOutRight(callback: (fromBB?: string) => void, elID: string): () => Promise<HTMLElement> {
+export function slidesOutRight(
+  callback: (fromBB?: string) => void,
+  elID: string
+): () => Promise<HTMLElement> {
   return function(fromBB?: string) {
     const el = document.getElementById(elID)
     return Zanimo(el, 'transform', 'translateX(100%)', 250, 'ease-out')
-    .then(() => utils.autoredraw(() => callback(fromBB)))
-    .catch(console.log.bind(console))
+      .then(() => utils.autoredraw(() => callback(fromBB)))
+      .catch(console.log.bind(console))
   }
 }
 
-export function fadesOut(callback: () => void, selector?: string, time = 150): (e: Event) => Promise<HTMLElement> {
+export function fadesOut(
+  callback: () => void,
+  selector?: string,
+  time = 150
+): (e: Event) => Promise<HTMLElement> {
   return function(e: Event) {
     e.stopPropagation()
-    const el = selector ? findParentBySelector((e.target as HTMLElement), selector) : e.target
+    const el = selector
+      ? findParentBySelector(e.target as HTMLElement, selector)
+      : e.target
     return Zanimo(el, 'opacity', 0, time)
-    .then(() => utils.autoredraw(callback))
-    .catch(console.log.bind(console))
+      .then(() => utils.autoredraw(callback))
+      .catch(console.log.bind(console))
   }
 }
 
 type TapHandler = (e: TouchEvent) => void
 type RepeatHandler = () => boolean
 
-function createTapHandler(tapHandler: TapHandler, holdHandler?: TapHandler, repeatHandler?: RepeatHandler, scrollX?: boolean, scrollY?: boolean, getElement?: (e: TouchEvent) => HTMLElement) {
+function createTapHandler(
+  tapHandler: TapHandler,
+  holdHandler?: TapHandler,
+  repeatHandler?: RepeatHandler,
+  scrollX?: boolean,
+  scrollY?: boolean,
+  getElement?: (e: TouchEvent) => HTMLElement
+) {
   return function(vnode: Mithril.DOMNode) {
-    ButtonHandler(vnode.dom as HTMLElement,
+    ButtonHandler(
+      vnode.dom as HTMLElement,
       (e: TouchEvent) => {
         tapHandler(e)
         redraw()
       },
-      holdHandler ? (e: TouchEvent) => utils.autoredraw(() => holdHandler(e)) : undefined,
+      holdHandler
+        ? (e: TouchEvent) => utils.autoredraw(() => holdHandler(e))
+        : undefined,
       repeatHandler,
       scrollX,
       scrollY,
@@ -216,31 +253,69 @@ export function ontouch(handler: TapHandler) {
   }
 }
 
-export function ontap(tapHandler: TapHandler, holdHandler?: TapHandler, repeatHandler?: RepeatHandler, getElement?: (e: TouchEvent) => HTMLElement) {
-  return createTapHandler(tapHandler, holdHandler, repeatHandler, false, false, getElement)
+export function ontap(
+  tapHandler: TapHandler,
+  holdHandler?: TapHandler,
+  repeatHandler?: RepeatHandler,
+  getElement?: (e: TouchEvent) => HTMLElement
+) {
+  return createTapHandler(
+    tapHandler,
+    holdHandler,
+    repeatHandler,
+    false,
+    false,
+    getElement
+  )
 }
 
 export function ontapX(tapHandler: TapHandler, holdHandler?: TapHandler) {
   return createTapHandler(tapHandler, holdHandler, undefined, true, false)
 }
 
-export function ontapY(tapHandler: TapHandler, holdHandler?: TapHandler, getElement?: (e: TouchEvent) => HTMLElement) {
-  return createTapHandler(tapHandler, holdHandler, undefined, false, true, getElement)
+export function ontapY(
+  tapHandler: TapHandler,
+  holdHandler?: TapHandler,
+  getElement?: (e: TouchEvent) => HTMLElement
+) {
+  return createTapHandler(
+    tapHandler,
+    holdHandler,
+    undefined,
+    false,
+    true,
+    getElement
+  )
 }
 
-export function ontapXY(tapHandler: TapHandler, holdHandler?: TapHandler, getElement?: (e: TouchEvent) => HTMLElement) {
-  return createTapHandler(tapHandler, holdHandler, undefined, true, true, getElement)
+export function ontapXY(
+  tapHandler: TapHandler,
+  holdHandler?: TapHandler,
+  getElement?: (e: TouchEvent) => HTMLElement
+) {
+  return createTapHandler(
+    tapHandler,
+    holdHandler,
+    undefined,
+    true,
+    true,
+    getElement
+  )
 }
 
 export function progress(p: number): Mithril.Children {
   if (p === 0) return null
-  return h('span', {
-    className: 'progress ' + (p > 0 ? 'positive' : 'negative'),
-    'data-icon': p > 0 ? 'N' : 'M'
-  }, String(Math.abs(p)))
+  return h(
+    'span',
+    {
+      className: 'progress ' + (p > 0 ? 'positive' : 'negative'),
+      'data-icon': p > 0 ? 'N' : 'M'
+    },
+    String(Math.abs(p))
+  )
 }
 
-export function classSet(classes: {[cl: string]: boolean}): string {
+export function classSet(classes: { [cl: string]: boolean }): string {
   const arr: string[] = []
   for (let i in classes) {
     if (classes[i]) arr.push(i)
@@ -259,7 +334,9 @@ export function isVeryWideScreen(): boolean {
 export function is43Aspect(): boolean {
   if (cachedViewportAspectIs43 !== undefined) return cachedViewportAspectIs43
   else {
-    cachedViewportAspectIs43 = window.matchMedia('(aspect-ratio: 4/3), (aspect-ratio: 3/4), (device-aspect-ratio: 4/3), (device-aspect-ratio: 3/4)').matches
+    cachedViewportAspectIs43 = window.matchMedia(
+      '(aspect-ratio: 4/3), (aspect-ratio: 3/4), (device-aspect-ratio: 4/3), (device-aspect-ratio: 3/4)'
+    ).matches
     return cachedViewportAspectIs43
   }
 }
@@ -272,7 +349,11 @@ export function isPortrait(): boolean {
   }
 }
 
-export function getBoardBounds(viewportDim: ViewportDim, isPortrait: boolean, halfsize: boolean = false): Bounds {
+export function getBoardBounds(
+  viewportDim: ViewportDim,
+  isPortrait: boolean,
+  halfsize: boolean = false
+): Bounds {
   const { vh, vw } = viewportDim
   const is43 = is43Aspect()
 
@@ -283,8 +364,7 @@ export function getBoardBounds(viewportDim: ViewportDim, isPortrait: boolean, ha
         width: side,
         height: side
       }
-    }
-    else if (is43) {
+    } else if (is43) {
       const side = vw * 0.98
       return {
         width: side,
@@ -298,7 +378,7 @@ export function getBoardBounds(viewportDim: ViewportDim, isPortrait: boolean, ha
     }
   } else {
     if (is43) {
-      const wsSide = vh - headerHeight - (vh * 0.12)
+      const wsSide = vh - headerHeight - vh * 0.12
       return {
         width: wsSide,
         height: wsSide
@@ -314,7 +394,7 @@ export function getBoardBounds(viewportDim: ViewportDim, isPortrait: boolean, ha
 }
 
 export function autofocus(vnode: Mithril.DOMNode): void {
-  (vnode.dom as HTMLElement).focus()
+  ;(vnode.dom as HTMLElement).focus()
 }
 
 let contentHeight: number
@@ -323,7 +403,7 @@ export function onKeyboardShow(e: Ionic.KeyboardEvent): void {
     const content = document.getElementById('free_content')
     if (content) {
       contentHeight = content.offsetHeight
-      content.style.height = (contentHeight - e.keyboardHeight) + 'px'
+      content.style.height = contentHeight - e.keyboardHeight + 'px'
     }
   }
 }
@@ -335,7 +415,9 @@ export function onKeyboardHide(): void {
   }
 }
 
-export function renderRatingDiff(player: Player | UserGamePlayer): Mithril.Children {
+export function renderRatingDiff(
+  player: Player | UserGamePlayer
+): Mithril.Children {
   if (player.ratingDiff === undefined) return null
   if (player.ratingDiff === 0) return h('span.rp.null', ' +0')
   if (player.ratingDiff > 0) return h('span.rp.up', ' +' + player.ratingDiff)
@@ -345,23 +427,25 @@ export function renderRatingDiff(player: Player | UserGamePlayer): Mithril.Child
 }
 
 export function getButton(e: Event): HTMLElement {
-  const target = (e.target as HTMLElement)
-  return target.tagName === 'BUTTON' ? target : findParentBySelector(target, 'button')
+  const target = e.target as HTMLElement
+  return target.tagName === 'BUTTON'
+    ? target
+    : findParentBySelector(target, 'button')
 }
 
 export function getLI(e: Event) {
-  const target = (e.target as HTMLElement)
+  const target = e.target as HTMLElement
   return target.tagName === 'LI' ? target : findParentBySelector(target, 'li')
 }
 
 export function getTR(e: Event) {
-  const target = (e.target as HTMLElement)
+  const target = e.target as HTMLElement
   return target.tagName === 'TR' ? target : findParentBySelector(target, 'tr')
 }
 
 export function findElByClassName(e: Event, className: string) {
-  const target = (e.target as HTMLElement)
-  return target.classList.contains(className) ?
-    target : findParentBySelector(target, '.' + className)
+  const target = e.target as HTMLElement
+  return target.classList.contains(className)
+    ? target
+    : findParentBySelector(target, '.' + className)
 }
-

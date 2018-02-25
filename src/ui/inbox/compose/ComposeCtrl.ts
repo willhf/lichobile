@@ -27,7 +27,6 @@ export interface IComposeCtrl {
 }
 
 export default function ComposeCtrl(userId: string): IComposeCtrl {
-
   const id = stream<string>(userId)
   const errors = stream<SendError>()
   const autocompleteResults = stream<string[]>([])
@@ -36,27 +35,29 @@ export default function ComposeCtrl(userId: string): IComposeCtrl {
     const recipient = (form[0] as HTMLInputElement).value
     const subject = (form[1] as HTMLInputElement).value
     const body = (form[2] as HTMLTextAreaElement).value
-    xhr.newThread(recipient, subject, body)
-    .then((data: ComposeResponse) => {
-      if (data.ok) {
-        router.set('/inbox/' + data.id)
-      }
-      else {
-        redraw()
-      }
-    })
-    .catch(handleSendError)
+    xhr
+      .newThread(recipient, subject, body)
+      .then((data: ComposeResponse) => {
+        if (data.ok) {
+          router.set('/inbox/' + data.id)
+        } else {
+          redraw()
+        }
+      })
+      .catch(handleSendError)
   }
 
   window.addEventListener('native.keyboardhide', helper.onKeyboardHide)
   window.addEventListener('native.keyboardshow', helper.onKeyboardShow)
 
   function handleSendError(error: SendErrorResponse) {
-    if (error.body && (error.body.username || error.body.subject || error.body.text)) {
+    if (
+      error.body &&
+      (error.body.username || error.body.subject || error.body.text)
+    ) {
       errors(error.body)
       redraw()
-    }
-    else {
+    } else {
       handleXhrError(error)
     }
   }
@@ -72,8 +73,7 @@ export default function ComposeCtrl(userId: string): IComposeCtrl {
           autocompleteResults(data)
           redraw()
         })
-      }
-      else {
+      } else {
         autocompleteResults([])
         redraw()
       }

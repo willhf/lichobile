@@ -20,7 +20,6 @@ export interface IMainMenuCtrl {
 }
 
 export default {
-
   controller(root: AnalyseCtrl): IMainMenuCtrl {
     let isOpen = false
 
@@ -59,7 +58,6 @@ export default {
 }
 
 function renderAnalyseMenu(ctrl: AnalyseCtrl) {
-
   const sharePGN = helper.ontap(
     () => pgnExport(ctrl),
     () => window.plugins.toast.show('Share PGN', 'short', 'bottom')
@@ -69,38 +67,75 @@ function renderAnalyseMenu(ctrl: AnalyseCtrl) {
     ctrl.source === 'offline' || !gameApi.playable(ctrl.data)
 
   return h('div.analyseMenu', [
-     isOfflineOrNotPlayable ? h('button[data-icon=U]', {
-      key: 'continueFromHere',
-      oncreate: helper.ontap(() => {
-        ctrl.menu.close()
-        ctrl.continuePopup.open(ctrl.node.fen, ctrl.data.game.variant.key, ctrl.data.player.color)
-      })
-    }, i18n('continueFromHere')) : null,
-    isOfflineOrNotPlayable ? h('button', {
-      key: 'boardEditor',
-      oncreate: helper.ontap(() => router.set(`/editor/${encodeURIComponent(ctrl.node.fen)}`))
-    }, [h('span.fa.fa-pencil'), i18n('boardEditor')]) : null,
-    isOfflineOrNotPlayable ? h('button', {
-      key: 'sharePGN',
-      oncreate: sharePGN
-    }, ctrl.menu.s.computingPGN ? spinner.getVdom('monochrome') : [h('span.fa.fa-share-alt'), i18n('sharePGN')]) : null,
-    ctrl.data.analysis ? h('button', {
-      key: 'retro',
-      oncreate: helper.ontap(() => {
-        ctrl.menu.close()
-        ctrl.toggleRetro()
-      }),
-      disabled: !!ctrl.retro
-    }, [h('span.fa.fa-play'), 'Learn from your mistakes']) : null,
-    ctrl.notes ? h('button', {
-      key: 'notes',
-      oncreate: helper.ontap(() => {
-        if (ctrl.notes) {
-          ctrl.menu.close()
-          ctrl.notes.open()
-        }
-      })
-    }, [h('span.fa.fa-pencil'), i18n('notes')]) : null
+    isOfflineOrNotPlayable
+      ? h(
+          'button[data-icon=U]',
+          {
+            key: 'continueFromHere',
+            oncreate: helper.ontap(() => {
+              ctrl.menu.close()
+              ctrl.continuePopup.open(
+                ctrl.node.fen,
+                ctrl.data.game.variant.key,
+                ctrl.data.player.color
+              )
+            })
+          },
+          i18n('continueFromHere')
+        )
+      : null,
+    isOfflineOrNotPlayable
+      ? h(
+          'button',
+          {
+            key: 'boardEditor',
+            oncreate: helper.ontap(() =>
+              router.set(`/editor/${encodeURIComponent(ctrl.node.fen)}`)
+            )
+          },
+          [h('span.fa.fa-pencil'), i18n('boardEditor')]
+        )
+      : null,
+    isOfflineOrNotPlayable
+      ? h(
+          'button',
+          {
+            key: 'sharePGN',
+            oncreate: sharePGN
+          },
+          ctrl.menu.s.computingPGN
+            ? spinner.getVdom('monochrome')
+            : [h('span.fa.fa-share-alt'), i18n('sharePGN')]
+        )
+      : null,
+    ctrl.data.analysis
+      ? h(
+          'button',
+          {
+            key: 'retro',
+            oncreate: helper.ontap(() => {
+              ctrl.menu.close()
+              ctrl.toggleRetro()
+            }),
+            disabled: !!ctrl.retro
+          },
+          [h('span.fa.fa-play'), 'Learn from your mistakes']
+        )
+      : null,
+    ctrl.notes
+      ? h(
+          'button',
+          {
+            key: 'notes',
+            oncreate: helper.ontap(() => {
+              if (ctrl.notes) {
+                ctrl.menu.close()
+                ctrl.notes.open()
+              }
+            })
+          },
+          [h('span.fa.fa-pencil'), i18n('notes')]
+        )
+      : null
   ])
 }
-

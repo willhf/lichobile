@@ -37,33 +37,33 @@ export default {
       if (cachedState.ctrl && window.history.state.puzzleId === numId) {
         this.ctrl = cachedState.ctrl
         redraw()
-      }
-      else {
-        xhr.loadPuzzle(numId)
-        .then(cfg => {
-          this.ctrl = new TrainingCtrl(cfg, database)
-          cachedState.ctrl = this.ctrl
-        })
-        .catch(handleXhrError)
+      } else {
+        xhr
+          .loadPuzzle(numId)
+          .then(cfg => {
+            this.ctrl = new TrainingCtrl(cfg, database)
+            cachedState.ctrl = this.ctrl
+          })
+          .catch(handleXhrError)
       }
     } else {
       const user = session.get()
       if (user) {
         syncAndLoadNewPuzzle(database, user)
-        .catch(xhr.newPuzzle)
-        .then((cfg: PuzzleData) => {
-          this.ctrl = new TrainingCtrl(cfg, database)
-          cachedState.ctrl = this.ctrl
-        })
-        .catch(puzzleLoadFailure)
-      }
-      else {
-        xhr.newPuzzle()
-        .then((cfg: PuzzleData) => {
-          this.ctrl = new TrainingCtrl(cfg, database)
-          cachedState.ctrl = this.ctrl
-        })
-        .catch(handleXhrError)
+          .catch(xhr.newPuzzle)
+          .then((cfg: PuzzleData) => {
+            this.ctrl = new TrainingCtrl(cfg, database)
+            cachedState.ctrl = this.ctrl
+          })
+          .catch(puzzleLoadFailure)
+      } else {
+        xhr
+          .newPuzzle()
+          .then((cfg: PuzzleData) => {
+            this.ctrl = new TrainingCtrl(cfg, database)
+            cachedState.ctrl = this.ctrl
+          })
+          .catch(handleXhrError)
       }
     }
 
@@ -91,11 +91,9 @@ export default {
         () => renderContent(this.ctrl!, key, bounds),
         () => overlay(this.ctrl!)
       )
-    }
-    else {
-      return layout.board(
-        connectingHeader,
-        () => h.fragment({ key: key + '-no-data' }, [
+    } else {
+      return layout.board(connectingHeader, () =>
+        h.fragment({ key: key + '-no-data' }, [
           h('section.board_wrapper', [
             h(ViewOnlyBoard, {
               fen: attrs.initFen || emptyFen,

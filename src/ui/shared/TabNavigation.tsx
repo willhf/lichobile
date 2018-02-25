@@ -33,12 +33,7 @@ export default {
   },
 
   view(vnode) {
-
-    const {
-      buttons,
-      selectedIndex,
-      noIndicator
-    } = vnode.attrs
+    const { buttons, selectedIndex, noIndicator } = vnode.attrs
 
     const iWidth = 100 / buttons.length
     const shift = selectedIndex * (iWidth * buttons.length)
@@ -66,13 +61,11 @@ export default {
     }
 
     return (
-      <div className="tabs-navigation"
-        oncreate={helper.ontap(this.onTap)}
-      >
-        { buttons.map(renderTab) }
-        { noIndicator ? null :
+      <div className="tabs-navigation" oncreate={helper.ontap(this.onTap)}>
+        {buttons.map(renderTab)}
+        {noIndicator ? null : (
           <div className="tabIndicator" style={indicatorStyle} />
-        }
+        )}
       </div>
     )
   }

@@ -21,10 +21,13 @@ export function getCurrentOTBGame(): StoredOfflineGame | null {
   return storage.get<StoredOfflineGame>(otbStorageKey)
 }
 
-export function getAnalyseData(data: StoredOfflineGame, orientation: Color): AnalyseData | null {
+export function getAnalyseData(
+  data: StoredOfflineGame,
+  orientation: Color
+): AnalyseData | null {
   if (!data) return null
   const aData = data.data as any
-  (aData as AnalyseData).orientation = orientation
+  ;(aData as AnalyseData).orientation = orientation
   aData.treeParts = data.situations.map((o: GameSituation) => {
     const node = {
       // bc layer TODO remove in version 5.4
@@ -36,7 +39,10 @@ export function getAnalyseData(data: StoredOfflineGame, orientation: Color): Ana
       // uciMoves contains at least situation last move
       // bc layer TODO remove in version 5.4
       uci: o.uci || o.uciMoves[o.uciMoves.length - 1],
-      san: o.san || o.pgnMoves.length ? o.pgnMoves[o.pgnMoves.length - 1] : undefined,
+      san:
+        o.san || o.pgnMoves.length
+          ? o.pgnMoves[o.pgnMoves.length - 1]
+          : undefined,
       dests: o.dests,
       drops: o.drops,
       crazyhouse: o.crazyhouse,
@@ -88,7 +94,10 @@ export function getOfflineGameData(id: string): OnlineGameData | null {
   return stored && stored[id]
 }
 
-export function saveOfflineGameData(id: string, gameData: OnlineGameData): void {
+export function saveOfflineGameData(
+  id: string,
+  gameData: OnlineGameData
+): void {
   const stored = storage.get<StoredOfflineGames>(offlineCorresStorageKey) || {}
   const toStore = cloneDeep(gameData)
   toStore.player.onGame = false
@@ -109,12 +118,17 @@ export function removeOfflineGameData(id: string): void {
   storage.set(offlineCorresStorageKey, stored)
 }
 
-export function syncWithNowPlayingGames(nowPlaying: Array<NowPlayingGame>): void {
+export function syncWithNowPlayingGames(
+  nowPlaying: Array<NowPlayingGame>
+): void {
   if (nowPlaying === undefined) return
 
   const stored = storage.get<StoredOfflineGames>(offlineCorresStorageKey) || {}
   const storedIds = Object.keys(stored)
-  const toRemove = difference(storedIds, nowPlaying.map((g: NowPlayingGame) => g.fullId))
+  const toRemove = difference(
+    storedIds,
+    nowPlaying.map((g: NowPlayingGame) => g.fullId)
+  )
 
   if (toRemove.length > 0) {
     toRemove.forEach(id => {

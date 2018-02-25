@@ -30,7 +30,11 @@ export function allowSleepAgain() {
   window.plugins.insomnia.allowSleepAgain()
 }
 
-function idleTimer(delay: number, onIdle: () => void, onWakeUp: () => void): () => void {
+function idleTimer(
+  delay: number,
+  onIdle: () => void,
+  onWakeUp: () => void
+): () => void {
   const events = ['touchstart']
   let listening = false
   let active = true
@@ -47,7 +51,7 @@ function idleTimer(delay: number, onIdle: () => void, onWakeUp: () => void): () 
   }
   const startListening = () => {
     if (!listening) {
-      events.forEach((e) => {
+      events.forEach(e => {
         document.addEventListener(e, onActivity)
       })
       listening = true
@@ -55,7 +59,7 @@ function idleTimer(delay: number, onIdle: () => void, onWakeUp: () => void): () 
   }
   const stopListening = () => {
     if (listening) {
-      events.forEach((e) => {
+      events.forEach(e => {
         document.removeEventListener(e, onActivity)
       })
       listening = false

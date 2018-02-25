@@ -8,7 +8,6 @@ interface CloseSlideHandlerState {
 }
 
 export default function CloseSlideHandler(el: HTMLElement) {
-
   const maxSlide = menu.getMenuWidth()
 
   const state: CloseSlideHandlerState = {
@@ -20,10 +19,12 @@ export default function CloseSlideHandler(el: HTMLElement) {
   const mc = new Hammer.Manager(el, {
     inputClass: Hammer.TouchInput
   })
-  mc.add(new Hammer.Pan({
-    direction: Hammer.DIRECTION_HORIZONTAL,
-    threshold: 10
-  }))
+  mc.add(
+    new Hammer.Pan({
+      direction: Hammer.DIRECTION_HORIZONTAL,
+      threshold: 10
+    })
+  )
 
   mc.on('panstart', (e: HammerInput) => {
     state.backDropElement = document.getElementById('menu-close-overlay')
@@ -46,7 +47,10 @@ export default function CloseSlideHandler(el: HTMLElement) {
 
       if (e.deltaX < 0 && e.deltaX >= -maxSlide) {
         menu.translateMenu(el, e.deltaX)
-        menu.backdropOpacity(state.backDropElement!, ((maxSlide + e.deltaX) / maxSlide * 100) / 100 / 2)
+        menu.backdropOpacity(
+          state.backDropElement!,
+          (maxSlide + e.deltaX) / maxSlide * 100 / 100 / 2
+        )
       }
     }
   })
@@ -58,11 +62,11 @@ export default function CloseSlideHandler(el: HTMLElement) {
       const velocity = e.velocityX
       if (
         velocity <= 0 &&
-        (e.deltaX < -(maxSlide - maxSlide * menu.OPEN_AFTER_SLIDE_RATIO) || velocity < -0.4)
+        (e.deltaX < -(maxSlide - maxSlide * menu.OPEN_AFTER_SLIDE_RATIO) ||
+          velocity < -0.4)
       ) {
         menu.close()
-      }
-      else {
+      } else {
         menu.open()
       }
     }

@@ -9,13 +9,12 @@ const hChars = /[&<>\"\']/
 export function escapeHtml(str: string) {
   if (hChars.test(String(str))) {
     return str
-    .replace(rAmp, '&amp;')
-    .replace(rLt, '&lt;')
-    .replace(rGt, '&gt;')
-    .replace(rApos, '&apos;')
-    .replace(rQuot, '&quot;')
-  }
-  else {
+      .replace(rAmp, '&amp;')
+      .replace(rLt, '&lt;')
+      .replace(rGt, '&gt;')
+      .replace(rApos, '&apos;')
+      .replace(rQuot, '&quot;')
+  } else {
     return str
   }
 }
@@ -32,7 +31,10 @@ function linkReplace(match: string, before: string, url: string) {
   if (url.indexOf('&quot;') !== -1) return match
   const fullUrl = url.indexOf('http') === 0 ? url : 'https://' + url
   const minUrl = url.replace(/^(?:https:\/\/)?(.+)$/, '$1')
-  return before + `<a href="#" class="external_link" onClick="window.open('${fullUrl}', '_system')">${minUrl}</a>`
+  return (
+    before +
+    `<a href="#" class="external_link" onClick="window.open('${fullUrl}', '_system')">${minUrl}</a>`
+  )
 }
 
 const userPattern = /(^|[^\w@#/])@([\w-]{2,})/g
@@ -43,5 +45,7 @@ function userLinkReplace(orig: string, prefix: String, user: string) {
 }
 
 function autoLink(html: string) {
-  return html.replace(userPattern, userLinkReplace).replace(linkPattern, linkReplace)
+  return html
+    .replace(userPattern, userLinkReplace)
+    .replace(linkPattern, linkReplace)
 }

@@ -18,8 +18,9 @@ export interface IChessClockCtrl {
 }
 
 export default function ChessClockCtrl(): IChessClockCtrl {
-
-  const clockType: Mithril.Stream<ClockType> = stream(settings.clock.clockType())
+  const clockType: Mithril.Stream<ClockType> = stream(
+    settings.clock.clockType()
+  )
   const clockObj: Mithril.Stream<IChessClock> = stream(clockSet[clockType()]())
 
   function reload() {
@@ -34,7 +35,7 @@ export default function ChessClockCtrl(): IChessClockCtrl {
     clockObj().clockHit(side)
   }
 
-  function startStop () {
+  function startStop() {
     clockObj().startStop()
   }
 

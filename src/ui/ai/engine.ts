@@ -32,8 +32,8 @@ export default function(ctrl: AiRoundInterface): EngineInterface {
   return {
     init() {
       return Stockfish.init()
-      .then(onInit)
-      .catch(console.error.bind(console))
+        .then(onInit)
+        .catch(console.error.bind(console))
     },
 
     search(initialFen: string, moves: string) {
@@ -48,8 +48,8 @@ export default function(ctrl: AiRoundInterface): EngineInterface {
       // console.info('engine search pos: ', `position fen ${initialFen} moves ${moves}`)
 
       setOption('Threads', getNbCores())
-      .then(() => cmd(`position fen ${initialFen} moves ${moves}`))
-      .then(() => cmd(`go movetime ${moveTime(level)} depth ${depth(level)}`))
+        .then(() => cmd(`position fen ${initialFen} moves ${moves}`))
+        .then(() => cmd(`go movetime ${moveTime(level)} depth ${depth(level)}`))
     },
 
     setLevel(l: number) {
@@ -68,8 +68,7 @@ export default function(ctrl: AiRoundInterface): EngineInterface {
 }
 
 function onInit() {
-  return cmd('uci')
-  .then(() => setOption('Ponder', 'false'))
+  return cmd('uci').then(() => setOption('Ponder', 'false'))
 }
 
 function cmd(text: string) {

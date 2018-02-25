@@ -31,26 +31,38 @@ const ImporterScreen: Mithril.Component<{}, State> = {
     const bodyCtrl = () => renderBody(this.ctrl)
     return layout.free(headerCtrl, bodyCtrl)
   }
-
 }
 
 function renderBody(ctrl: IImporterCtrl) {
   return h('div.gameImporter.native_scroller', [
-    h('p', 'When pasting a game PGN, you get a browsable replay and a computer analysis.'),
-    h('form', {
-      onsubmit: (e: Event) => {
-        e.preventDefault()
-        const target = e.target as HTMLFormElement
-        const pgn: string = target[0].value
-        if (pgn) ctrl.importGame(pgn)
-      }
-    }, [
-      h('label', i18n('pasteThePgnStringHere') + ' :'),
-      h('textarea.pgnImport'),
-      formWidgets.renderCheckbox(i18n('requestAComputerAnalysis'), 'analyse', settings.importer.analyse),
-      h('button.fatButton', ctrl.importing() ?
-        h('div.fa.fa-hourglass-half') : i18n('importGame'))
-    ])
+    h(
+      'p',
+      'When pasting a game PGN, you get a browsable replay and a computer analysis.'
+    ),
+    h(
+      'form',
+      {
+        onsubmit: (e: Event) => {
+          e.preventDefault()
+          const target = e.target as HTMLFormElement
+          const pgn: string = target[0].value
+          if (pgn) ctrl.importGame(pgn)
+        }
+      },
+      [
+        h('label', i18n('pasteThePgnStringHere') + ' :'),
+        h('textarea.pgnImport'),
+        formWidgets.renderCheckbox(
+          i18n('requestAComputerAnalysis'),
+          'analyse',
+          settings.importer.analyse
+        ),
+        h(
+          'button.fatButton',
+          ctrl.importing() ? h('div.fa.fa-hourglass-half') : i18n('importGame')
+        )
+      ]
+    )
   ])
 }
 

@@ -10,7 +10,9 @@ import { batchRequestAnimationFrame } from '../../../utils/batchRAF'
 import { GameSituation } from '../../../chess'
 
 function makeConfig(data: OfflineGameData, sit: GameSituation): cg.InitConfig {
-  const lastUci = sit.uciMoves.length ? sit.uciMoves[sit.uciMoves.length - 1] : null
+  const lastUci = sit.uciMoves.length
+    ? sit.uciMoves[sit.uciMoves.length - 1]
+    : null
   return {
     batchRAF: batchRequestAnimationFrame,
     fen: sit.fen,
@@ -68,7 +70,11 @@ function make(
   return new Chessground(config)
 }
 
-function reload(ground: Chessground, data: OfflineGameData, sit: GameSituation) {
+function reload(
+  ground: Chessground,
+  data: OfflineGameData,
+  sit: GameSituation
+) {
   ground.reconfigure(makeConfig(data, sit))
 }
 
@@ -77,7 +83,7 @@ function changeOTBMode(ground: Chessground, flip: boolean) {
 }
 
 function promote(ground: Chessground, key: Key, role: Role) {
-  const pieces: {[k: string]: Piece } = {}
+  const pieces: { [k: string]: Piece } = {}
   const piece = ground.state.pieces[key]
   if (piece && piece.role === 'pawn') {
     pieces[key] = {

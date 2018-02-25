@@ -2,7 +2,10 @@ import redraw from '../../utils/redraw'
 import settings from '../../settings'
 import { handleXhrError, loadLocalJsonFile } from '../../utils'
 import * as xhr from './tournamentXhr'
-import { TournamentListItem, TournamentLists } from '../../lichess/interfaces/tournament'
+import {
+  TournamentListItem,
+  TournamentLists
+} from '../../lichess/interfaces/tournament'
 
 export default class TournamentsListCtrl {
   tournaments: TournamentLists
@@ -12,30 +15,38 @@ export default class TournamentsListCtrl {
   constructor(defaultTab?: number) {
     this.currentTab = defaultTab || 0
 
-    xhr.currentTournaments()
-    .then(data => {
-      data.started = data.started.filter(supported)
-      data.created = data.created.filter(supported)
-      data.finished = data.finished.filter(supported)
-      data.started.sort(sortByLichessAndDate)
-      data.finished.sort(sortByEndDate)
-      this.tournaments = data
-      redraw()
-    })
-    .catch(handleXhrError)
+    xhr
+      .currentTournaments()
+      .then(data => {
+        data.started = data.started.filter(supported)
+        data.created = data.created.filter(supported)
+        data.finished = data.finished.filter(supported)
+        data.started.sort(sortByLichessAndDate)
+        data.finished.sort(sortByEndDate)
+        this.tournaments = data
+        redraw()
+      })
+      .catch(handleXhrError)
 
-    loadLocalJsonFile<BoardPositionCategory[]>('data/positions.json')
-    .then(data => {
-      this.startPositions = data
-      redraw()
-    })
+    loadLocalJsonFile<BoardPositionCategory[]>('data/positions.json').then(
+      data => {
+        this.startPositions = data
+        redraw()
+      }
+    )
   }
 
   onTabChange = (tabIndex: number) => {
     const loc = window.location.search.replace(/\?tab\=\w+$/, '')
     try {
-      window.history.replaceState(window.history.state, '', loc + '?tab=' + tabIndex)
-    } catch (e) { console.error(e) }
+      window.history.replaceState(
+        window.history.state,
+        '',
+        loc + '?tab=' + tabIndex
+      )
+    } catch (e) {
+      console.error(e)
+    }
     this.currentTab = tabIndex
     redraw()
   }

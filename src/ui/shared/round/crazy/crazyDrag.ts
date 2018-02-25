@@ -2,8 +2,9 @@ import { State } from '../../../../chessground/state'
 import { BoardInterface } from '../'
 
 function isDraggable(data: State, color: Color) {
-  return data.movable.color === color && (
-    data.turnColor === color || data.predroppable.enabled
+  return (
+    data.movable.color === color &&
+    (data.turnColor === color || data.predroppable.enabled)
   )
 }
 

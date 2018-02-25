@@ -12,7 +12,10 @@ export function currentSri() {
 }
 
 export function newSri() {
-  sri = Math.random().toString(36).substring(2).slice(0, 10)
+  sri = Math.random()
+    .toString(36)
+    .substring(2)
+    .slice(0, 10)
   return sri
 }
 
@@ -25,8 +28,7 @@ export function loadLocalJsonFile<T>(url: string): Promise<T> {
       if (xhr.readyState === 4) {
         if (xhr.status === 0 || xhr.status === 200)
           resolve(JSON.parse(xhr.responseText))
-        else
-          reject(xhr)
+        else reject(xhr)
       }
     }
     xhr.send(null)
@@ -48,25 +50,18 @@ export function handleXhrError(error: ErrorResponse): void {
   const data = error.body
   let message: string
 
-  if (!status || status === 0)
-    message = 'lichessIsUnreachable'
-  else if (status === 401)
-    message = 'unauthorizedError'
-  else if (status === 404)
-    message = 'resourceNotFoundError'
-  else if (status === 503)
-    message = 'lichessIsUnavailableError'
-  else if (status >= 500)
-    message = 'Server error.'
-  else
-    message = 'Error.'
+  if (!status || status === 0) message = 'lichessIsUnreachable'
+  else if (status === 401) message = 'unauthorizedError'
+  else if (status === 404) message = 'resourceNotFoundError'
+  else if (status === 503) message = 'lichessIsUnavailableError'
+  else if (status >= 500) message = 'Server error.'
+  else message = 'Error.'
 
   message = i18n(message)
 
   if (typeof data === 'string') {
     message += ` ${data}`
-  }
-  else if (data.global && data.global.constructor === Array) {
+  } else if (data.global && data.global.constructor === Array) {
     message += ` ${i18n(data.global[0])}`
   }
   window.plugins.toast.show(message, 'short', 'center')
@@ -86,13 +81,13 @@ export function serializeQueryParameters(obj: StringMap): string {
 
 export function noop() {}
 
-const perfIconsMap: {[index: string]: string} = {
+const perfIconsMap: { [index: string]: string } = {
   bullet: 'T',
   blitz: ')',
   rapid: '#',
   classical: '+',
   correspondence: ';',
-  chess960: '\'',
+  chess960: "'",
   kingOfTheHill: '(',
   threeCheck: '.',
   antichess: '@',
@@ -125,7 +120,7 @@ export function caseInsensitiveSort(a: string, b: string): number {
   const alow = a.toLowerCase()
   const blow = b.toLowerCase()
 
-  return alow > blow ? 1 : (alow < blow ? -1 : 0)
+  return alow > blow ? 1 : alow < blow ? -1 : 0
 }
 
 export function userFullNameToId(fullName: string): string {
@@ -142,7 +137,10 @@ export function getRandomArbitrary(min: number, max: number): number {
   return Math.random() * (max - min) + min
 }
 
-export function boardOrientation(data: GameData, flip?: boolean): 'black' | 'white' {
+export function boardOrientation(
+  data: GameData,
+  flip?: boolean
+): 'black' | 'white' {
   if (data.game.variant.key === 'racingKings') {
     return flip ? 'black' : 'white'
   } else {
@@ -151,9 +149,9 @@ export function boardOrientation(data: GameData, flip?: boolean): 'black' | 'whi
 }
 
 export function pad(num: number, size: number): string {
-    let s = num + ''
-    while (s.length < size) s = '0' + s
-    return s
+  let s = num + ''
+  while (s.length < size) s = '0' + s
+  return s
 }
 
 export function formatTimeInSecs(
@@ -162,7 +160,7 @@ export function formatTimeInSecs(
 ): string {
   let timeStr = ''
   const hours = Math.floor(seconds / 60 / 60)
-  const mins = Math.floor(seconds / 60) - (hours * 60)
+  const mins = Math.floor(seconds / 60) - hours * 60
   const secs = seconds % 60
   if (format === 'hour_min_secs') {
     if (hours > 0) {
@@ -186,7 +184,10 @@ export function formatTournamentDuration(timeInMin: number): string {
 export function formatTournamentTimeControl(clock: TournamentClock): string {
   if (clock) {
     const min = secondsToMinutes(clock.limit)
-    const t = min === 0.25 ? '¼' : min === 0.5 ? '½' : min === 0.75 ? '¾' : min.toString()
+    const t =
+      min === 0.25
+        ? '¼'
+        : min === 0.5 ? '½' : min === 0.75 ? '¾' : min.toString()
     return t + '+' + clock.increment
   } else {
     return '∞'
@@ -201,9 +202,12 @@ export function flatten<T>(arr: T[][]): T[] {
   return arr.reduce((a: T[], b: T[]) => a.concat(b), [])
 }
 
-export function mapObject<K extends string, T, U>(obj: Record<K, T>, f: (x: T) => U): Record<K, U> {
+export function mapObject<K extends string, T, U>(
+  obj: Record<K, T>,
+  f: (x: T) => U
+): Record<K, U> {
   const res = {} as Record<K, U>
-  Object.keys(obj).map((k: K) => res[k] = f(obj[k]))
+  Object.keys(obj).map((k: K) => (res[k] = f(obj[k])))
   return res
 }
 
@@ -223,7 +227,9 @@ export function truncate(text: string, len: number): string {
   return text.length > len ? text.slice(0, len) + '…' : text
 }
 
-export function safeStringToNum(s: string | null | undefined): number | undefined {
+export function safeStringToNum(
+  s: string | null | undefined
+): number | undefined {
   const n = Number(s)
   return isNaN(n) ? undefined : n
 }
@@ -240,8 +246,12 @@ export function shallowEqual(objA: OAny, objB: OAny): boolean {
     return true
   }
 
-  if (typeof objA !== 'object' || objA === null ||
-      typeof objB !== 'object' || objB === null) {
+  if (
+    typeof objA !== 'object' ||
+    objA === null ||
+    typeof objB !== 'object' ||
+    objB === null
+  ) {
     return false
   }
 

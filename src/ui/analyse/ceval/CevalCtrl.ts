@@ -10,7 +10,6 @@ export default function CevalCtrl(
   emit: (work: Work, res?: Tree.ClientEval) => void,
   initOpts: Opts
 ): ICevalCtrl {
-
   let initialized = false
 
   const minDepth = 6
@@ -46,7 +45,7 @@ export default function CevalCtrl(
     const work = {
       initialFen: nodes[0].fen,
       currentFen: step.fen,
-      moves: nodes.slice(1).map((s) => fixCastle(s.uci!, s.san!)),
+      moves: nodes.slice(1).map(s => fixCastle(s.uci!, s.san!)),
       maxDepth: forceRetroOpts ? 18 : effectiveMaxDepth(),
       cores: forceRetroOpts ? getNbCores() : opts.cores,
       path,
@@ -68,13 +67,14 @@ export default function CevalCtrl(
 
   function destroy() {
     if (initialized) {
-      engine.exit()
-      .then(() => {
-        initialized = false
-      })
-      .catch(() => {
-        initialized = false
-      })
+      engine
+        .exit()
+        .then(() => {
+          initialized = false
+        })
+        .catch(() => {
+          initialized = false
+        })
     }
   }
 

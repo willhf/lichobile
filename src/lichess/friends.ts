@@ -7,12 +7,12 @@ export interface Friend {
 let onlineFriends: Array<Friend> = []
 
 function makeFriend(name: string, isPlaying: boolean, isPatron: boolean) {
-  return {'name' : name, 'playing': isPlaying, 'patron': isPatron}
+  return { name: name, playing: isPlaying, patron: isPatron }
 }
 
 /** Compares usernames for equality, ignoring prefixed titles (such as GM) */
 function isSameUser(userId: string, name: string) {
-  const id = (name.indexOf(' ') >= 0) ? name.split(' ')[1] : name
+  const id = name.indexOf(' ') >= 0 ? name.split(' ')[1] : name
   return id.toLowerCase() === userId
 }
 
@@ -31,12 +31,9 @@ function setPatron(userName: string, patron: boolean) {
 }
 
 function lexicallyCompareFriends(friend1: Friend, friend2: Friend) {
-  if (friend1.name.toLowerCase() < friend2.name.toLowerCase())
-    return -1
-  else if (friend1.name.toLowerCase() > friend2.name.toLowerCase())
-    return 1
-  else
-    return 0
+  if (friend1.name.toLowerCase() < friend2.name.toLowerCase()) return -1
+  else if (friend1.name.toLowerCase() > friend2.name.toLowerCase()) return 1
+  else return 0
 }
 
 function list(): Array<Friend> {
@@ -47,7 +44,11 @@ function count() {
   return onlineFriends.length
 }
 
-function set(friends: Array<string>, playings: Array<string>, patrons: Array<string> ) {
+function set(
+  friends: Array<string>,
+  playings: Array<string>,
+  patrons: Array<string>
+) {
   onlineFriends = friends.map(name => makeFriend(name, false, false))
 
   playings.forEach(user => setPlaying(user, true))

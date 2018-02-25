@@ -9,7 +9,18 @@ import { UserGame } from './interfaces/user'
 import { GameData, OnlineGameData } from './interfaces/game'
 import { AnalyseData, OnlineAnalyseData } from './interfaces/analyse'
 
-export const analysableVariants = ['standard', 'crazyhouse', 'chess960', 'fromPosition', 'kingOfTheHill', 'threeCheck', 'atomic', 'antichess', 'horde', 'racingKings']
+export const analysableVariants = [
+  'standard',
+  'crazyhouse',
+  'chess960',
+  'fromPosition',
+  'kingOfTheHill',
+  'threeCheck',
+  'atomic',
+  'antichess',
+  'horde',
+  'racingKings'
+]
 
 export function parsePossibleMoves(possibleMoves?: StringMap): DestsMap {
   if (!possibleMoves) return {}
@@ -27,7 +38,10 @@ export function parsePossibleMoves(possibleMoves?: StringMap): DestsMap {
 }
 
 export function playable(data: GameData | AnalyseData): boolean {
-  return data.game.source !== 'import' && data.game.status.id < gameStatus.ids.aborted
+  return (
+    data.game.source !== 'import' &&
+    data.game.status.id < gameStatus.ids.aborted
+  )
 }
 
 export function isPlayerPlaying(data: GameData | AnalyseData) {
@@ -59,18 +73,33 @@ export function abortable(data: OnlineGameData) {
 }
 
 export function takebackable(data: OnlineGameData): boolean {
-  return !!(playable(data) && data.takebackable && !data.tournament && playedTurns(data) > 1 && !data.player.proposingTakeback && !data.opponent.proposingTakeback)
+  return !!(
+    playable(data) &&
+    data.takebackable &&
+    !data.tournament &&
+    playedTurns(data) > 1 &&
+    !data.player.proposingTakeback &&
+    !data.opponent.proposingTakeback
+  )
 }
 
 export function drawable(data: OnlineGameData) {
-  return playable(data) && data.game.turns >= 2 && !data.player.offeringDraw && !data.opponent.ai && !data.opponent.offeringDraw
+  return (
+    playable(data) &&
+    data.game.turns >= 2 &&
+    !data.player.offeringDraw &&
+    !data.opponent.ai &&
+    !data.opponent.offeringDraw
+  )
 }
 
 export function berserkableBy(data: OnlineGameData) {
-  return data.tournament &&
+  return (
+    data.tournament &&
     data.tournament.berserkable &&
     isPlayerPlaying(data) &&
     playedTurns(data) < 2
+  )
 }
 
 export function resignable(data: OnlineGameData) {
@@ -78,7 +107,9 @@ export function resignable(data: OnlineGameData) {
 }
 
 export function forceResignable(data: OnlineGameData) {
-  return !data.opponent.ai && data.clock && data.opponent.isGone && resignable(data)
+  return (
+    !data.opponent.ai && data.clock && data.opponent.isGone && resignable(data)
+  )
 }
 
 export function moretimeable(data: OnlineGameData) {
@@ -94,11 +125,19 @@ export function replayable(data: GameData | AnalyseData) {
 }
 
 export function userAnalysable(data: GameData) {
-  return settings.analyse.supportedVariants.indexOf(data.game.variant.key) !== -1 && playable(data) && (!data.clock || !isPlayerPlaying(data))
+  return (
+    settings.analyse.supportedVariants.indexOf(data.game.variant.key) !== -1 &&
+    playable(data) &&
+    (!data.clock || !isPlayerPlaying(data))
+  )
 }
 
 export function analysable(data: OnlineGameData | OnlineAnalyseData) {
-  return replayable(data) && playedTurns(data) > 4 && analysableVariants.indexOf(data.game.variant.key) !== -1
+  return (
+    replayable(data) &&
+    playedTurns(data) > 4 &&
+    analysableVariants.indexOf(data.game.variant.key) !== -1
+  )
 }
 
 export function getPlayer(data: GameData | AnalyseData, color?: Color) {
@@ -130,44 +169,50 @@ export function nbMoves(data: OnlineGameData, color: Color) {
 }
 
 export function result(data: GameData) {
-  if (gameStatus.finished(data)) switch (data.game.winner) {
-    case 'white':
-      return '1-0'
-    case 'black':
-      return '0-1'
-    default:
-      return '½-½'
-  }
+  if (gameStatus.finished(data))
+    switch (data.game.winner) {
+      case 'white':
+        return '1-0'
+      case 'black':
+        return '0-1'
+      default:
+        return '½-½'
+    }
   return '*'
 }
 
 // FIXME
-export function time(data: GameData | MiniBoardGameObj | UserGame | AnalyseData) {
+export function time(
+  data: GameData | MiniBoardGameObj | UserGame | AnalyseData
+) {
   if (data.clock) {
     const min = secondsToMinutes(data.clock.initial)
-    const t = min === 0.25 ? '¼' : min === 0.5 ? '½' : min === 0.75 ? '¾' : min.toString()
+    const t =
+      min === 0.25
+        ? '¼'
+        : min === 0.5 ? '½' : min === 0.75 ? '¾' : min.toString()
     return t + '+' + data.clock.increment
-  }
-  else if (data.correspondence) {
+  } else if (data.correspondence) {
     return i18n('nbDays', data.correspondence.daysPerTurn)
-  }
-  else {
+  } else {
     return '∞'
   }
 }
 
 export function title(data: GameData | AnalyseData): string {
-  const mode = data.game.offline ?
-    i18n('offline') :
-    data.game.rated ? i18n('rated') : i18n('casual')
+  const mode = data.game.offline
+    ? i18n('offline')
+    : data.game.rated ? i18n('rated') : i18n('casual')
 
   const perf = data.game.perf && shortPerfTitle(data.game.perf)
   const variant = getVariant(data.game.variant.key)
-  const name = perf || (variant ? (variant.tinyName || variant.shortName || variant.name) : '?')
+  const name =
+    perf ||
+    (variant ? variant.tinyName || variant.shortName || variant.name : '?')
   const t = time(data)
-  return data.game.source === 'import' ?
-    'Import • Standard' :
-    `${t} • ${name} • ${mode}`
+  return data.game.source === 'import'
+    ? 'Import • Standard'
+    : `${t} • ${name} • ${mode}`
 }
 
 export function publicUrl(data: GameData) {

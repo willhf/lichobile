@@ -2,15 +2,16 @@ import { Tree } from '../../shared/tree/interfaces'
 import { Work, IEngine } from './interfaces'
 import { send, setOption, setVariant } from '../../../utils/stockfish'
 
-const EVAL_REGEX = new RegExp(''
-  + /^info depth (\d+) seldepth \d+ multipv (\d+) /.source
-  + /score (cp|mate) ([-\d]+) /.source
-  + /(?:(upper|lower)bound )?nodes (\d+) nps \S+ /.source
-  + /(?:hashfull \d+ )?tbhits \d+ time (\S+) /.source
-  + /pv (.+)/.source)
+const EVAL_REGEX = new RegExp(
+  '' +
+    /^info depth (\d+) seldepth \d+ multipv (\d+) /.source +
+    /score (cp|mate) ([-\d]+) /.source +
+    /(?:(upper|lower)bound )?nodes (\d+) nps \S+ /.source +
+    /(?:hashfull \d+ )?tbhits \d+ time (\S+) /.source +
+    /pv (.+)/.source
+)
 
 export default function StockfishEngine(variant: VariantKey): IEngine {
-
   let stopTimeoutId: number
   let readyPromise: Promise<void> = Promise.resolve()
 
@@ -35,12 +36,12 @@ export default function StockfishEngine(variant: VariantKey): IEngine {
    */
   function init() {
     return Stockfish.init()
-    .then(() => {
-      return send('uci')
-      .then(() => setOption('Ponder', 'false'))
-      .then(() => setVariant(variant))
-    })
-    .catch(err => console.error('stockfish init error', err))
+      .then(() => {
+        return send('uci')
+          .then(() => setOption('Ponder', 'false'))
+          .then(() => setVariant(variant))
+      })
+      .catch(err => console.error('stockfish init error', err))
   }
 
   /*
@@ -59,10 +60,10 @@ export default function StockfishEngine(variant: VariantKey): IEngine {
     })
 
     Promise.race([readyPromise, timeout])
-    .then(search)
-    .catch(() => {
-      reset().then(search)
-    })
+      .then(search)
+      .catch(() => {
+        reset().then(search)
+      })
   }
 
   /*
@@ -86,14 +87,20 @@ export default function StockfishEngine(variant: VariantKey): IEngine {
       finished = false
       startQueue = []
 
-      readyPromise = new Promise((resolve) => {
+      readyPromise = new Promise(resolve => {
         Stockfish.output((msg: string) => processOutput(msg, work, resolve))
       })
 
       return setOption('Threads', work.cores)
-      .then(() => setOption('MultiPV', work.multiPv))
-      .then(() => send(['position', 'fen', work.initialFen, 'moves'].concat(work.moves).join(' ')))
-      .then(() => send('go depth ' + work.maxDepth))
+        .then(() => setOption('MultiPV', work.multiPv))
+        .then(() =>
+          send(
+            ['position', 'fen', work.initialFen, 'moves']
+              .concat(work.moves)
+              .join(' ')
+          )
+        )
+        .then(() => send('go depth ' + work.maxDepth))
     }
   }
 
@@ -122,7 +129,6 @@ export default function StockfishEngine(variant: VariantKey): IEngine {
       nodes = parseInt(matches[6]),
       elapsedMs: number = parseInt(matches[7]),
       moves = matches[8].split(' ')
-
 
     let ev = parseInt(matches[4])
 
@@ -168,7 +174,6 @@ export default function StockfishEngine(variant: VariantKey): IEngine {
       work.emit(curEval)
     }
   }
-
 
   function exit() {
     return Stockfish.exit()

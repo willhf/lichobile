@@ -14,24 +14,37 @@ export function threadBody(ctrl: IThreadCtrl) {
     <div key={ctrl.thread().id} className="threadWrapper native_scroller">
       {ctrl.thread().posts.map(renderPost)}
       <div className="responseWrapper">
-        <form id="responseForm"
+        <form
+          id="responseForm"
           onsubmit={(e: Event) => {
             e.preventDefault()
             const form = e.target as HTMLFormElement
             const body = (form[1] as HTMLTextAreaElement).value
-            if (body.length >= 3)
-              return ctrl.sendResponse(form)
+            if (body.length >= 3) return ctrl.sendResponse(form)
             else
-              window.plugins.toast.show('Minimum length is 3', 'short', 'center')
+              window.plugins.toast.show(
+                'Minimum length is 3',
+                'short',
+                'center'
+              )
           }}
         >
           <input id="id" key="id" value={ctrl.id()} type="hidden" />
-          <textarea id="body" key="body" className="responseBody composeTextarea" />
-          <button key="send" className="fatButton sendResponse" oncreate={helper.autofocus} type="submit">
+          <textarea
+            id="body"
+            key="body"
+            className="responseBody composeTextarea"
+          />
+          <button
+            key="send"
+            className="fatButton sendResponse"
+            oncreate={helper.autofocus}
+            type="submit"
+          >
             <span className="fa fa-check" />
             {i18n('send')}
           </button>
-          { deleteButton (ctrl) }
+          {deleteButton(ctrl)}
         </form>
       </div>
     </div>
@@ -40,10 +53,8 @@ export function threadBody(ctrl: IThreadCtrl) {
 
 function renderPost(post: Post, index: number, posts: Array<Post>) {
   let postClass = 'postWrapper'
-  if (index === 0)
-    postClass += ' first'
-  if (index === posts.length - 1)
-    postClass += ' last'
+  if (index === 0) postClass += ' first'
+  if (index === posts.length - 1) postClass += ' last'
   return (
     <div className={postClass} key={post.createdAt}>
       <div className="infos">
@@ -60,32 +71,45 @@ function renderPost(post: Post, index: number, posts: Array<Post>) {
   )
 }
 
-function postDateFormat (timeInMillis: number) {
+function postDateFormat(timeInMillis: number) {
   const time = window.moment(timeInMillis)
   return time.calendar()
 }
 
-function deleteButton (ctrl: IThreadCtrl) {
+function deleteButton(ctrl: IThreadCtrl) {
   return ctrl.deleteAttempted() ? (
     <div className="negotiation confirmDeleteDialog">
-      <button key="confirmDelete" className="fatButton confirmDelete" oncreate={helper.ontapY(() => {ctrl.deleteThread(ctrl.id())})}>
+      <button
+        key="confirmDelete"
+        className="fatButton confirmDelete"
+        oncreate={helper.ontapY(() => {
+          ctrl.deleteThread(ctrl.id())
+        })}
+      >
         <span className="fa fa-trash-o" />
         Delete
       </button>
-      <button key="cancelDelete" className="fatButton cancelDelete"
+      <button
+        key="cancelDelete"
+        className="fatButton cancelDelete"
         oncreate={helper.ontapY(() => {
           ctrl.deleteAttempted(false)
           redraw()
-        })}>
+        })}
+      >
         <span className="fa fa-ban" />
         {i18n('cancel')}
       </button>
     </div>
   ) : (
-    <button key="delete" className="fatButton deleteThread" oncreate={helper.ontapY(() => {
-      ctrl.deleteAttempted(true)
-      redraw()
-    })}>
+    <button
+      key="delete"
+      className="fatButton deleteThread"
+      oncreate={helper.ontapY(() => {
+        ctrl.deleteAttempted(true)
+        redraw()
+      })}
+    >
       <span className="fa fa-trash-o" />
       Delete
     </button>

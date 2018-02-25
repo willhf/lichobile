@@ -25,8 +25,7 @@ if (window.cordova.platformId === 'ios') {
     berserk: 'sounds/berserk.aifc',
     clock: 'sounds/clock.aifc'
   }
-}
-else {
+} else {
   media = {
     move: 'sounds/move.mp3',
     capture: 'sounds/capture.mp3',
@@ -38,26 +37,28 @@ else {
   }
 }
 
-document.addEventListener('deviceready', () => {
+document.addEventListener(
+  'deviceready',
+  () => {
+    shouldPlay = settings.general.sound()
 
-  shouldPlay = settings.general.sound()
+    if (window.hotjs) {
+      window.hotjs.Audio!.init!()
+      lla = window.hotjs.Audio
+    } else {
+      lla = window.plugins.LowLatencyAudio
+    }
 
-  if (window.hotjs) {
-    window.hotjs.Audio!.init!()
-    lla = window.hotjs.Audio
-  } else {
-    lla = window.plugins.LowLatencyAudio
-  }
-
-  lla.preloadFX('move', media.move)
-  lla.preloadFX('capture', media.capture)
-  lla.preloadFX('explosion', media.explosion)
-  lla.preloadFX('lowtime', media.lowtime)
-  lla.preloadFX('dong', media.dong)
-  lla.preloadFX('berserk', media.berserk)
-  lla.preloadFX('clock', media.clock)
-}, false)
-
+    lla.preloadFX('move', media.move)
+    lla.preloadFX('capture', media.capture)
+    lla.preloadFX('explosion', media.explosion)
+    lla.preloadFX('lowtime', media.lowtime)
+    lla.preloadFX('dong', media.dong)
+    lla.preloadFX('berserk', media.berserk)
+    lla.preloadFX('clock', media.clock)
+  },
+  false
+)
 
 export default {
   move() {

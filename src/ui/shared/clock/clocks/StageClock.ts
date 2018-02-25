@@ -1,10 +1,20 @@
 import redraw from '../../../../utils/redraw'
 import sound from '../../../../sound'
 
-import { ClockType, IStageClock, Stage, IChessStageClockState } from '../interfaces'
-import { CLOCK_TICK_STEP, MINUTE_MILLIS} from '../utils'
+import {
+  ClockType,
+  IStageClock,
+  Stage,
+  IChessStageClockState
+} from '../interfaces'
+import { CLOCK_TICK_STEP, MINUTE_MILLIS } from '../utils'
 
-export default function StageClock(stages: Stage[], increment: number, onFlag: (color: Color) => void, soundOn: boolean): IStageClock {
+export default function StageClock(
+  stages: Stage[],
+  increment: number,
+  onFlag: (color: Color) => void,
+  soundOn: boolean
+): IStageClock {
   let state: IChessStageClockState = {
     clockType: 'stage',
     whiteTime: Number(stages[0].time) * MINUTE_MILLIS,
@@ -24,7 +34,7 @@ export default function StageClock(stages: Stage[], increment: number, onFlag: (
   let whiteTimestamp: number
   let blackTimestamp: number
 
-  function tick () {
+  function tick() {
     const now = performance.now()
     if (state.activeSide === 'white') {
       const elapsed = now - whiteTimestamp
@@ -36,8 +46,7 @@ export default function StageClock(stages: Stage[], increment: number, onFlag: (
         if (soundOn) sound.dong()
         clearInterval(clockInterval)
       }
-    }
-    else if (state.activeSide === 'black') {
+    } else if (state.activeSide === 'black') {
       const elapsed = now - blackTimestamp
       blackTimestamp = now
       state.blackTime = Math.max(state.blackTime - elapsed, 0)
@@ -61,31 +70,30 @@ export default function StageClock(stages: Stage[], increment: number, onFlag: (
     const bm = state.blackMoves
 
     if (side === 'white') {
-      if (tm !== null)
-        state.whiteMoves = tm - 1
+      if (tm !== null) state.whiteMoves = tm - 1
       state.whiteTime = state.whiteTime + state.increment
       if (state.whiteMoves === 0) {
         state.whiteStage = state.whiteStage + 1
-        state.whiteTime = state.whiteTime + Number(state.stages[state.whiteStage].time) * MINUTE_MILLIS
-        if (state.whiteStage === (state.stages.length - 1))
+        state.whiteTime =
+          state.whiteTime +
+          Number(state.stages[state.whiteStage].time) * MINUTE_MILLIS
+        if (state.whiteStage === state.stages.length - 1)
           state.whiteMoves = null
-        else
-          state.whiteMoves = state.stages[state.whiteStage].moves
+        else state.whiteMoves = state.stages[state.whiteStage].moves
       }
       blackTimestamp = performance.now()
       state.activeSide = 'black'
-    }
-    else {
-      if (bm !== null)
-        state.blackMoves = bm - 1
+    } else {
+      if (bm !== null) state.blackMoves = bm - 1
       state.blackTime = state.blackTime + state.increment
       if (state.blackMoves === 0) {
         state.blackStage = state.blackStage + 1
-        state.blackTime = state.blackTime + Number(state.stages[state.blackStage].time) * MINUTE_MILLIS
-        if (state.blackStage === (state.stages.length - 1))
+        state.blackTime =
+          state.blackTime +
+          Number(state.stages[state.blackStage].time) * MINUTE_MILLIS
+        if (state.blackStage === state.stages.length - 1)
           state.blackMoves = null
-        else
-          state.blackMoves = state.stages[state.blackStage].moves
+        else state.blackMoves = state.stages[state.blackStage].moves
       }
       whiteTimestamp = performance.now()
       state.activeSide = 'white'
@@ -98,12 +106,11 @@ export default function StageClock(stages: Stage[], increment: number, onFlag: (
     redraw()
   }
 
-  function startStop () {
+  function startStop() {
     if (state.isRunning) {
       state.isRunning = false
       clearInterval(clockInterval)
-    }
-    else {
+    } else {
       state.isRunning = true
       clockInterval = setInterval(tick, CLOCK_TICK_STEP)
       if (state.activeSide === 'white') {

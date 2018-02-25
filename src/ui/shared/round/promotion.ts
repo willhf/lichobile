@@ -7,12 +7,24 @@ import { OnlineRoundInterface } from '.'
 
 let promoting: KeyPair | null = null
 
-function start(ctrl: OnlineRoundInterface, orig: Key, dest: Key, isPremove: boolean) {
+function start(
+  ctrl: OnlineRoundInterface,
+  orig: Key,
+  dest: Key,
+  isPremove: boolean
+) {
   const piece = ctrl.chessground.state.pieces[dest]
-  if (piece && piece.role === 'pawn' && (
-    (dest[1] === '8' && ctrl.data.player.color === 'white') ||
-    (dest[1] === '1' && ctrl.data.player.color === 'black'))) {
-    if (ctrl.data.pref.autoQueen === 3 || (ctrl.data.pref.autoQueen === 2 && isPremove)) return false
+  if (
+    piece &&
+    piece.role === 'pawn' &&
+    ((dest[1] === '8' && ctrl.data.player.color === 'white') ||
+      (dest[1] === '1' && ctrl.data.player.color === 'black'))
+  ) {
+    if (
+      ctrl.data.pref.autoQueen === 3 ||
+      (ctrl.data.pref.autoQueen === 2 && isPremove)
+    )
+      return false
     promoting = [orig, dest]
     redraw()
     return true
@@ -34,7 +46,6 @@ function cancel(ctrl: OnlineRoundInterface) {
 }
 
 export default {
-
   start: start,
 
   view: function(ctrl: OnlineRoundInterface) {
@@ -43,15 +54,25 @@ export default {
     const pieces = ['queen', 'knight', 'rook', 'bishop']
     if (ctrl.data.game.variant.key === 'antichess') pieces.push('king')
 
-    return h('div.overlay.open', {
-      oncreate: helper.ontap(cancel.bind(undefined, ctrl))
-    }, [h('div#promotion_choice', {
-      className: settings.general.theme.piece(),
-      style: { top: (helper.viewportDim().vh - 100) / 2 + 'px' }
-    }, pieces.map(function(role) {
-      return h('piece.' + role + '.' + ctrl.data.player.color, {
-        oncreate: helper.ontap(finish.bind(undefined, ctrl, role))
-      })
-    }))])
+    return h(
+      'div.overlay.open',
+      {
+        oncreate: helper.ontap(cancel.bind(undefined, ctrl))
+      },
+      [
+        h(
+          'div#promotion_choice',
+          {
+            className: settings.general.theme.piece(),
+            style: { top: (helper.viewportDim().vh - 100) / 2 + 'px' }
+          },
+          pieces.map(function(role) {
+            return h('piece.' + role + '.' + ctrl.data.player.color, {
+              oncreate: helper.ontap(finish.bind(undefined, ctrl, role))
+            })
+          })
+        )
+      ]
+    )
   }
 }

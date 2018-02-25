@@ -21,9 +21,6 @@ export default {
     this.ctrl = FollowersCtrl(vnode.attrs.id)
   },
   view() {
-    return layout.free(
-      () => header('Followers'),
-      () => renderBody(this.ctrl)
-    )
+    return layout.free(() => header('Followers'), () => renderBody(this.ctrl))
   }
 } as Mithril.Component<Attrs, State>

@@ -22,9 +22,10 @@ export default class CorrespondenceCtrl {
     socket.createLobby('corresLobby', this.reload, {
       redirect: socket.redirectToGame,
       reload_seeks: () => this.reload(),
-      resync: () => xhr.lobby().then(d => {
-        socket.setVersion(d.lobby.version)
-      })
+      resync: () =>
+        xhr.lobby().then(d => {
+          socket.setVersion(d.lobby.version)
+        })
     })
 
     challengesApi.refresh().then(() => {
@@ -36,8 +37,7 @@ export default class CorrespondenceCtrl {
   }
 
   public cancelChallenge = (id: string) => {
-    return xhr.cancelChallenge(id)
-    .then(() => {
+    return xhr.cancelChallenge(id).then(() => {
       challengesApi.remove(id)
       this.sendingChallenges = this.getSendingCorres()
       redraw()
@@ -45,7 +45,13 @@ export default class CorrespondenceCtrl {
   }
 
   public cancel = (seekId: string) => {
-    return Zanimo(document.getElementById(seekId), 'opacity', '0', '300', 'ease-out')
+    return Zanimo(
+      document.getElementById(seekId),
+      'opacity',
+      '0',
+      '300',
+      'ease-out'
+    )
       .then(() => socket.send('cancelSeek', seekId))
       .catch(console.log.bind(console))
   }
@@ -58,7 +64,9 @@ export default class CorrespondenceCtrl {
     const loc = window.location.search.replace(/\?tab\=\w+$/, '')
     try {
       window.history.replaceState(window.history.state, '', loc + '?tab=' + i)
-    } catch (e) { console.error(e) }
+    } catch (e) {
+      console.error(e)
+    }
     this.currentTab = i
     redraw()
   }
@@ -68,9 +76,10 @@ export default class CorrespondenceCtrl {
   }
 
   private reload = (feedback?: boolean) => {
-    xhr.seeks(feedback = false)
-    .then(d => {
-      this.pool = fixSeeks(d).filter(s => settings.game.supportedVariants.indexOf(s.variant.key) !== -1)
+    xhr.seeks((feedback = false)).then(d => {
+      this.pool = fixSeeks(d).filter(
+        s => settings.game.supportedVariants.indexOf(s.variant.key) !== -1
+      )
       redraw()
     })
   }
@@ -82,11 +91,12 @@ function seekUserId(seek: CorrespondenceSeek) {
 
 function fixSeeks(seeks: CorrespondenceSeek[]): CorrespondenceSeek[] {
   const userId = session.getUserId()
-  if (userId) seeks.sort((a, b) => {
-    if (seekUserId(a) === userId) return -1
-    if (seekUserId(b) === userId) return 1
-    return 0
-  })
+  if (userId)
+    seeks.sort((a, b) => {
+      if (seekUserId(a) === userId) return -1
+      if (seekUserId(b) === userId) return 1
+      return 0
+    })
   return uniqBy(seeks, s => {
     const username = seekUserId(s) === userId ? s.id : s.username
     const key = username + s.mode + s.variant.key + s.days

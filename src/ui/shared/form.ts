@@ -9,7 +9,6 @@ type SelectOptionGroup = Array<SelectOption>
 type LichessPropOption = [number, string, string | undefined]
 
 export default {
-
   renderRadio(
     label: string,
     name: string,
@@ -29,9 +28,13 @@ export default {
         onchange,
         disabled
       }),
-      h('label', {
-        'for': id
-      }, i18n(label))
+      h(
+        'label',
+        {
+          for: id
+        },
+        i18n(label)
+      )
     ]
   },
 
@@ -45,19 +48,27 @@ export default {
   ) {
     const prop = settingsProp()
     return [
-      h('label', {
-        'for': 'select_' + name
-      }, i18n(label)),
-      h('select', {
-        id: 'select_' + name,
-        disabled: isDisabled,
-        onchange(e: Event) {
-          const val = (e.target as HTMLSelectElement).value
-          settingsProp(val)
-          if (onChangeCallback) onChangeCallback(val)
-          setTimeout(redraw, 10)
-        }
-      }, options.map(e => renderOption(e[0], e[1], prop, e[2], e[3])))
+      h(
+        'label',
+        {
+          for: 'select_' + name
+        },
+        i18n(label)
+      ),
+      h(
+        'select',
+        {
+          id: 'select_' + name,
+          disabled: isDisabled,
+          onchange(e: Event) {
+            const val = (e.target as HTMLSelectElement).value
+            settingsProp(val)
+            if (onChangeCallback) onChangeCallback(val)
+            setTimeout(redraw, 10)
+          }
+        },
+        options.map(e => renderOption(e[0], e[1], prop, e[2], e[3]))
+      )
     ]
   },
 
@@ -70,17 +81,25 @@ export default {
   ) {
     const prop = settingsProp()
     return [
-      h('label', {
-        'for': 'select_' + name
-      }, i18n(label)),
-      h('select', {
-        id: 'select_' + name,
-        disabled: isDisabled,
-        onchange(e: Event) {
-          const val = (e.target as HTMLSelectElement).value
-          settingsProp(~~val)
-        }
-      }, options.map(e => renderLichessPropOption(e[1], e[0], prop, e[2])))
+      h(
+        'label',
+        {
+          for: 'select_' + name
+        },
+        i18n(label)
+      ),
+      h(
+        'select',
+        {
+          id: 'select_' + name,
+          disabled: isDisabled,
+          onchange(e: Event) {
+            const val = (e.target as HTMLSelectElement).value
+            settingsProp(~~val)
+          }
+        },
+        options.map(e => renderLichessPropOption(e[1], e[0], prop, e[2]))
+      )
     ]
   },
 
@@ -92,24 +111,32 @@ export default {
     disabled?: boolean
   ) {
     const isOn = settingsProp()
-    return h('div.check_container', {
-      className: disabled ? 'disabled' : ''
-    }, [
-      h('label', {
-        'for': name
-      }, label),
-      h('input[type=checkbox]', {
-        name: name,
-        disabled,
-        checked: isOn,
-        onchange: function() {
-          const newVal = !isOn
-          settingsProp(newVal)
-          if (callback) callback(newVal)
-          redraw()
-        }
-      })
-    ])
+    return h(
+      'div.check_container',
+      {
+        className: disabled ? 'disabled' : ''
+      },
+      [
+        h(
+          'label',
+          {
+            for: name
+          },
+          label
+        ),
+        h('input[type=checkbox]', {
+          name: name,
+          disabled,
+          checked: isOn,
+          onchange: function() {
+            const newVal = !isOn
+            settingsProp(newVal)
+            if (callback) callback(newVal)
+            redraw()
+          }
+        })
+      ]
+    )
   },
 
   renderSelectWithGroup(
@@ -122,19 +149,35 @@ export default {
   ) {
     const prop = settingsProp()
     return [
-      h('label', {
-        'for': 'select_' + name
-      }, i18n(label)),
-      h('select', {
-        id: 'select_' + name,
-        disabled: isDisabled,
-        onchange(e: Event) {
-          const val = (e.target as HTMLSelectElement).value
-          settingsProp(val)
-          if (onChangeCallback) onChangeCallback(val)
-          setTimeout(() => redraw(), 10)
-        }
-      }, options.map(e => renderOptionGroup(e[0] as string, e[1], prop, e[2] as string, e[3] as string)))
+      h(
+        'label',
+        {
+          for: 'select_' + name
+        },
+        i18n(label)
+      ),
+      h(
+        'select',
+        {
+          id: 'select_' + name,
+          disabled: isDisabled,
+          onchange(e: Event) {
+            const val = (e.target as HTMLSelectElement).value
+            settingsProp(val)
+            if (onChangeCallback) onChangeCallback(val)
+            setTimeout(() => redraw(), 10)
+          }
+        },
+        options.map(e =>
+          renderOptionGroup(
+            e[0] as string,
+            e[1],
+            prop,
+            e[2] as string,
+            e[3] as string
+          )
+        )
+      )
     ]
   },
 
@@ -149,7 +192,7 @@ export default {
   ) {
     const value = prop()
     return h('div.forms-rangeSlider', [
-      h('label', { 'for': name }, label),
+      h('label', { for: name }, label),
       h('input[type=range]', {
         id: name,
         value,
@@ -169,34 +212,63 @@ export default {
   }
 }
 
-function renderOption(label: string, value: string, prop: string, labelArg?: string, labelArg2?: string) {
-  const l = labelArg && labelArg2 ? i18n(label, labelArg, labelArg2) :
-    labelArg ? i18n(label, labelArg) : i18n(label)
-  return h('option', {
-    key: value,
-    value,
-    selected: prop === value
-  }, l)
+function renderOption(
+  label: string,
+  value: string,
+  prop: string,
+  labelArg?: string,
+  labelArg2?: string
+) {
+  const l =
+    labelArg && labelArg2
+      ? i18n(label, labelArg, labelArg2)
+      : labelArg ? i18n(label, labelArg) : i18n(label)
+  return h(
+    'option',
+    {
+      key: value,
+      value,
+      selected: prop === value
+    },
+    l
+  )
 }
 
-function renderLichessPropOption(label: string, value: number, prop: number, labelArg?: string) {
+function renderLichessPropOption(
+  label: string,
+  value: number,
+  prop: number,
+  labelArg?: string
+) {
   const l = labelArg ? i18n(label, labelArg) : i18n(label)
-  return h('option', {
-    key: value,
-    value,
-    selected: prop === value
-  }, l)
+  return h(
+    'option',
+    {
+      key: value,
+      value,
+      selected: prop === value
+    },
+    l
+  )
 }
 
-
-function renderOptionGroup(label: string, value: string | SelectOptionGroup, prop: string, labelArg: string, labelArg2: string): Mithril.Children {
+function renderOptionGroup(
+  label: string,
+  value: string | SelectOptionGroup,
+  prop: string,
+  labelArg: string,
+  labelArg2: string
+): Mithril.Children {
   if (typeof value === 'string') {
     return renderOption(label, value, prop, labelArg, labelArg2)
-  }
-  else {
-    return h('optgroup', {
-      key: label,
-      label
-    }, value.map(e => renderOption(e[0], e[1], prop, e[2], e[3])))
+  } else {
+    return h(
+      'optgroup',
+      {
+        key: label,
+        label
+      },
+      value.map(e => renderOption(e[0], e[1], prop, e[2], e[3]))
+    )
   }
 }

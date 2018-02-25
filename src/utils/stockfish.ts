@@ -19,14 +19,10 @@ export function getNbCores(): number {
 }
 
 export function setVariant(variant: VariantKey) {
-
-  const uci960p =
-    setOption('UCI_Chess960', 'chess960' === variant)
+  const uci960p = setOption('UCI_Chess960', 'chess960' === variant)
 
   if (['standard', 'fromPosition', 'chess960'].includes(variant))
     return Promise.all([uci960p, setOption('UCI_Variant', 'chess')])
-  else if (variant === 'antichess')
-    return setOption('UCI_Variant', 'giveaway')
-  else
-    return setOption('UCI_Variant', variant.toLowerCase())
+  else if (variant === 'antichess') return setOption('UCI_Variant', 'giveaway')
+  else return setOption('UCI_Variant', variant.toLowerCase())
 }

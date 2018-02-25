@@ -5,7 +5,6 @@ import * as h from 'mithril/hyperscript'
 import Editor, { MenuInterface } from './Editor'
 
 export default {
-
   controller: function(root: Editor) {
     let isOpen = false
 
@@ -34,20 +33,23 @@ export default {
       'pasteFenPopup',
       undefined,
       () => {
-        return h('form', {
-          onsubmit(e: Event) {
-            e.preventDefault()
-            const input = (e.target as HTMLFormElement)[0]
-            const value = input.value
-            if (value && value.length)
-              ctrl.root.loadNewFen(input.value)
-          }
-        }, [
-          h('input[type=text]', {
-            placeholder: 'Paste FEN position'
-          }),
-          h('button[data-icon=E].withIcon.popupAction', i18n('loadPosition'))
-        ])
+        return h(
+          'form',
+          {
+            onsubmit(e: Event) {
+              e.preventDefault()
+              const input = (e.target as HTMLFormElement)[0]
+              const value = input.value
+              if (value && value.length) ctrl.root.loadNewFen(input.value)
+            }
+          },
+          [
+            h('input[type=text]', {
+              placeholder: 'Paste FEN position'
+            }),
+            h('button[data-icon=E].withIcon.popupAction', i18n('loadPosition'))
+          ]
+        )
       },
       ctrl.isOpen(),
       ctrl.close

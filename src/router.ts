@@ -23,14 +23,18 @@ const router = new Rlite()
 let currentStateId: number = 0
 let viewSlideDirection = 'fwd'
 
-export function defineRoutes(mountPoint: HTMLElement, routes: {[index: string]: Mithril.Component<any, any>}) {
+export function defineRoutes(
+  mountPoint: HTMLElement,
+  routes: { [index: string]: Mithril.Component<any, any> }
+) {
   for (let route in routes) {
     const component = routes[route]
     router.add(route, function onRouteMatch({ params }) {
-
-      const RouteComponent = {view() {
-        return Vnode(component, undefined, params)
-      }}
+      const RouteComponent = {
+        view() {
+          return Vnode(component, undefined, params)
+        }
+      }
 
       function redraw() {
         RenderService.render(mountPoint, Vnode(RouteComponent))
@@ -73,16 +77,18 @@ function assignState(state?: { [k: string]: any }, path?: string) {
   // and https://bugs.webkit.org/show_bug.cgi?id=156115
   // (may be only 100 calls per 30s interval in ios 10... need to test)
   try {
-    const newState = state ?
-      Object.assign({}, window.history.state, state) :
-      window.history.state
+    const newState = state
+      ? Object.assign({}, window.history.state, state)
+      : window.history.state
 
     if (path !== undefined) {
       window.history.replaceState(newState, '', '?=' + path)
     } else {
       window.history.replaceState(newState, '')
     }
-  } catch (e) { console.error(e) }
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 function replacePath(path: string) {
@@ -110,8 +116,10 @@ const backbutton = (() => {
       // back!
       if (/^\/game\/[a-zA-Z0-9]{12}/.test(get()) && !session.isConnected()) {
         navigator.notification.confirm(
-          'Do you really want to leave the game? You can\'t go back to it after.',
-          i => { if (i === 1) backHistory() }
+          "Do you really want to leave the game? You can't go back to it after.",
+          i => {
+            if (i === 1) backHistory()
+          }
         )
       } else {
         backHistory()
@@ -124,7 +132,6 @@ const backbutton = (() => {
   x.stack = []
 
   return <Backbutton>x
-
 })()
 
 function doSet(path: string, replace = false) {
@@ -138,7 +145,9 @@ function doSet(path: string, replace = false) {
     viewSlideDirection = 'fwd'
     try {
       window.history.pushState({ id: stateId }, '', '?=' + path)
-    } catch (e) { console.error(e) }
+    } catch (e) {
+      console.error(e)
+    }
   }
   const matched = router.run(path)
   if (!matched) router.run('/')

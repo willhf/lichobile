@@ -5,7 +5,15 @@ import storage from './storage'
 import settings from './settings'
 import i18n from './i18n'
 import session from './session'
-import { TimelineData, LobbyData, HookData, Pool, HumanSeekSetup, CorrespondenceSeek, ApiStatus } from './lichess/interfaces'
+import {
+  TimelineData,
+  LobbyData,
+  HookData,
+  Pool,
+  HumanSeekSetup,
+  CorrespondenceSeek,
+  ApiStatus
+} from './lichess/interfaces'
 import { ChallengesData, Challenge } from './lichess/interfaces/challenge'
 import { OnlineGameData } from './lichess/interfaces/game'
 
@@ -36,10 +44,14 @@ export function newAiGame(fen?: string): Promise<OnlineGameData> {
 
   if (fen) body.fen = fen
 
-  return fetchJSON('/setup/ai', {
-    method: 'POST',
-    body: JSON.stringify(body)
-  }, true)
+  return fetchJSON(
+    '/setup/ai',
+    {
+      method: 'POST',
+      body: JSON.stringify(body)
+    },
+    true
+  )
 }
 
 export function seekGame(setup: HumanSeekSetup): Promise<HookData> {
@@ -51,13 +63,20 @@ export function seekGame(setup: HumanSeekSetup): Promise<HookData> {
   } else {
     body = JSON.stringify({ ...rest })
   }
-  return fetchJSON('/setup/hook/' + currentSri(), {
-    method: 'POST',
-    body
-  }, true)
+  return fetchJSON(
+    '/setup/hook/' + currentSri(),
+    {
+      method: 'POST',
+      body
+    },
+    true
+  )
 }
 
-export function challenge(userId: string, fen?: string): Promise<{ challenge: Challenge }> {
+export function challenge(
+  userId: string,
+  fen?: string
+): Promise<{ challenge: Challenge }> {
   const config = settings.gameSetup.challenge
   const url = userId ? `/setup/friend?user=${userId}` : '/setup/friend'
 
@@ -73,10 +92,14 @@ export function challenge(userId: string, fen?: string): Promise<{ challenge: Ch
 
   if (fen) body.fen = fen
 
-  return fetchJSON(url, {
-    method: 'POST',
-    body: JSON.stringify(body)
-  }, true)
+  return fetchJSON(
+    url,
+    {
+      method: 'POST',
+      body: JSON.stringify(body)
+    },
+    true
+  )
 }
 
 export function getChallenges(): Promise<ChallengesData> {
@@ -92,25 +115,32 @@ export function getChallenge(id: string): Promise<ChallengeData> {
 }
 
 export function cancelChallenge(id: string): Promise<string> {
-  return fetchText(`/challenge/${id}/cancel`, {
-    method: 'POST'
-  }, true)
+  return fetchText(
+    `/challenge/${id}/cancel`,
+    {
+      method: 'POST'
+    },
+    true
+  )
 }
 
 export function declineChallenge(id: string): Promise<string> {
-  return fetchText(`/challenge/${id}/decline`, {
-    method: 'POST'
-  }, true)
+  return fetchText(
+    `/challenge/${id}/decline`,
+    {
+      method: 'POST'
+    },
+    true
+  )
 }
 
 export function acceptChallenge(id: string): Promise<OnlineGameData> {
-  return fetchJSON(`/challenge/${id}/accept`, { method: 'POST'}, true)
+  return fetchJSON(`/challenge/${id}/accept`, { method: 'POST' }, true)
 }
 
 export let cachedPools: ReadonlyArray<Pool> = []
 export function lobby(feedback?: boolean): Promise<LobbyData> {
-  return fetchJSON('/', undefined, feedback)
-  .then((d: LobbyData) => {
+  return fetchJSON('/', undefined, feedback).then((d: LobbyData) => {
     if (d.lobby.pools !== undefined) cachedPools = d.lobby.pools
     return d
   })
@@ -122,7 +152,7 @@ export function seeks(feedback: boolean): Promise<CorrespondenceSeek[]> {
 
 export function game(id: string, color?: string): Promise<OnlineGameData> {
   let url = '/' + id
-  if (color) url += ('/' + color)
+  if (color) url += '/' + color
   return fetchJSON(url)
 }
 
@@ -132,11 +162,17 @@ export function toggleGameBookmark(id: string) {
   })
 }
 
-export function featured(channel: string, flip: boolean): Promise<OnlineGameData> {
-  return fetchJSON('/tv/' + channel, flip ? { query: { flip: 1 }} : {})
+export function featured(
+  channel: string,
+  flip: boolean
+): Promise<OnlineGameData> {
+  return fetchJSON('/tv/' + channel, flip ? { query: { flip: 1 } } : {})
 }
 
-export function importMasterGame(gameId: string, orientation: Color): Promise<OnlineGameData> {
+export function importMasterGame(
+  gameId: string,
+  orientation: Color
+): Promise<OnlineGameData> {
   return fetchJSON(`/import/master/${gameId}/${orientation}`)
 }
 
@@ -147,8 +183,7 @@ export function setServerLang(lang: string): Promise<void> {
       body: JSON.stringify({
         lang
       })
-    })
-    .then(() => {})
+    }).then(() => {})
   } else {
     return Promise.resolve()
   }
@@ -167,8 +202,7 @@ export function status() {
     query: {
       v: window.AppVersion ? window.AppVersion.version : null
     }
-  })
-  .then((data: ApiStatus) => {
+  }).then((data: ApiStatus) => {
     // warn if buggy app
     if (data.mustUpgrade) {
       const v = window.AppVersion ? window.AppVersion.version : 'dev'
@@ -181,43 +215,39 @@ export function status() {
             storage.set(key, 1)
           }
         )
-      }
-      else if (warnCount === 10) {
+      } else if (warnCount === 10) {
         storage.remove(key)
-      }
-      else {
+      } else {
         storage.set(key, warnCount + 1)
       }
-    }
-    else if (data.api.current > globalConfig.apiVersion) {
-      const versionInfo = data.api.olds.find(o => o.version === globalConfig.apiVersion)
+    } else if (data.api.current > globalConfig.apiVersion) {
+      const versionInfo = data.api.olds.find(
+        o => o.version === globalConfig.apiVersion
+      )
       if (versionInfo) {
         const now = new Date(),
-        unsupportedDate = new Date(versionInfo.unsupportedAt),
-        deprecatedDate = new Date(versionInfo.deprecatedAt)
+          unsupportedDate = new Date(versionInfo.unsupportedAt),
+          deprecatedDate = new Date(versionInfo.deprecatedAt)
 
         const key = 'warn_old_' + versionInfo.version
         const deprWarnCount = Number(storage.get(key)) || 0
 
         if (now > unsupportedDate) {
-          window.navigator.notification.alert(
-            i18n('apiUnsupported'),
-            noop
-          )
-        }
-        else if (now > deprecatedDate) {
+          window.navigator.notification.alert(i18n('apiUnsupported'), noop)
+        } else if (now > deprecatedDate) {
           if (deprWarnCount === 0) {
             window.navigator.notification.alert(
-              i18n('apiDeprecated', window.moment(unsupportedDate).format('LL')),
+              i18n(
+                'apiDeprecated',
+                window.moment(unsupportedDate).format('LL')
+              ),
               () => {
                 storage.set(key, 1)
               }
             )
-          }
-          else if (deprWarnCount === 15) {
+          } else if (deprWarnCount === 15) {
             storage.remove(key)
-          }
-          else {
+          } else {
             storage.set(key, deprWarnCount + 1)
           }
         }
@@ -227,11 +257,11 @@ export function status() {
 }
 
 export function createToken() {
-  return fetchJSON('/auth/token', {method: 'POST'}, true)
+  return fetchJSON('/auth/token', { method: 'POST' }, true)
 }
 
 export function openWebsitePatronPage() {
-  createToken().then((data: {url: string, userId: string}) => {
+  createToken().then((data: { url: string; userId: string }) => {
     window.open(data.url + '?referrer=/patron', '_blank', 'location=no')
   })
 }

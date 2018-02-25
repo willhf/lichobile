@@ -1,4 +1,3 @@
-
 export interface IExplorerCtrl {
   setStep(): void
   loading: Mithril.Stream<boolean>

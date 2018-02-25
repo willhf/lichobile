@@ -15,9 +15,7 @@ export function inboxBody(ctrl: InboxCtrl) {
   return (
     <div className="native_scroller inboxWrapper">
       <table className="threadList">
-        <tbody>
-          {threads.currentPageResults.map(renderInboxItem)}
-        </tbody>
+        <tbody>{threads.currentPageResults.map(renderInboxItem)}</tbody>
       </table>
     </div>
   )
@@ -33,14 +31,22 @@ export function renderFooter(ctrl: InboxCtrl) {
 
   return (
     <div className="inboxFooter">
-      <div className={'navigationButtons' + (threads.nbPages <= 1 ? ' invisible' : '')}>
+      <div
+        className={
+          'navigationButtons' + (threads.nbPages <= 1 ? ' invisible' : '')
+        }
+      >
         {renderNavButton('W', !ctrl.isLoading() && backEnabled, ctrl.first)}
         {renderNavButton('Y', !ctrl.isLoading() && backEnabled, ctrl.prev)}
         {renderNavButton('X', !ctrl.isLoading() && forwardEnabled, ctrl.next)}
         {renderNavButton('V', !ctrl.isLoading() && forwardEnabled, ctrl.last)}
       </div>
       <div className="actions_bar composeAction">
-        <button key="compose" className="action_bar_button" oncreate={helper.ontapY(() => router.set('/inbox/new'))}>
+        <button
+          key="compose"
+          className="action_bar_button"
+          oncreate={helper.ontapY(() => router.set('/inbox/new'))}
+        >
           <span className="fa fa-pencil" />
           {i18n('composeMessage')}
         </button>
@@ -52,24 +58,29 @@ export function renderFooter(ctrl: InboxCtrl) {
 function renderNavButton(icon: string, isEnabled: boolean, action: () => void) {
   const state = isEnabled ? 'enabled' : 'disabled'
   return (
-    <button className={`navigationButton ${state}`}
-      data-icon={icon} oncreate={helper.ontap(action)} />
+    <button
+      className={`navigationButton ${state}`}
+      data-icon={icon}
+      oncreate={helper.ontap(action)}
+    />
   )
 }
 
 function renderInboxItem(thread: Thread) {
   return (
-    <tr className={'list_item' + (thread.isUnread ? ' unread' : '')}
-    key={thread.id}
-    oncreate={helper.ontapY(() => router.set('/inbox/' + thread.id))}>
-      <td className="threadAuthor"> { thread.author } </td>
-      <td className="threadName"> { thread.name } </td>
-      <td className="threadDate"> { formatMessageTime(thread.updatedAt) } </td>
+    <tr
+      className={'list_item' + (thread.isUnread ? ' unread' : '')}
+      key={thread.id}
+      oncreate={helper.ontapY(() => router.set('/inbox/' + thread.id))}
+    >
+      <td className="threadAuthor"> {thread.author} </td>
+      <td className="threadName"> {thread.name} </td>
+      <td className="threadDate"> {formatMessageTime(thread.updatedAt)} </td>
     </tr>
   )
 }
 
-function formatMessageTime (timeInMillis: number) {
+function formatMessageTime(timeInMillis: number) {
   const time = window.moment(timeInMillis)
   const now = window.moment()
   if (now.isAfter(time, 'year')) {

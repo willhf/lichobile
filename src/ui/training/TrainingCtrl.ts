@@ -1,7 +1,13 @@
 import * as cloneDeep from 'lodash/cloneDeep'
 import * as debounce from 'lodash/debounce'
 import Chessground from '../../chessground/Chessground'
-import { build as makeTree, ops as treeOps, path as treePath, TreeWrapper, Tree } from '../shared/tree'
+import {
+  build as makeTree,
+  ops as treeOps,
+  path as treePath,
+  TreeWrapper,
+  Tree
+} from '../shared/tree'
 import router from '../../router'
 import { ErrorResponse } from '../../http'
 import redraw from '../../utils/redraw'
@@ -21,7 +27,12 @@ import makeGround from './ground'
 import menu, { IMenuCtrl } from './menu'
 import * as xhr from './xhr'
 import { VM, Data, PimpedGame, Feedback } from './interfaces'
-import { syncPuzzleResult, syncAndLoadNewPuzzle, nbRemainingPuzzles, puzzleLoadFailure } from './offlineService'
+import {
+  syncPuzzleResult,
+  syncAndLoadNewPuzzle,
+  nbRemainingPuzzles,
+  puzzleLoadFailure
+} from './offlineService'
 import { Database } from './database'
 
 export default class TrainingCtrl implements PromotingInterface {
@@ -73,7 +84,10 @@ export default class TrainingCtrl implements PromotingInterface {
         return node.puzzle !== 'good'
       })
       if (firstGoodPath) {
-        this.userJump(firstGoodPath + this.tree.nodeAtPath(firstGoodPath).children[0].id, true)
+        this.userJump(
+          firstGoodPath + this.tree.nodeAtPath(firstGoodPath).children[0].id,
+          true
+        )
       }
     }
 
@@ -92,7 +106,8 @@ export default class TrainingCtrl implements PromotingInterface {
     this.setPath(path)
     this.updateBoard()
     if (pathChanged && withSound) {
-      if (this.node.san && this.node.san.indexOf('x') !== -1) sound.throttledCapture()
+      if (this.node.san && this.node.san.indexOf('x') !== -1)
+        sound.throttledCapture()
       else sound.throttledMove()
     }
     promotion.cancel(this.chessground)
@@ -138,14 +153,15 @@ export default class TrainingCtrl implements PromotingInterface {
     const user = session.get()
     if (user) {
       syncAndLoadNewPuzzle(this.database, user)
-      .then(onSuccess)
-      .catch(puzzleLoadFailure)
+        .then(onSuccess)
+        .catch(puzzleLoadFailure)
     } else {
       this.vm.loading = true
       redraw()
-      xhr.newPuzzle()
-      .then(onSuccess)
-      .catch(this.onXhrError)
+      xhr
+        .newPuzzle()
+        .then(onSuccess)
+        .catch(this.onXhrError)
     }
   }
 
@@ -154,15 +170,28 @@ export default class TrainingCtrl implements PromotingInterface {
   }
 
   public share = () => {
-    window.plugins.socialsharing.share(null, null, null, `http://lichess.org/training/${this.data.puzzle.id}`)
+    window.plugins.socialsharing.share(
+      null,
+      null,
+      null,
+      `http://lichess.org/training/${this.data.puzzle.id}`
+    )
   }
 
   public goToAnalysis = () => {
     const puzzle = this.data.puzzle
     if (hasNetwork()) {
-      router.set(`/analyse/online/${puzzle.gameId}/${puzzle.color}?ply=${puzzle.initialPly}&curFen=${puzzle.fen}`)
+      router.set(
+        `/analyse/online/${puzzle.gameId}/${puzzle.color}?ply=${
+          puzzle.initialPly
+        }&curFen=${puzzle.fen}`
+      )
     } else {
-      router.set(`/analyse/variant/standard/fen/${encodeURIComponent(this.initialNode.fen)}`)
+      router.set(
+        `/analyse/variant/standard/fen/${encodeURIComponent(
+          this.initialNode.fen
+        )}`
+      )
     }
   }
 
@@ -171,7 +200,10 @@ export default class TrainingCtrl implements PromotingInterface {
   private init(cfg: PuzzleData) {
     this.initialData = cfg
 
-    router.assignState({ puzzleId: cfg.puzzle.id }, `/training/${cfg.puzzle.id}`)
+    router.assignState(
+      { puzzleId: cfg.puzzle.id },
+      `/training/${cfg.puzzle.id}`
+    )
 
     this.vm = {
       mode: 'play',
@@ -185,8 +217,7 @@ export default class TrainingCtrl implements PromotingInterface {
 
     const user = session.get()
     if (user) {
-      nbRemainingPuzzles(this.database, user)
-      .then(nb => {
+      nbRemainingPuzzles(this.database, user).then(nb => {
         this.nbUnsolved = nb
         redraw()
       })
@@ -201,16 +232,20 @@ export default class TrainingCtrl implements PromotingInterface {
 
     this.data = pimpedData
 
-    this.tree = makeTree(treeOps.reconstruct([
-      // make root node with puzzle initial state
-      {
-        fen: this.data.puzzle.fen,
-        ply: this.data.puzzle.initialPly - 1,
-        id: ''
-      },
-      this.data.game.treeParts
-    ]))
-    this.initialPath = treePath.fromNodeList(treeOps.mainlineNodeList(this.tree.root))
+    this.tree = makeTree(
+      treeOps.reconstruct([
+        // make root node with puzzle initial state
+        {
+          fen: this.data.puzzle.fen,
+          ply: this.data.puzzle.initialPly - 1,
+          id: ''
+        },
+        this.data.game.treeParts
+      ])
+    )
+    this.initialPath = treePath.fromNodeList(
+      treeOps.mainlineNodeList(this.tree.root)
+    )
     this.initialNode = this.tree.nodeAtPath(this.initialPath)
     this.setPath(treePath.init(this.initialPath))
     this.updateBoard()
@@ -254,23 +289,24 @@ export default class TrainingCtrl implements PromotingInterface {
 
   private getNodeSituation = debounce(() => {
     if (this.node && !this.node.dests) {
-      chess.situation({
-        variant: this.data.game.variant.key,
-        fen: this.node.fen,
-        path: this.path
-      })
-      .then(({ situation, path }) => {
-        this.tree.updateAt(path, (node: Tree.Node) => {
-          node.dests = situation.dests
-          node.end = situation.end
-          node.player = situation.player
+      chess
+        .situation({
+          variant: this.data.game.variant.key,
+          fen: this.node.fen,
+          path: this.path
         })
-        if (path === this.path) {
-          this.updateBoard()
-          redraw()
-        }
-      })
-      .catch(err => console.error('get dests error', err))
+        .then(({ situation, path }) => {
+          this.tree.updateAt(path, (node: Tree.Node) => {
+            node.dests = situation.dests
+            node.end = situation.end
+            node.player = situation.player
+          })
+          if (path === this.path) {
+            this.updateBoard()
+            redraw()
+          }
+        })
+        .catch(err => console.error('get dests error', err))
     }
   }, 50)
 
@@ -294,44 +330,49 @@ export default class TrainingCtrl implements PromotingInterface {
   }
 
   private sendMoveRequest = (move: chess.MoveRequest, userMove = false) => {
-    chess.move(move)
-    .then(({ situation, path}) => {
-      const node = {
-        id: situation.id,
-        ply: situation.ply,
-        fen: situation.fen,
-        uci: situation.uci,
-        children: [],
-        dests: situation.dests,
-        check: situation.check,
-        end: situation.end,
-        player: situation.player,
-        san: situation.san,
-        pgnMoves: situation.pgnMoves
-      }
-      if (path === undefined) {
-        console.error('Cannot addNode, missing path', node)
-        return
-      }
-      const newPath = this.tree.addNode(node, path)
-      if (!newPath) {
-        console.error('Cannot addNode', node, path)
-        return
-      }
-      if (userMove) this.vm.moveValidationPending = true
-      this.jump(newPath, !userMove)
-      redraw()
+    chess
+      .move(move)
+      .then(({ situation, path }) => {
+        const node = {
+          id: situation.id,
+          ply: situation.ply,
+          fen: situation.fen,
+          uci: situation.uci,
+          children: [],
+          dests: situation.dests,
+          check: situation.check,
+          end: situation.end,
+          player: situation.player,
+          san: situation.san,
+          pgnMoves: situation.pgnMoves
+        }
+        if (path === undefined) {
+          console.error('Cannot addNode, missing path', node)
+          return
+        }
+        const newPath = this.tree.addNode(node, path)
+        if (!newPath) {
+          console.error('Cannot addNode', node, path)
+          return
+        }
+        if (userMove) this.vm.moveValidationPending = true
+        this.jump(newPath, !userMove)
+        redraw()
 
-      const playedByColor = this.node.ply % 2 === 1 ? 'white' : 'black'
-      if (playedByColor === this.data.puzzle.color) {
-        const progress = moveTest(
-          this.vm.mode, this.node, this.path, this.initialPath, this.nodeList,
-          this.data.puzzle
-        )
-        if (progress) this.applyProgress(progress)
-      }
-    })
-    .catch(err => console.error('send move error', move, err))
+        const playedByColor = this.node.ply % 2 === 1 ? 'white' : 'black'
+        if (playedByColor === this.data.puzzle.color) {
+          const progress = moveTest(
+            this.vm.mode,
+            this.node,
+            this.path,
+            this.initialPath,
+            this.nodeList,
+            this.data.puzzle
+          )
+          if (progress) this.applyProgress(progress)
+        }
+      })
+      .catch(err => console.error('send move error', move, err))
   }
 
   private userMove = (orig: Key, dest: Key, captured?: Piece) => {
@@ -381,8 +422,7 @@ export default class TrainingCtrl implements PromotingInterface {
   }
 
   private mergeSolution(solution: Tree.Node, color: Color) {
-
-    treeOps.updateAll(solution, (node) => {
+    treeOps.updateAll(solution, node => {
       if ((color === 'white') === (node.ply % 2 === 1)) node.puzzle = 'good'
     })
 
@@ -400,10 +440,8 @@ export default class TrainingCtrl implements PromotingInterface {
 
     if (user && !this.data.online) {
       syncPuzzleResult(this.database, user, outcome)
-    }
-    else {
-      xhr.round(outcome)
-      .then((res) => {
+    } else {
+      xhr.round(outcome).then(res => {
         this.data.user = res.user
         redraw()
       })
@@ -417,6 +455,8 @@ export default class TrainingCtrl implements PromotingInterface {
   }
 }
 
-function isMoveRequest(v: Feedback | chess.MoveRequest): v is chess.MoveRequest {
+function isMoveRequest(
+  v: Feedback | chess.MoveRequest
+): v is chess.MoveRequest {
   return (v as chess.MoveRequest).variant !== undefined
 }

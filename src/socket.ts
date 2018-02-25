@@ -34,7 +34,10 @@ interface SocketConfig {
   params?: StringMap
 }
 
-type MessageHandler<D, P extends LichessMessage<D>> = (data?: D, payload?: P) => void
+type MessageHandler<D, P extends LichessMessage<D>> = (
+  data?: D,
+  payload?: P
+) => void
 type MessageHandlerGeneric = MessageHandler<{}, any>
 
 export interface MessageHandlers {
@@ -82,9 +85,12 @@ const worker = new Worker('lib/socketWorker.js')
 const defaultHandlers: MessageHandlers = {
   following_onlines: handleFollowingOnline,
   following_enters: (name: string, payload: FollowingEntersPayload) =>
-    autoredraw(() => friendsApi.add(name, payload.playing || false, payload.patron || false)),
+    autoredraw(() =>
+      friendsApi.add(name, payload.playing || false, payload.patron || false)
+    ),
   following_leaves: (name: string) => autoredraw(() => friendsApi.remove(name)),
-  following_playing: (name: string) => autoredraw(() => friendsApi.playing(name)),
+  following_playing: (name: string) =>
+    autoredraw(() => friendsApi.playing(name)),
   following_stopped_playing: (name: string) =>
     autoredraw(() => friendsApi.stoppedPlaying(name)),
   challenges: (data: ChallengesData) => {
@@ -99,7 +105,10 @@ const defaultHandlers: MessageHandlers = {
   }
 }
 
-function handleFollowingOnline(data: Array<string>, payload: FollowingOnlinePayload) {
+function handleFollowingOnline(
+  data: Array<string>,
+  payload: FollowingOnlinePayload
+) {
   // We clone the friends online before we update it for comparison later
   const oldFriendList = cloneDeep(friendsApi.list())
 
@@ -157,10 +166,13 @@ function createGame(
         // just to be sure that we don't send an xhr every second when the
         // websocket is trying to reconnect
         errorDetected = true
-        xhr.game(gameUrl.substring(1))
-        .catch((err: ErrorResponse) => {
+        xhr.game(gameUrl.substring(1)).catch((err: ErrorResponse) => {
           if (err.status === 401) {
-            window.plugins.toast.show(i18n('unauthorizedError'), 'short', 'center')
+            window.plugins.toast.show(
+              i18n('unauthorizedError'),
+              'short',
+              'center'
+            )
             router.set('/')
           }
         })
@@ -173,7 +185,7 @@ function createGame(
     options: {
       name: 'game',
       debug: globalConfig.mode === 'dev',
-      sendOnOpen: [{t: 'following_onlines'}],
+      sendOnOpen: [{ t: 'following_onlines' }],
       registeredEvents: Object.keys(socketHandlers.events)
     }
   }
@@ -194,7 +206,8 @@ function createTournament(
   handlers: MessageHandlers,
   featuredGameId?: string
 ) {
-  let url = '/tournament/' + tournamentId + `/socket/v${globalConfig.apiVersion}`
+  let url =
+    '/tournament/' + tournamentId + `/socket/v${globalConfig.apiVersion}`
   const socketHandlers = {
     events: Object.assign({}, defaultHandlers, handlers),
     onOpen: session.backgroundRefresh
@@ -204,7 +217,10 @@ function createTournament(
       name: 'tournament',
       debug: globalConfig.mode === 'dev',
       pingDelay: 2000,
-      sendOnOpen: [{t: 'following_onlines'}, {t: 'startWatching', d: featuredGameId}],
+      sendOnOpen: [
+        { t: 'following_onlines' },
+        { t: 'startWatching', d: featuredGameId }
+      ],
       registeredEvents: Object.keys(socketHandlers.events)
     }
   }
@@ -238,7 +254,7 @@ function createChallenge(
       debug: globalConfig.mode === 'dev',
       ignoreUnknownMessages: true,
       pingDelay: 2000,
-      sendOnOpen: [{t: 'following_onlines'}],
+      sendOnOpen: [{ t: 'following_onlines' }],
       registeredEvents: Object.keys(socketHandlers.events)
     }
   }
@@ -269,7 +285,7 @@ function createLobby(
       name,
       debug: globalConfig.mode === 'dev',
       pingDelay: 2000,
-      sendOnOpen: [{t: 'following_onlines'}],
+      sendOnOpen: [{ t: 'following_onlines' }],
       registeredEvents: Object.keys(socketHandlers.events)
     }
   }
@@ -293,7 +309,7 @@ function createDefault() {
         name: 'default',
         debug: globalConfig.mode === 'dev',
         pingDelay: 3000,
-        sendOnOpen: [{t: 'following_onlines'}],
+        sendOnOpen: [{ t: 'following_onlines' }],
         registeredEvents: Object.keys(socketHandlers.events)
       }
     }
@@ -327,8 +343,8 @@ function redirectToGame(obj: string | RedirectObj) {
         '; max-age=' + obj.cookie.maxAge,
         '; path=/',
         '; domain=' + domain
-        ].join('')
-        document.cookie = cookie
+      ].join('')
+      document.cookie = cookie
     }
   }
   router.set('/game' + url)
@@ -389,7 +405,10 @@ export default {
       const connSetup = rememberedSetups.shift()
       rememberedSetups = []
       // safeguard to just be sure to not reopen a seeking lobby socket connection
-      if (connSetup && connSetup.setup.opts.options.name !== SEEKING_SOCKET_NAME) {
+      if (
+        connSetup &&
+        connSetup.setup.opts.options.name !== SEEKING_SOCKET_NAME
+      ) {
         setupConnection(connSetup.setup, connSetup.handlers)
       } else {
         tellWorker(worker, 'destroy')

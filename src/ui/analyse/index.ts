@@ -9,13 +9,26 @@ import i18n from '../../i18n'
 import { specialFenVariants } from '../../lichess/variant'
 import { emptyFen } from '../../utils/fen'
 import spinner from '../../spinner'
-import { getAnalyseData, getCurrentAIGame, getCurrentOTBGame } from '../../utils/offlineGames'
+import {
+  getAnalyseData,
+  getCurrentAIGame,
+  getCurrentOTBGame
+} from '../../utils/offlineGames'
 import * as helper from '../helper'
-import { loadingBackbutton, header, backButton as renderBackbutton } from '../shared/common'
+import {
+  loadingBackbutton,
+  header,
+  backButton as renderBackbutton
+} from '../shared/common'
 import GameTitle from '../shared/GameTitle'
 import { makeDefaultData } from './data'
 import { gameAnalysis as gameAnalysisXhr } from './analyseXhr'
-import { renderContent, overlay, viewOnlyBoard, renderVariantSelector } from './view/analyseView'
+import {
+  renderContent,
+  overlay,
+  viewOnlyBoard,
+  renderVariantSelector
+} from './view/analyseView'
 import AnalyseCtrl from './AnalyseCtrl'
 import { Source } from './interfaces'
 import layout from '../layout'
@@ -53,27 +66,42 @@ export default {
     if (source === 'online' && gameId) {
       const now = performance.now()
       gameAnalysisXhr(gameId, orientation)
-      .then(cfg => {
-        const elapsed = performance.now() - now
-        setTimeout(() => {
-          this.ctrl = new AnalyseCtrl(cfg, source, orientation, shouldGoBack, ply, tab)
+        .then(cfg => {
+          const elapsed = performance.now() - now
+          setTimeout(() => {
+            this.ctrl = new AnalyseCtrl(
+              cfg,
+              source,
+              orientation,
+              shouldGoBack,
+              ply,
+              tab
+            )
+            redraw()
+          }, Math.max(400 - elapsed, 0))
+        })
+        .catch(err => {
+          handleXhrError(err)
+          router.set('/analyse', true)
           redraw()
-        }, Math.max(400 - elapsed, 0))
-      })
-      .catch(err => {
-        handleXhrError(err)
-        router.set('/analyse', true)
-        redraw()
-      })
+        })
     } else if (source === 'offline' && gameId === 'otb') {
       setTimeout(() => {
         const savedOtbGame = getCurrentOTBGame()
-        const otbData = savedOtbGame && getAnalyseData(savedOtbGame, orientation)
+        const otbData =
+          savedOtbGame && getAnalyseData(savedOtbGame, orientation)
         if (!otbData) {
           router.set('/analyse', true)
         } else {
           otbData.player.spectator = true
-          this.ctrl = new AnalyseCtrl(otbData, source, orientation, shouldGoBack, ply, tab)
+          this.ctrl = new AnalyseCtrl(
+            otbData,
+            source,
+            orientation,
+            shouldGoBack,
+            ply,
+            tab
+          )
           redraw()
         }
       }, 400)
@@ -85,7 +113,14 @@ export default {
           router.set('/analyse', true)
         } else {
           aiData.player.spectator = true
-          this.ctrl = new AnalyseCtrl(aiData, source, orientation, shouldGoBack, ply, tab)
+          this.ctrl = new AnalyseCtrl(
+            aiData,
+            source,
+            orientation,
+            shouldGoBack,
+            ply,
+            tab
+          )
           redraw()
         }
       }, 400)
@@ -94,15 +129,23 @@ export default {
         let settingsVariant = settings.analyse.syntheticVariant()
         // don't allow special variants fen since they are not supported
         if (fenArg) {
-          settingsVariant = specialFenVariants.has(settingsVariant) ?
-            'standard' : settingsVariant
+          settingsVariant = specialFenVariants.has(settingsVariant)
+            ? 'standard'
+            : settingsVariant
         }
         let url = `/analyse/variant/${settingsVariant}`
         if (fenArg) url += `/fen/${encodeURIComponent(fenArg)}`
         router.set(url, true)
         redraw()
       } else {
-        this.ctrl = new AnalyseCtrl(makeDefaultData(variant, fenArg), source, orientation, shouldGoBack, ply, tab)
+        this.ctrl = new AnalyseCtrl(
+          makeDefaultData(variant, fenArg),
+          source,
+          orientation,
+          shouldGoBack,
+          ply,
+          tab
+        )
         redraw()
       }
     }
@@ -129,17 +172,26 @@ export default {
     const isPortrait = helper.isPortrait()
 
     if (this.ctrl) {
+      const bounds = helper.getBoardBounds(
+        helper.viewportDim(),
+        isPortrait,
+        this.ctrl.settings.s.smallBoard
+      )
+      const backButton = this.ctrl.shouldGoBack
+        ? renderBackbutton(
+            h(GameTitle, { data: this.ctrl.data, subTitle: 'players' })
+          )
+        : null
 
-      const bounds = helper.getBoardBounds(helper.viewportDim(), isPortrait, this.ctrl.settings.s.smallBoard)
-      const backButton = this.ctrl.shouldGoBack ?
-        renderBackbutton(h(GameTitle, { data: this.ctrl.data, subTitle: 'players' })) : null
-
-      const title = this.ctrl.shouldGoBack ? null : h('div.main_header_title.withSub', {
-        key: 'title-selector'
-      }, [
-        h('div', i18n('analysis')),
-        renderVariantSelector(this.ctrl)
-      ])
+      const title = this.ctrl.shouldGoBack
+        ? null
+        : h(
+            'div.main_header_title.withSub',
+            {
+              key: 'title-selector'
+            },
+            [h('div', i18n('analysis')), renderVariantSelector(this.ctrl)]
+          )
 
       return layout.board(
         () => header(title, backButton),
@@ -148,14 +200,20 @@ export default {
       )
     } else {
       const isSmall = settings.analyse.smallBoard()
-      const bounds = helper.getBoardBounds(helper.viewportDim(), isPortrait, isSmall)
-      return layout.board(
-        loadingBackbutton,
-        () => [
-          viewOnlyBoard(vnode.attrs.color || 'white', bounds, isSmall, vnode.attrs.curFen || emptyFen),
-          h('div.analyse-tableWrapper', spinner.getVdom('monochrome'))
-        ]
+      const bounds = helper.getBoardBounds(
+        helper.viewportDim(),
+        isPortrait,
+        isSmall
       )
+      return layout.board(loadingBackbutton, () => [
+        viewOnlyBoard(
+          vnode.attrs.color || 'white',
+          bounds,
+          isSmall,
+          vnode.attrs.curFen || emptyFen
+        ),
+        h('div.analyse-tableWrapper', spinner.getVdom('monochrome'))
+      ])
     }
   }
 } as Mithril.Component<Attrs, State>

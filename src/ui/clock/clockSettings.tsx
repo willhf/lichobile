@@ -15,8 +15,10 @@ interface IClockSettingsCtrl {
 }
 
 export default {
-
-  controller(reload: () => void, clockObj: Mithril.Stream<IChessClock>): IClockSettingsCtrl {
+  controller(
+    reload: () => void,
+    clockObj: Mithril.Stream<IChessClock>
+  ): IClockSettingsCtrl {
     let isOpen = false
 
     function open() {
@@ -42,7 +44,6 @@ export default {
   },
 
   view(ctrl: IClockSettingsCtrl) {
-
     if (ctrl.isOpen()) {
       return popupWidget(
         'new_offline_game clock_settings',
@@ -52,14 +53,25 @@ export default {
             <div>
               <div className="action">
                 <div className="select_input">
-                  {formWidgets.renderSelect('Clock', 'clock', settings.clock.availableClocks, settings.clock.clockType, false, onChange)}
+                  {formWidgets.renderSelect(
+                    'Clock',
+                    'clock',
+                    settings.clock.availableClocks,
+                    settings.clock.clockType,
+                    false,
+                    onChange
+                  )}
                 </div>
                 {clockSettingsView(settings.clock, onChange)}
               </div>
-              <button className="newClockButton" data-icon="E" oncreate={helper.ontap(function () {
+              <button
+                className="newClockButton"
+                data-icon="E"
+                oncreate={helper.ontap(function() {
                   ctrl.reload()
                   ctrl.close()
-                })}>
+                })}
+              >
                 Set Clock
               </button>
             </div>
@@ -74,7 +86,7 @@ export default {
   }
 }
 
-function onChange () {
+function onChange() {
   window.StatusBar.hide()
   redraw()
 }

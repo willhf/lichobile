@@ -19,9 +19,11 @@ const perfMap: { [k: string]: Perf } = {
   racingKings: { name: 'Racing Kings', shortName: 'Racing' }
 }
 
-export const perfTypes = Object.keys(perfMap).map(k =>
-  [k, perfMap[k].name, perfMap[k].shortName]
-)
+export const perfTypes = Object.keys(perfMap).map(k => [
+  k,
+  perfMap[k].name,
+  perfMap[k].shortName
+])
 
 export function perfTitle(key: PerfKey): string {
   const p = perfMap[key]

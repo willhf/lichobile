@@ -52,27 +52,38 @@ export default {
 
     const vh = helper.viewportDim().vh
     const cDim = cardDims()
-    const wrapperStyle = helper.isWideScreen() ? {} : { top: ((vh - cDim.h) / 2) + 'px' }
+    const wrapperStyle = helper.isWideScreen()
+      ? {}
+      : { top: (vh - cDim.h) / 2 + 'px' }
     const wrapperClass = helper.isWideScreen() ? 'overlay_popup' : ''
 
-    return h('div#games_menu.overlay_popup_wrapper', {
-      onbeforeremove: menuOnBeforeRemove
-    }, [
-      h('div.wrapper_overlay_close', { oncreate: menuOnOverlayTap }),
-      h('div#wrapper_games', {
-        className: wrapperClass,
-        style: wrapperStyle,
-        oncreate: wrapperOnCreate,
-        onupdate: wrapperOnUpdate,
-        onremove: wrapperOnRemove
-      }, [
-        helper.isWideScreen() ? h('header',
-          i18n('nbGamesInPlay', session.nowPlaying().length)
-        ) : null,
-        helper.isWideScreen() ? h('div.popup_content', renderAllGames()) :
-          renderAllGames(cDim)
-      ])
-    ])
+    return h(
+      'div#games_menu.overlay_popup_wrapper',
+      {
+        onbeforeremove: menuOnBeforeRemove
+      },
+      [
+        h('div.wrapper_overlay_close', { oncreate: menuOnOverlayTap }),
+        h(
+          'div#wrapper_games',
+          {
+            className: wrapperClass,
+            style: wrapperStyle,
+            oncreate: wrapperOnCreate,
+            onupdate: wrapperOnUpdate,
+            onremove: wrapperOnRemove
+          },
+          [
+            helper.isWideScreen()
+              ? h('header', i18n('nbGamesInPlay', session.nowPlaying().length))
+              : null,
+            helper.isWideScreen()
+              ? h('div.popup_content', renderAllGames())
+              : renderAllGames(cDim)
+          ]
+        )
+      ]
+    )
   }
 }
 
@@ -80,7 +91,7 @@ const menuOnOverlayTap = helper.ontap(() => close())
 
 function menuOnBeforeRemove({ dom }: Mithril.DOMNode) {
   dom.classList.add('fading_out')
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(resolve, 500)
   })
 }
@@ -128,7 +139,6 @@ function close(fromBB?: string) {
   isOpen = false
 }
 
-
 function joinGame(g: NowPlayingGame) {
   lastJoined = g
   positionsCache.set(g.fullId, { fen: g.fen, orientation: g.color })
@@ -137,17 +147,17 @@ function joinGame(g: NowPlayingGame) {
 }
 
 function acceptChallenge(id: string) {
-  return xhr.acceptChallenge(id)
-  .then(data => {
-    router.set('/game' + data.url.round)
-  })
-  .then(() => challengesApi.remove(id))
-  .then(() => close())
+  return xhr
+    .acceptChallenge(id)
+    .then(data => {
+      router.set('/game' + data.url.round)
+    })
+    .then(() => challengesApi.remove(id))
+    .then(() => close())
 }
 
 function declineChallenge(id: string) {
-  return xhr.declineChallenge(id)
-  .then(() => {
+  return xhr.declineChallenge(id).then(() => {
     challengesApi.remove(id)
   })
 }
@@ -177,10 +187,18 @@ function cardDims(): CardDim {
   }
 }
 
-function renderViewOnlyBoard(fen: string, orientation: Color, cDim?: CardDim, lastMove?: string, variant?: VariantKey) {
+function renderViewOnlyBoard(
+  fen: string,
+  orientation: Color,
+  cDim?: CardDim,
+  lastMove?: string,
+  variant?: VariantKey
+) {
   const style = cDim ? { height: cDim.innerW + 'px' } : {}
   const bounds = cDim ? { width: cDim.innerW, height: cDim.innerW } : undefined
-  return h('div.boardWrapper', { style },
+  return h(
+    'div.boardWrapper',
+    { style },
     h(ViewOnlyBoard, { bounds, fen, lastMove, orientation, variant })
   )
 }
@@ -189,9 +207,13 @@ function timeLeft(g: NowPlayingGame): Mithril.Child {
   if (!g.isMyTurn) return i18n('waitingForOpponent')
   if (!g.secondsLeft) return i18n('yourTurn')
   const time = window.moment().add(g.secondsLeft, 'seconds')
-  return h('time', {
-    datetime: time.format()
-  }, time.fromNow())
+  return h(
+    'time',
+    {
+      datetime: time.format()
+    },
+    time.fromNow()
+  )
 }
 
 function savedGameDataToCardData(data: OnlineGameData): NowPlayingGame {
@@ -203,13 +225,15 @@ function savedGameDataToCardData(data: OnlineGameData): NowPlayingGame {
     isMyTurn: gameApi.isPlayerTurn(data),
     lastMove: data.game.lastMove,
     perf: data.game.perf,
-    opponent: data.opponent.user ? {
-      id: data.opponent.user.id,
-      username: data.opponent.user.username,
-      rating: data.opponent.rating
-    } : {
-      username: 'Anonymous'
-    },
+    opponent: data.opponent.user
+      ? {
+          id: data.opponent.user.id,
+          username: data.opponent.user.username,
+          rating: data.opponent.rating
+        }
+      : {
+          username: 'Anonymous'
+        },
     rated: data.game.rated,
     secondsLeft: data.correspondence && data.correspondence[data.player.color],
     speed: data.game.speed,
@@ -217,43 +241,51 @@ function savedGameDataToCardData(data: OnlineGameData): NowPlayingGame {
   }
 }
 
-function renderGame(g: NowPlayingGame, cDim: CardDim | undefined, cardStyle: Object) {
+function renderGame(
+  g: NowPlayingGame,
+  cDim: CardDim | undefined,
+  cardStyle: Object
+) {
   const icon = g.opponent.ai ? 'n' : utils.gameIcon(g.perf)
   const playerName = liPlayerName(g.opponent, false)
-  const cardClass = [
-    'card',
-    'standard',
-    g.color
-  ].join(' ')
+  const cardClass = ['card', 'standard', g.color].join(' ')
   const timeClass = [
     'timeIndication',
     g.isMyTurn ? 'myTurn' : 'opponentTurn'
   ].join(' ')
-  const oncreate = helper.isWideScreen() ?
-    helper.ontapY(() => joinGame(g)) :
-    helper.ontapX(() => joinGame(g))
+  const oncreate = helper.isWideScreen()
+    ? helper.ontapY(() => joinGame(g))
+    : helper.ontapX(() => joinGame(g))
 
-  return h('div', {
-    className: cardClass,
-    key: 'game.' + g.gameId,
-    style: cardStyle,
-    oncreate
-  }, [
-    renderViewOnlyBoard(g.fen, g.color, cDim, g.lastMove, g.variant.key),
-    h('div.infos', [
-      h('div.icon-game', { 'data-icon': icon || '' }),
-      h('div.description', [
-        h('h2.title', playerName),
-        h('p', [
-          h('span.variant', g.variant.name),
-          h('span', { className: timeClass }, timeLeft(g))
+  return h(
+    'div',
+    {
+      className: cardClass,
+      key: 'game.' + g.gameId,
+      style: cardStyle,
+      oncreate
+    },
+    [
+      renderViewOnlyBoard(g.fen, g.color, cDim, g.lastMove, g.variant.key),
+      h('div.infos', [
+        h('div.icon-game', { 'data-icon': icon || '' }),
+        h('div.description', [
+          h('h2.title', playerName),
+          h('p', [
+            h('span.variant', g.variant.name),
+            h('span', { className: timeClass }, timeLeft(g))
+          ])
         ])
       ])
-    ])
-  ])
+    ]
+  )
 }
 
-function renderIncomingChallenge(c: Challenge, cDim: CardDim | undefined, cardStyle: Object) {
+function renderIncomingChallenge(
+  c: Challenge,
+  cDim: CardDim | undefined,
+  cardStyle: Object
+) {
   if (!c.challenger) {
     return null
   }
@@ -264,7 +296,13 @@ function renderIncomingChallenge(c: Challenge, cDim: CardDim | undefined, cardSt
   const playerName = `${c.challenger.id} (${c.challenger.rating}${mark})`
 
   return h('div.card.standard.challenge', { style: cardStyle }, [
-    renderViewOnlyBoard(c.initialFen || standardFen, 'white', cDim, undefined, c.variant.key),
+    renderViewOnlyBoard(
+      c.initialFen || standardFen,
+      'white',
+      cDim,
+      undefined,
+      c.variant.key
+    ),
     h('div.infos', [
       h('div.icon-game', { 'data-icon': c.perf.icon }),
       h('div.description', [
@@ -275,14 +313,18 @@ function renderIncomingChallenge(c: Challenge, cDim: CardDim | undefined, cardSt
         ])
       ]),
       h('div.actions', [
-        h('button', { oncreate: helper.ontapX(() => acceptChallenge(c.id)) },
+        h(
+          'button',
+          { oncreate: helper.ontapX(() => acceptChallenge(c.id)) },
           i18n('accept')
         ),
-        h('button', {
-          oncreate: helper.ontapX(
-            helper.fadesOut(() => declineChallenge(c.id), '.card', 250)
-          )
-        },
+        h(
+          'button',
+          {
+            oncreate: helper.ontapX(
+              helper.fadesOut(() => declineChallenge(c.id), '.card', 250)
+            )
+          },
           i18n('decline')
         )
       ])
@@ -293,15 +335,17 @@ function renderIncomingChallenge(c: Challenge, cDim: CardDim | undefined, cardSt
 function renderAllGames(cDim?: CardDim) {
   const nowPlaying = session.nowPlaying()
   const challenges = challengesApi.incoming()
-  const cardStyle = cDim ? {
-    width: (cDim.w - cDim.margin * 2) + 'px',
-    height: cDim.h + 'px',
-    marginLeft: cDim.margin + 'px',
-    marginRight: cDim.margin + 'px'
-  } : {}
-  const nbCards = utils.hasNetwork() ?
-    challenges.length + nowPlaying.length + 1 :
-    getOfflineGames().length + 1
+  const cardStyle = cDim
+    ? {
+        width: cDim.w - cDim.margin * 2 + 'px',
+        height: cDim.h + 'px',
+        marginLeft: cDim.margin + 'px',
+        marginRight: cDim.margin + 'px'
+      }
+    : {}
+  const nbCards = utils.hasNetwork()
+    ? challenges.length + nowPlaying.length + 1
+    : getOfflineGames().length + 1
 
   let wrapperStyle: Object, wrapperWidth: number
   if (cDim) {
@@ -309,12 +353,13 @@ function renderAllGames(cDim?: CardDim) {
     // calcul is:
     // ((cardWidth + visible part of adjacent card) * nb of cards) +
     //   wrapper's marginLeft
-    wrapperWidth = ((cDim.w + cDim.margin * 2) * nbCards) +
-      (cDim.margin * 2)
-    wrapperStyle = helper.isWideScreen() ? {} : {
-      width: wrapperWidth + 'px',
-      marginLeft: (cDim.margin * 3) + 'px'
-    }
+    wrapperWidth = (cDim.w + cDim.margin * 2) * nbCards + cDim.margin * 2
+    wrapperStyle = helper.isWideScreen()
+      ? {}
+      : {
+          width: wrapperWidth + 'px',
+          marginLeft: cDim.margin * 3 + 'px'
+        }
   } else {
     wrapperStyle = {}
   }
@@ -323,7 +368,9 @@ function renderAllGames(cDim?: CardDim) {
     return renderIncomingChallenge(c, cDim, cardStyle)
   })
 
-  let allCards = challengesDom.concat(nowPlaying.map(g => renderGame(g, cDim, cardStyle)))
+  let allCards = challengesDom.concat(
+    nowPlaying.map(g => renderGame(g, cDim, cardStyle))
+  )
 
   if (!utils.hasNetwork()) {
     allCards = getOfflineGames().map(d => {
@@ -333,22 +380,26 @@ function renderAllGames(cDim?: CardDim) {
   }
 
   if (!helper.isWideScreen()) {
-    const newGameCard = h('div.card.standard', {
-      key: 'game.new-game',
-      style: cardStyle,
-      oncreate: helper.ontapX(() => {
-        close()
-        newGameForm.open()
-      })
-    }, [
-      renderViewOnlyBoard(standardFen, 'white', cDim),
-      h('div.infos', [
-        h('div.description', [
-          h('h2.title', i18n('createAGame')),
-          h('p', i18n('newOpponent'))
+    const newGameCard = h(
+      'div.card.standard',
+      {
+        key: 'game.new-game',
+        style: cardStyle,
+        oncreate: helper.ontapX(() => {
+          close()
+          newGameForm.open()
+        })
+      },
+      [
+        renderViewOnlyBoard(standardFen, 'white', cDim),
+        h('div.infos', [
+          h('div.description', [
+            h('h2.title', i18n('createAGame')),
+            h('p', i18n('newOpponent'))
+          ])
         ])
-      ])
-    ])
+      ]
+    )
 
     allCards.unshift(newGameCard)
   }

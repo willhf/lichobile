@@ -28,7 +28,12 @@ function pos2px(pos: BoardPos, bounds: Bounds) {
   return [(pos[0] - 0.5) * squareSize, (8.5 - pos[1]) * squareSize]
 }
 
-export function circle(brush: Brush, pos: BoardPos, current: boolean, bounds: Bounds) {
+export function circle(
+  brush: Brush,
+  pos: BoardPos,
+  current: boolean,
+  bounds: Bounds
+) {
   const o = pos2px(pos, bounds)
   const width = circleWidth(current, bounds)
   const radius = bounds.width / 16
@@ -45,7 +50,13 @@ export function circle(brush: Brush, pos: BoardPos, current: boolean, bounds: Bo
   )
 }
 
-export function arrow(brush: Brush, orig: BoardPos, dest: BoardPos, current: boolean, bounds: Bounds) {
+export function arrow(
+  brush: Brush,
+  orig: BoardPos,
+  dest: BoardPos,
+  current: boolean,
+  bounds: Bounds
+) {
   const margin = arrowMargin(current, bounds)
   const a = pos2px(orig, bounds)
   const b = pos2px(dest, bounds)
@@ -70,7 +81,12 @@ export function arrow(brush: Brush, orig: BoardPos, dest: BoardPos, current: boo
   )
 }
 
-export function piece(theme: string, pos: BoardPos, piece: Piece, bounds: Bounds) {
+export function piece(
+  theme: string,
+  pos: BoardPos,
+  piece: Piece,
+  bounds: Bounds
+) {
   const o = pos2px(pos, bounds)
   const size = bounds.width / 8
   let name = piece.color === 'white' ? 'w' : 'b'
@@ -83,7 +99,7 @@ export function piece(theme: string, pos: BoardPos, piece: Piece, bounds: Bounds
       y: o[1] - size / 2,
       width: size,
       height: size,
-      'xlink:href': href,
+      'xlink:href': href
     }
   }
 }
@@ -116,25 +132,33 @@ export function orient(pos: BoardPos, color: Color): [number, number] {
 export function renderShape(
   orientation: Color,
   current: boolean,
-  brushes: {[key: string]: Brush},
+  brushes: { [key: string]: Brush },
   bounds: Bounds,
   pieceTheme: string
 ) {
   return function(shape: Shape) {
-    if (shape.piece) return piece(
-      pieceTheme,
-      orient(key2pos(shape.orig), orientation),
-      shape.piece,
-      bounds)
-    if (shape.orig && shape.dest) return arrow(
-      brushes[shape.brush],
-      orient(key2pos(shape.orig), orientation),
-      orient(key2pos(shape.dest), orientation),
-      current, bounds)
-    else if (shape.orig) return circle(
-      brushes[shape.brush],
-      orient(key2pos(shape.orig), orientation),
-      current, bounds)
+    if (shape.piece)
+      return piece(
+        pieceTheme,
+        orient(key2pos(shape.orig), orientation),
+        shape.piece,
+        bounds
+      )
+    if (shape.orig && shape.dest)
+      return arrow(
+        brushes[shape.brush],
+        orient(key2pos(shape.orig), orientation),
+        orient(key2pos(shape.dest), orientation),
+        current,
+        bounds
+      )
+    else if (shape.orig)
+      return circle(
+        brushes[shape.brush],
+        orient(key2pos(shape.orig), orientation),
+        current,
+        bounds
+      )
     else return null
   }
 }

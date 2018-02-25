@@ -18,55 +18,61 @@ function IncrementClock(time: number, increment: number, onFlag: () => void) {
 export default {
   none: () => null,
 
-  simple: () => SimpleClock(
-    Number(settings.clock.simple.time()) * MINUTE_MILLIS,
-    noop
-  ),
+  simple: () =>
+    SimpleClock(Number(settings.clock.simple.time()) * MINUTE_MILLIS, noop),
 
-  increment: () => IncrementClock(
-    Number(settings.clock.increment.time()) * MINUTE_MILLIS,
-    Number(settings.clock.increment.increment()) * MILLIS,
-    noop
-  ),
+  increment: () =>
+    IncrementClock(
+      Number(settings.clock.increment.time()) * MINUTE_MILLIS,
+      Number(settings.clock.increment.increment()) * MILLIS,
+      noop
+    ),
 
-  handicapInc: () => HandicapIncClock(
-    Number(settings.clock.handicapInc.topTime()) * MINUTE_MILLIS,
-    Number(settings.clock.handicapInc.topIncrement()) * MILLIS,
-    Number(settings.clock.handicapInc.bottomTime()) * MINUTE_MILLIS,
-    Number(settings.clock.handicapInc.bottomIncrement()) * MILLIS,
-    noop,
-    true
-  ),
+  handicapInc: () =>
+    HandicapIncClock(
+      Number(settings.clock.handicapInc.topTime()) * MINUTE_MILLIS,
+      Number(settings.clock.handicapInc.topIncrement()) * MILLIS,
+      Number(settings.clock.handicapInc.bottomTime()) * MINUTE_MILLIS,
+      Number(settings.clock.handicapInc.bottomIncrement()) * MILLIS,
+      noop,
+      true
+    ),
 
-  delay: () => DelayClock(
-    Number(settings.clock.delay.time()) * MINUTE_MILLIS,
-    Number(settings.clock.delay.increment()) * MILLIS,
-    noop,
-    true
-  ),
+  delay: () =>
+    DelayClock(
+      Number(settings.clock.delay.time()) * MINUTE_MILLIS,
+      Number(settings.clock.delay.increment()) * MILLIS,
+      noop,
+      true
+    ),
 
-  bronstein: () => BronsteinClock(
-    Number(settings.clock.bronstein.time()) * MINUTE_MILLIS,
-    Number(settings.clock.bronstein.increment()) * MILLIS,
-    noop,
-    true
-  ),
+  bronstein: () =>
+    BronsteinClock(
+      Number(settings.clock.bronstein.time()) * MINUTE_MILLIS,
+      Number(settings.clock.bronstein.increment()) * MILLIS,
+      noop,
+      true
+    ),
 
-  hourglass: () => HourglassClock(
-    Number(settings.clock.hourglass.time()) * MINUTE_MILLIS,
-    noop,
-    true
-  ),
+  hourglass: () =>
+    HourglassClock(
+      Number(settings.clock.hourglass.time()) * MINUTE_MILLIS,
+      noop,
+      true
+    ),
 
-  stage: () => StageClock(
-    settings.clock.stage.stages().map((s: { time: string, moves: string }) => {
-      return {
-        time: Number(s.time),
-        moves: s.moves !== null ? Number(s.moves) : null
-      }
-    }),
-    Number(settings.clock.stage.increment()) * MILLIS,
-    noop,
-    true
-  )
+  stage: () =>
+    StageClock(
+      settings.clock.stage
+        .stages()
+        .map((s: { time: string; moves: string }) => {
+          return {
+            time: Number(s.time),
+            moves: s.moves !== null ? Number(s.moves) : null
+          }
+        }),
+      Number(settings.clock.stage.increment()) * MILLIS,
+      noop,
+      true
+    )
 }

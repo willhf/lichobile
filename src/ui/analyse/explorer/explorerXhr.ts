@@ -10,7 +10,12 @@ export interface OpeningConf {
   ratings?: number[]
 }
 
-export function openingXhr(variant: VariantKey, fen: string, config: OpeningConf, withGames: boolean): Promise<ExplorerData> {
+export function openingXhr(
+  variant: VariantKey,
+  fen: string,
+  config: OpeningConf,
+  withGames: boolean
+): Promise<ExplorerData> {
   let url: string
   const params: any = {
     fen,
@@ -29,16 +34,19 @@ export function openingXhr(variant: VariantKey, fen: string, config: OpeningConf
   }
   return fetchJSON(explorerEndpoint + url, {
     headers: {
-      'Accept': 'application/json, text/*'
+      Accept: 'application/json, text/*'
     },
     query: params
   })
 }
 
-export function tablebaseXhr(variant: VariantKey, fen: string): Promise<ExplorerData> {
+export function tablebaseXhr(
+  variant: VariantKey,
+  fen: string
+): Promise<ExplorerData> {
   return fetchJSON(tablebaseEndpoint + '/' + variant, {
     headers: {
-      'Accept': 'application/json, text/*'
+      Accept: 'application/json, text/*'
     },
     query: {
       fen: fen

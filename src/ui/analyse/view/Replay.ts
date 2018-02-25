@@ -18,18 +18,27 @@ export default {
   view({ attrs }) {
     const { ctrl } = attrs
     pieceNotation = pieceNotation || settings.game.pieceNotation()
-    const replayClass = 'analyse-replay native_scroller' + (pieceNotation ? ' displayPieces' : '')
-    return h('div#replay.analyse-replay.native_scroller', {
-      className: replayClass,
-      oncreate: helper.ontapXY(e => onReplayTap(ctrl, e), (e: TouchEvent) => {
-        const el = getMoveEl(e!)
-        const ds = el.dataset as ReplayDataSet
-        if (el && ds.path) {
-          ctrl.contextMenu = ds.path
-          redraw()
-        }
-      }, getMoveEl)
-    }, renderTree(ctrl))
+    const replayClass =
+      'analyse-replay native_scroller' + (pieceNotation ? ' displayPieces' : '')
+    return h(
+      'div#replay.analyse-replay.native_scroller',
+      {
+        className: replayClass,
+        oncreate: helper.ontapXY(
+          e => onReplayTap(ctrl, e),
+          (e: TouchEvent) => {
+            const el = getMoveEl(e!)
+            const ds = el.dataset as ReplayDataSet
+            if (el && ds.path) {
+              ctrl.contextMenu = ds.path
+              redraw()
+            }
+          },
+          getMoveEl
+        )
+      },
+      renderTree(ctrl)
+    )
   }
 } as Mithril.Component<{ ctrl: AnalyseCtrl }, {}>
 
@@ -41,7 +50,8 @@ function onReplayTap(ctrl: AnalyseCtrl, e: Event) {
 }
 
 function getMoveEl(e: Event) {
-  const target = (e.target as HTMLElement)
-  return target.tagName === 'MOVE' ? target :
-    helper.findParentBySelector(target, 'move')
+  const target = e.target as HTMLElement
+  return target.tagName === 'MOVE'
+    ? target
+    : helper.findParentBySelector(target, 'move')
 }

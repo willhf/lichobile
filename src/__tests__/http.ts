@@ -9,7 +9,7 @@ const testConfig = {
 // must be before import
 jest.mock('../config', () => {
   return {
-    'default': testConfig
+    default: testConfig
   }
 })
 
@@ -25,7 +25,6 @@ beforeAll(() => {
 
 describe('HTTP fetch wrapper', () => {
   test('if response ok, fetchJSON returns extracted json body', async () => {
-
     global.fetch = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         status: 200,
@@ -36,7 +35,9 @@ describe('HTTP fetch wrapper', () => {
       })
     })
 
-    await expect(http.fetchJSON('/api/hello')).resolves.toEqual({ data: 'hello' })
+    await expect(http.fetchJSON('/api/hello')).resolves.toEqual({
+      data: 'hello'
+    })
   })
 
   test('if response ok, fetchText returns text', async () => {
@@ -54,34 +55,35 @@ describe('HTTP fetch wrapper', () => {
   })
 
   test('if response not ok, extract JSON or fallback to text', async () => {
-    global.fetch = jest.fn()
-    .mockImplementationOnce(() => {
-      const body = '{ "error": "bad" }'
-      return Promise.resolve({
-        status: 401,
-        ok: false,
-        json() {
-          return Promise.resolve().then(() => JSON.parse(body))
-        },
-        text() {
-          return Promise.resolve().then(() => body)
-        }
+    global.fetch = jest
+      .fn()
+      .mockImplementationOnce(() => {
+        const body = '{ "error": "bad" }'
+        return Promise.resolve({
+          status: 401,
+          ok: false,
+          json() {
+            return Promise.resolve().then(() => JSON.parse(body))
+          },
+          text() {
+            return Promise.resolve().then(() => body)
+          }
+        })
       })
-    })
-    .mockImplementationOnce(() => {
-      const body = 'bad'
-      return Promise.resolve({
-        status: 400,
-        statusText: 'Bad request',
-        ok: false,
-        json() {
-          return Promise.resolve().then(() => JSON.parse(body))
-        },
-        text() {
-          return Promise.resolve().then(() => body)
-        }
+      .mockImplementationOnce(() => {
+        const body = 'bad'
+        return Promise.resolve({
+          status: 400,
+          statusText: 'Bad request',
+          ok: false,
+          json() {
+            return Promise.resolve().then(() => JSON.parse(body))
+          },
+          text() {
+            return Promise.resolve().then(() => body)
+          }
+        })
       })
-    })
 
     await expect(http.fetchText('/api/hello')).rejects.toEqual({
       status: 401,
@@ -107,14 +109,18 @@ describe('HTTP fetch wrapper', () => {
 
   test('will reject on timeout', async () => {
     global.fetch = jest.fn().mockImplementation(() => {
-      return new Promise((resolve) => {
-        setTimeout(() => resolve({
-          status: 200,
-          ok: true,
-          json() {
-            return Promise.resolve({ data: 'hello' })
-          }
-        }), testConfig.fetchTimeoutMs + 100)
+      return new Promise(resolve => {
+        setTimeout(
+          () =>
+            resolve({
+              status: 200,
+              ok: true,
+              json() {
+                return Promise.resolve({ data: 'hello' })
+              }
+            }),
+          testConfig.fetchTimeoutMs + 100
+        )
       })
     })
 
@@ -144,7 +150,7 @@ describe('HTTP fetch wrapper', () => {
       credentials: 'include',
       headers: new Headers({
         'X-Requested-With': 'XMLHttpRequest',
-        'Accept': 'application/vnd.lichess.v1+json'
+        Accept: 'application/vnd.lichess.v1+json'
       })
     })
   })
@@ -160,7 +166,9 @@ describe('HTTP fetch wrapper', () => {
     })
 
     expect(global.fetch.mock.calls.length).toBe(1)
-    expect(global.fetch.mock.calls[0][0]).toBe('http://test.org/api/test?q=text%20url%20encoded&v=1234')
+    expect(global.fetch.mock.calls[0][0]).toBe(
+      'http://test.org/api/test?q=text%20url%20encoded&v=1234'
+    )
   })
 
   test('POST request call fetch with correct opts', () => {
@@ -174,7 +182,7 @@ describe('HTTP fetch wrapper', () => {
       credentials: 'include',
       headers: new Headers({
         'X-Requested-With': 'XMLHttpRequest',
-        'Accept': 'application/vnd.lichess.v1+json',
+        Accept: 'application/vnd.lichess.v1+json',
         'Content-Type': 'application/json; charset=UTF-8'
       }),
       body: '{}'

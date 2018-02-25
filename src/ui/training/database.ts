@@ -1,9 +1,13 @@
 import asyncStorage from '../../asyncStorage'
-import { PuzzleOutcome, PuzzleData, UserData } from '../../lichess/interfaces/training'
+import {
+  PuzzleOutcome,
+  PuzzleData,
+  UserData
+} from '../../lichess/interfaces/training'
 
 const db = {
   fetch,
-  save,
+  save
 }
 
 export default db
@@ -22,18 +26,19 @@ type OfflineData = {
 }
 
 function fetch(userId: UserId): Promise<UserOfflineData | null> {
-  return asyncStorage.getItem<OfflineData>('trainingOfflinePuzzles')
-  .then(data => {
-    return data && data[userId] || null
-  })
+  return asyncStorage
+    .getItem<OfflineData>('trainingOfflinePuzzles')
+    .then(data => {
+      return (data && data[userId]) || null
+    })
 }
 
 function save(userId: UserId, userData: UserOfflineData): Promise<OfflineData> {
-  return asyncStorage.getItem<OfflineData>('trainingOfflinePuzzles')
-  .then(data => {
-    const map: OfflineData = data || {}
-    map[userId] = userData
-    return asyncStorage.setItem('trainingOfflinePuzzles', map)
-  })
+  return asyncStorage
+    .getItem<OfflineData>('trainingOfflinePuzzles')
+    .then(data => {
+      const map: OfflineData = data || {}
+      map[userId] = userData
+      return asyncStorage.setItem('trainingOfflinePuzzles', map)
+    })
 }
-

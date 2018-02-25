@@ -4,7 +4,11 @@ import socket from '../../../socket'
 import redraw from '../../../utils/redraw'
 import * as utils from '../../../utils'
 import * as tournamentApi from '../../../lichess/tournament'
-import { Tournament, StandingPlayer, StandingPage } from '../../../lichess/interfaces/tournament'
+import {
+  Tournament,
+  StandingPlayer,
+  StandingPage
+} from '../../../lichess/interfaces/tournament'
 
 import * as xhr from '../tournamentXhr'
 import faq, { FaqCtrl } from '../faq'
@@ -38,74 +42,79 @@ export default class TournamentCtrl {
     this.faqCtrl = faq.controller(this)
     this.playerInfoCtrl = playerInfo.controller(this)
 
-    xhr.tournament(id)
-    .then(data => {
-      this.tournament = data
-      this.page = this.tournament.standing.page
-      this.loadCurrentPage(this.tournament.standing)
-      this.hasJoined = !!(data.me && !data.me.withdraw)
-      this.focusOnMe = tournamentApi.isIn(this.tournament)
-      this.scrollToMe()
-      const featuredGame = data.featured ? data.featured.id : undefined
-      socket.createTournament(
-        this.id,
-        this.tournament.socketVersion,
-        socketHandler(this),
-        featuredGame
-      )
-      redraw()
-    })
-    .catch((err: ErrorResponse) => {
-      if (err.status === 404) {
-        this.notFound = true
+    xhr
+      .tournament(id)
+      .then(data => {
+        this.tournament = data
+        this.page = this.tournament.standing.page
+        this.loadCurrentPage(this.tournament.standing)
+        this.hasJoined = !!(data.me && !data.me.withdraw)
+        this.focusOnMe = tournamentApi.isIn(this.tournament)
+        this.scrollToMe()
+        const featuredGame = data.featured ? data.featured.id : undefined
+        socket.createTournament(
+          this.id,
+          this.tournament.socketVersion,
+          socketHandler(this),
+          featuredGame
+        )
         redraw()
-      } else {
-        utils.handleXhrError(err)
-      }
-    })
+      })
+      .catch((err: ErrorResponse) => {
+        if (err.status === 404) {
+          this.notFound = true
+          redraw()
+        } else {
+          utils.handleXhrError(err)
+        }
+      })
   }
 
   join = throttle((password?: string) => {
-    xhr.join(this.tournament.id, password)
-    .then(() => {
-      this.hasJoined = true
-      this.focusOnMe = true
-      redraw()
-    })
-    .catch(utils.handleXhrError)
+    xhr
+      .join(this.tournament.id, password)
+      .then(() => {
+        this.hasJoined = true
+        this.focusOnMe = true
+        redraw()
+      })
+      .catch(utils.handleXhrError)
   }, 1000)
 
   withdraw = throttle(() => {
-    xhr.withdraw(this.tournament.id)
-    .then(() => {
-      this.hasJoined = false
-      this.focusOnMe = false
-      redraw()
-    })
-    .catch(utils.handleXhrError)
+    xhr
+      .withdraw(this.tournament.id)
+      .then(() => {
+        this.hasJoined = false
+        this.focusOnMe = false
+        redraw()
+      })
+      .catch(utils.handleXhrError)
   }, 1000)
 
   reload = throttle(() => {
-    xhr.reload(this.id, this.focusOnMe ? this.page : undefined)
-    .then(this.onReload)
-    .catch(this.onXhrError)
+    xhr
+      .reload(this.id, this.focusOnMe ? this.page : undefined)
+      .then(this.onReload)
+      .catch(this.onXhrError)
   }, 2000)
 
   loadPage = throttle((page: number) => {
-    xhr.loadPage(this.id, page)
-    .then((data: StandingPage) => {
-      this.isLoadingPage = false
-      if (this.page === data.page) {
-        this.loadCurrentPage(data)
-      } else {
-        this.setPageCache(data)
-      }
-      redraw()
-    })
-    .catch(err => {
-      this.isLoadingPage = false
-      this.onXhrError(err)
-    })
+    xhr
+      .loadPage(this.id, page)
+      .then((data: StandingPage) => {
+        this.isLoadingPage = false
+        if (this.page === data.page) {
+          this.loadCurrentPage(data)
+        } else {
+          this.setPageCache(data)
+        }
+        redraw()
+      })
+      .catch(err => {
+        this.isLoadingPage = false
+        this.onXhrError(err)
+      })
   }, 1000)
 
   first = () => {
@@ -123,7 +132,8 @@ export default class TournamentCtrl {
 
   last = () => {
     const nbPlayers = this.tournament.nbPlayers
-    if (this.page < nbPlayers / MAX_PER_PAGE) this.userSetPage(Math.ceil(nbPlayers / MAX_PER_PAGE))
+    if (this.page < nbPlayers / MAX_PER_PAGE)
+      this.userSetPage(Math.ceil(nbPlayers / MAX_PER_PAGE))
   }
 
   toggleFocusOnMe = () => {
@@ -134,9 +144,9 @@ export default class TournamentCtrl {
   }
 
   myPage = (): number | undefined => {
-    return (this.tournament.me) ?
-      Math.floor((this.tournament.me.rank - 1) / MAX_PER_PAGE) + 1 :
-      undefined
+    return this.tournament.me
+      ? Math.floor((this.tournament.me.rank - 1) / MAX_PER_PAGE) + 1
+      : undefined
   }
 
   private scrollToMe = () => {
@@ -173,10 +183,19 @@ export default class TournamentCtrl {
 
   private onReload = (data: Tournament) => {
     const oldData = this.tournament
-    if (data.featured && (!oldData || !oldData.featured || (data.featured.id !== oldData.featured.id))) {
+    if (
+      data.featured &&
+      (!oldData ||
+        !oldData.featured ||
+        data.featured.id !== oldData.featured.id)
+    ) {
       socket.send('startWatching', data.featured.id)
-    }
-    else if (data.featured && (!oldData || !oldData.featured || (data.featured.id === oldData.featured.id))) {
+    } else if (
+      data.featured &&
+      (!oldData ||
+        !oldData.featured ||
+        data.featured.id === oldData.featured.id)
+    ) {
       data.featured = oldData.featured
     }
     this.tournament = data

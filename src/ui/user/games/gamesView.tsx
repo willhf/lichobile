@@ -10,17 +10,20 @@ import spinner from '../../../spinner'
 import GameItem from '../../shared/GameItem'
 import gameStatus from '../../../lichess/status'
 
-import { IUserGamesCtrl, } from './UserGamesCtrl'
+import { IUserGamesCtrl } from './UserGamesCtrl'
 
 export function renderBody(ctrl: IUserGamesCtrl) {
   return (
     <div className="userGamesWrapper">
       <div className="select_input select_games_filter">
-        <label htmlFor="filterGames"></label>
+        <label htmlFor="filterGames" />
         <select id="filterGames" onchange={ctrl.onFilterChange}>
           {ctrl.scrollState.availableFilters.map(f => {
             return (
-              <option value={f.key} selected={ctrl.scrollState.currentFilter === f.key}>
+              <option
+                value={f.key}
+                selected={ctrl.scrollState.currentFilter === f.key}
+              >
                 {utils.capitalize(i18n(f.label).replace('%s ', ''))} ({f.count})
               </option>
             )
@@ -34,7 +37,7 @@ export function renderBody(ctrl: IUserGamesCtrl) {
 }
 
 function getButton(e: Event): HTMLElement | undefined {
-  const target = (e.target as HTMLElement)
+  const target = e.target as HTMLElement
   return target.tagName === 'BUTTON' ? target : undefined
 }
 
@@ -52,10 +55,14 @@ function onTap(ctrl: IUserGamesCtrl, e: Event) {
       const g = ctrl.scrollState.games.find(game => game.id === id)
       const userId = ctrl.scrollState.userId
       if (g) {
-        const userColor: Color = g.players.white.userId === userId ? 'white' : 'black'
+        const userColor: Color =
+          g.players.white.userId === userId ? 'white' : 'black'
         positionsCache.set(g.id, { fen: g.fen, orientation: userColor })
         const mePlaying = session.getUserId() === userId
-        if (mePlaying || (g.source !== 'import' && g.status.id < gameStatus.ids.aborted)) {
+        if (
+          mePlaying ||
+          (g.source !== 'import' && g.status.id < gameStatus.ids.aborted)
+        ) {
           router.set(`/game/${id}/${userColor}?goingBack=1`)
         } else {
           router.set(`/analyse/online/${id}/${userColor}?curFen=${g.fen}`)
@@ -65,34 +72,33 @@ function onTap(ctrl: IUserGamesCtrl, e: Event) {
   }
 }
 
-
 function renderAllGames(ctrl: IUserGamesCtrl) {
-  const { games  } = ctrl.scrollState
+  const { games } = ctrl.scrollState
   return (
-    <div id="scroller-wrapper" className="native_scroller userGame-scroller"
+    <div
+      id="scroller-wrapper"
+      className="native_scroller userGame-scroller"
       oncreate={helper.ontapY(e => onTap(ctrl, e!), undefined, helper.getLI)}
       onscroll={throttle(ctrl.onScroll, 30)}
     >
-      { games.length ?
+      {games.length ? (
         <ul className="userGames" oncreate={ctrl.onGamesLoaded}>
-          { games.map((g, i) =>
-              h(GameItem, {
-                key: g.id,
-                g,
-                index: i,
-                boardTheme: ctrl.boardTheme,
-                userId: ctrl.scrollState.userId
-              })
-            )
-          }
-          {ctrl.scrollState.isLoadingNextPage ?
-          <li className="list_item loadingNext">loading...</li> : null
-          }
-        </ul> :
-        <div className="userGame-loader">
-          {spinner.getVdom('monochrome')}
-        </div>
-      }
+          {games.map((g, i) =>
+            h(GameItem, {
+              key: g.id,
+              g,
+              index: i,
+              boardTheme: ctrl.boardTheme,
+              userId: ctrl.scrollState.userId
+            })
+          )}
+          {ctrl.scrollState.isLoadingNextPage ? (
+            <li className="list_item loadingNext">loading...</li>
+          ) : null}
+        </ul>
+      ) : (
+        <div className="userGame-loader">{spinner.getVdom('monochrome')}</div>
+      )}
     </div>
   )
 }

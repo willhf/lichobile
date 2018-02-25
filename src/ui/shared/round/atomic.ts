@@ -11,8 +11,9 @@ function capture(chessgroundCtrl: Chessground, key: Key) {
       const k = pos2key([orig[0] + x, orig[1] + y] as cg.Pos)
       if (k) {
         exploding.push(k)
-        const explodes = chessgroundCtrl.state.pieces[k] && (
-          k === key || chessgroundCtrl.state.pieces[k].role !== 'pawn')
+        const explodes =
+          chessgroundCtrl.state.pieces[k] &&
+          (k === key || chessgroundCtrl.state.pieces[k].role !== 'pawn')
         if (explodes) diff[k] = null
       }
     }

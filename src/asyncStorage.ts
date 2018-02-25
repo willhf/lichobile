@@ -3,12 +3,12 @@ import * as localForage from 'localforage'
 const appStore = localForage.createInstance({
   // driver: localForage.INDEXEDDB,
   name: 'AppStore',
-  version: 1.0,
+  version: 1.0
 })
 
 const keyRegistry = {
   session: 'session',
-  trainingOfflinePuzzles: 'training.offlinePuzzles',
+  trainingOfflinePuzzles: 'training.offlinePuzzles'
 }
 
 type Key = keyof typeof keyRegistry

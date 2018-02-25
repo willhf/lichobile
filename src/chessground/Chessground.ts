@@ -30,15 +30,17 @@ export default class Chessground {
     this.dom = {
       board,
       elements: {},
-      bounds: this.state.fixed ? {
-        // dummy bounds since fixed board doesn't use bounds
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 0,
-        width: 0
-      } : wrapper.getBoundingClientRect()
+      bounds: this.state.fixed
+        ? {
+            // dummy bounds since fixed board doesn't use bounds
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 0,
+            width: 0
+          }
+        : wrapper.getBoundingClientRect()
     }
 
     this.redrawSync()
@@ -60,14 +62,16 @@ export default class Chessground {
     }
 
     if (this.state.coordinates) {
-      makeCoords((wrapper), !!this.state.symmetricCoordinates)
+      makeCoords(wrapper, !!this.state.symmetricCoordinates)
       if (this.state.symmetricCoordinates) {
         makeSymmCoords(wrapper)
       }
     }
 
     if (!isViewOnly) {
-      board.addEventListener('touchstart', (e: TouchEvent) => drag.start(this, e))
+      board.addEventListener('touchstart', (e: TouchEvent) =>
+        drag.start(this, e)
+      )
       board.addEventListener('touchmove', (e: TouchEvent) => drag.move(this, e))
       board.addEventListener('touchend', (e: TouchEvent) => drag.end(this, e))
       board.addEventListener('touchcancel', () => drag.cancel(this))
@@ -109,7 +113,7 @@ export default class Chessground {
     const piecesKeys = Object.keys(this.state.pieces)
     for (let i = 0; i < piecesKeys.length; i++) {
       const p = this.state.pieces[piecesKeys[i]]
-      counts[p.role] += (p.color === 'white') ? 1 : -1
+      counts[p.role] += p.color === 'white' ? 1 : -1
     }
     const diff: cg.MaterialDiff = {
       white: {},
@@ -157,7 +161,12 @@ export default class Chessground {
     }
   }
 
-  apiMove(orig: Key, dest: Key, pieces?: cg.PiecesDiff, config?: cg.SetConfig): void {
+  apiMove(
+    orig: Key,
+    dest: Key,
+    pieces?: cg.PiecesDiff,
+    config?: cg.SetConfig
+  ): void {
     anim(state => {
       board.apiMove(state, orig, dest)
 
@@ -168,7 +177,6 @@ export default class Chessground {
       if (config) {
         setNewBoardState(state, config)
       }
-
     }, this)
   }
 
@@ -182,7 +190,6 @@ export default class Chessground {
   }
 
   playPremove = (): boolean => {
-
     if (this.state.premovable.current) {
       if (anim(board.playPremove, this)) return true
       // if the premove couldn't be played, redraw to clear it up
@@ -192,7 +199,6 @@ export default class Chessground {
   }
 
   playPredrop = (validate: (d: cg.Drop) => boolean): boolean => {
-
     if (this.state.predroppable.current) {
       const result = board.playPredrop(this.state, validate)
       this.redraw()

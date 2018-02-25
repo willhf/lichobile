@@ -133,7 +133,7 @@ export function makeDefaults(): State {
       distance: 3,
       magnified: true,
       centerPiece: false,
-    preventDefault: true,
+      preventDefault: true,
       showGhost: true,
       deleteOnDropOff: false,
       current: null

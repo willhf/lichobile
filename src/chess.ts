@@ -5,7 +5,7 @@ import { VariantKey, Variant } from './lichess/interfaces/variant'
 const worker = new Worker('vendor/scalachess.js')
 
 // warmup
-worker.postMessage({ topic: 'init', payload: { variant: 'standard'}})
+worker.postMessage({ topic: 'init', payload: { variant: 'standard' } })
 
 export interface GameSituation {
   id: string
@@ -135,7 +135,9 @@ export function dests(payload: DestsRequest): Promise<DestsResponse> {
   return askWorker(worker, { topic: 'dests', payload, reqid: uniqId() })
 }
 
-export function situation(payload: SituationRequest): Promise<SituationResponse> {
+export function situation(
+  payload: SituationRequest
+): Promise<SituationResponse> {
   return askWorker(worker, { topic: 'situation', payload, reqid: uniqId() })
 }
 
@@ -147,7 +149,9 @@ export function drop(payload: DropRequest): Promise<MoveResponse> {
   return askWorker(worker, { topic: 'drop', payload, reqid: uniqId() })
 }
 
-export function threefoldTest(payload: ThreefoldTestRequest): Promise<ThreefoldTestResponse> {
+export function threefoldTest(
+  payload: ThreefoldTestRequest
+): Promise<ThreefoldTestResponse> {
   return askWorker(worker, { topic: 'threefoldTest', payload })
 }
 

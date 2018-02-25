@@ -8,15 +8,27 @@ import * as h from 'mithril/hyperscript'
 function renderBody() {
   return [
     h('ul.native_scroller.page.settings_list.game', [
-      h('li.list_item.nav', {
-        oncreate: helper.ontapY(() => router.set('/settings/gameBehavior'))
-      }, i18n('gameBehavior')),
-      h('li.list_item.nav', {
-        oncreate: helper.ontapY(() => router.set('/settings/privacy'))
-      }, i18n('privacy')),
-      h('li.list_item.nav', {
-        oncreate: helper.ontapY(() => router.set('/settings/kidMode'))
-      }, 'Kid mode')
+      h(
+        'li.list_item.nav',
+        {
+          oncreate: helper.ontapY(() => router.set('/settings/gameBehavior'))
+        },
+        i18n('gameBehavior')
+      ),
+      h(
+        'li.list_item.nav',
+        {
+          oncreate: helper.ontapY(() => router.set('/settings/privacy'))
+        },
+        i18n('privacy')
+      ),
+      h(
+        'li.list_item.nav',
+        {
+          oncreate: helper.ontapY(() => router.set('/settings/kidMode'))
+        },
+        'Kid mode'
+      )
     ])
   ]
 }

@@ -9,7 +9,9 @@ import pasteFenPopup from './pasteFenPopup'
 import { validateFen } from '../../utils/fen'
 import { loadLocalJsonFile } from '../../utils'
 import { batchRequestAnimationFrame } from '../../utils/batchRAF'
-import continuePopup, { Controller as ContinuePopupCtrl } from '../shared/continuePopup'
+import continuePopup, {
+  Controller as ContinuePopupCtrl
+} from '../shared/continuePopup'
 import i18n from '../../i18n'
 import drag from './drag'
 import * as stream from 'mithril/stream'
@@ -76,22 +78,27 @@ export default class Editor {
     this.positions = stream([])
     this.endgamesPositions = stream([])
 
-    this.extraPositions = [{
-      fen: startingFen,
-      name: i18n('startPosition')
-    }, {
-      fen: '8/8/8/8/8/8/8/8 w - - 0 1',
-      name: i18n('clearBoard')
-    }]
+    this.extraPositions = [
+      {
+        fen: startingFen,
+        name: i18n('startPosition')
+      },
+      {
+        fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+        name: i18n('clearBoard')
+      }
+    ]
 
     Promise.all([
       loadLocalJsonFile<Array<BoardPositionCategory>>('data/positions.json'),
       loadLocalJsonFile<Array<BoardPosition>>('data/endgames.json')
-    ])
-    .then(([openings, endgames]) => {
+    ]).then(([openings, endgames]) => {
       this.positions(
-        openings.reduce((acc: Array<BoardPosition>, c: BoardPositionCategory) =>
-          acc.concat(c.positions), [])
+        openings.reduce(
+          (acc: Array<BoardPosition>, c: BoardPositionCategory) =>
+            acc.concat(c.positions),
+          []
+        )
       )
       this.endgamesPositions(endgames)
       redraw()
@@ -138,7 +145,9 @@ export default class Editor {
       const path = `/editor/${encodeURIComponent(newFen)}`
       try {
         window.history.replaceState(window.history.state, '', '?=' + path)
-      } catch (e) { console.error(e) }
+      } catch (e) {
+        console.error(e)
+      }
     }
   }, 250)
 
@@ -171,8 +180,7 @@ export default class Editor {
   public loadNewFen = (newFen: string) => {
     if (validateFen(newFen))
       router.set(`/editor/${encodeURIComponent(newFen)}`, true)
-    else
-      window.plugins.toast.show('Invalid FEN', 'short', 'center')
+    else window.plugins.toast.show('Invalid FEN', 'short', 'center')
   }
 
   private fenMetadatas() {
@@ -181,7 +189,17 @@ export default class Editor {
     Object.keys(data.castles).forEach(function(piece) {
       if (data.castles[piece]()) castlesStr += piece
     })
-    return data.color() + ' ' + (castlesStr.length ? castlesStr : '-') + ' ' + data.enpassant() + ' ' + data.halfmove() + ' ' + data.moves()
+    return (
+      data.color() +
+      ' ' +
+      (castlesStr.length ? castlesStr : '-') +
+      ' ' +
+      data.enpassant() +
+      ' ' +
+      data.halfmove() +
+      ' ' +
+      data.moves()
+    )
   }
 
   private readFen(fen: string): EditorData {

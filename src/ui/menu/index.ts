@@ -38,14 +38,10 @@ export function open() {
     Zanimo(bd, 'visibility', 'visible', 0),
     Zanimo(bd, 'opacity', 0.5, 250, 'linear'),
     Zanimo(el, 'visibility', 'visible', 0),
-    Zanimo(
-      el,
-      'transform',
-      'translate3d(0,0,0)', 250, 'ease-out'
-    )
+    Zanimo(el, 'transform', 'translate3d(0,0,0)', 250, 'ease-out')
   ])
-  .then(redraw)
-  .catch(console.log.bind(console))
+    .then(redraw)
+    .catch(console.log.bind(console))
 }
 
 export function close(fromBB?: string) {
@@ -60,19 +56,15 @@ export function close(fromBB?: string) {
   const bd = document.getElementById('menu-close-overlay')
   return Promise.all([
     Zanimo(bd, 'opacity', 0, 250, 'linear'),
-    Zanimo(
-      el,
-      'transform',
-      'translate3d(-100%,0,0)', 250, 'ease-out'
-    )
+    Zanimo(el, 'transform', 'translate3d(-100%,0,0)', 250, 'ease-out')
   ])
-  .then(() =>
-    Promise.all([
-      Zanimo(el, 'visibility', 'hidden', 0),
-      Zanimo(bd, 'visibility', 'hidden', 0)
-    ])
-  )
-  .catch(console.log.bind(console))
+    .then(() =>
+      Promise.all([
+        Zanimo(el, 'visibility', 'hidden', 0),
+        Zanimo(bd, 'visibility', 'hidden', 0)
+      ])
+    )
+    .catch(console.log.bind(console))
 }
 
 export function route(route: string) {
@@ -91,10 +83,9 @@ export function popup(action: () => void) {
 }
 
 export function toggleHeader() {
-  inboxXhr.inbox(false)
-  .then(data => {
-    inboxUnreadCount(data.currentPageResults.reduce((acc, x) =>
-      (acc + (x.isUnread ? 1 : 0)), 0)
+  inboxXhr.inbox(false).then(data => {
+    inboxUnreadCount(
+      data.currentPageResults.reduce((acc, x) => acc + (x.isUnread ? 1 : 0), 0)
     )
     redraw()
   })
@@ -103,8 +94,7 @@ export function toggleHeader() {
 
 export function getServerLags() {
   if (hasNetwork()) {
-    socket.getCurrentPing()
-    .then((p: number) => {
+    socket.getCurrentPing().then((p: number) => {
       ping(p)
       mlat(socket.getCurrentMoveLatency())
       if (isOpen()) {

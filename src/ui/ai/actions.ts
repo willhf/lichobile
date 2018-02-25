@@ -6,7 +6,10 @@ import settings from '../../settings'
 
 import * as helper from '../helper'
 import formWidgets from '../shared/form'
-import { renderClaimDrawButton, renderEndedGameStatus } from '../shared/offlineRound/view'
+import {
+  renderClaimDrawButton,
+  renderEndedGameStatus
+} from '../shared/offlineRound/view'
 import popupWidget from '../shared/popup'
 import router from '../../router'
 import { AiRoundInterface } from '../shared/round'
@@ -19,37 +22,46 @@ export interface AiActionsCtrl {
 }
 
 export function opponentSelector() {
-  const opts = settings.ai.availableOpponents.map(o =>
-    ['aiNameLevelAiLevel', o[1], o[0], o[1]]
-  )
-  return h('div.select_input',
+  const opts = settings.ai.availableOpponents.map(o => [
+    'aiNameLevelAiLevel',
+    o[1],
+    o[0],
+    o[1]
+  ])
+  return h(
+    'div.select_input',
     formWidgets.renderSelect('opponent', 'opponent', opts, settings.ai.opponent)
   )
 }
 
 function renderAlways() {
-  return [
-    h('div.action.opponentSelector', [
-      opponentSelector()
-    ])
-  ]
+  return [h('div.action.opponentSelector', [opponentSelector()])]
 }
 
 function resignButton(ctrl: AiRoundInterface) {
-  return gameApi.playable(ctrl.data) ? h('div.resign', {
-    key: 'resign'
-  }, [
-    h('button[data-icon=b]', {
-      oncreate: helper.ontap(() => {
-        ctrl.actions.close()
-        ctrl.resign()
-      })
-    }, i18n('resign'))
-  ]) : null
+  return gameApi.playable(ctrl.data)
+    ? h(
+        'div.resign',
+        {
+          key: 'resign'
+        },
+        [
+          h(
+            'button[data-icon=b]',
+            {
+              oncreate: helper.ontap(() => {
+                ctrl.actions.close()
+                ctrl.resign()
+              })
+            },
+            i18n('resign')
+          )
+        ]
+      )
+    : null
 }
 
 export default {
-
   controller: function(root: AiRoundInterface) {
     let isOpen = false
 
@@ -78,9 +90,7 @@ export default {
       'offline_actions',
       undefined,
       () => {
-        return [
-          renderEndedGameStatus(ctrl.root)
-        ].concat(
+        return [renderEndedGameStatus(ctrl.root)].concat(
           renderClaimDrawButton(ctrl.root),
           resignButton(ctrl.root),
           renderAlways()

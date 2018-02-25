@@ -6,9 +6,9 @@ export const AutoQueen = {
   ALWAYS: 3
 }
 export const AutoQueenChoices = [
-  [ AutoQueen.NEVER, 'never' ],
-  [ AutoQueen.ALWAYS, 'always' ],
-  [ AutoQueen.PREMOVE, 'whenPremoving' ]
+  [AutoQueen.NEVER, 'never'],
+  [AutoQueen.ALWAYS, 'always'],
+  [AutoQueen.PREMOVE, 'whenPremoving']
 ]
 
 export const SubmitMove = {
@@ -18,10 +18,10 @@ export const SubmitMove = {
   ALWAYS: 2
 }
 export const SubmitMoveChoices = [
-  [ SubmitMove.NEVER, 'never' ],
-  [ SubmitMove.CORRESPONDENCE_ONLY, 'inCorrespondenceGames' ],
-  [ SubmitMove.CORRESPONDENCE_UNLIMITED, 'Correspondence and unlimited' ],
-  [ SubmitMove.ALWAYS, 'always' ]
+  [SubmitMove.NEVER, 'never'],
+  [SubmitMove.CORRESPONDENCE_ONLY, 'inCorrespondenceGames'],
+  [SubmitMove.CORRESPONDENCE_UNLIMITED, 'Correspondence and unlimited'],
+  [SubmitMove.ALWAYS, 'always']
 ]
 
 export const ConfirmResign = {
@@ -29,8 +29,8 @@ export const ConfirmResign = {
   YES: 1
 }
 export const ConfirmResignChoices = [
-  [ ConfirmResign.NO, 'no' ],
-  [ ConfirmResign.YES, 'yes' ]
+  [ConfirmResign.NO, 'no'],
+  [ConfirmResign.YES, 'yes']
 ]
 
 export const AutoThreefold = {
@@ -39,9 +39,9 @@ export const AutoThreefold = {
   ALWAYS: 3
 }
 export const AutoThreefoldChoices = [
-  [ AutoThreefold.NEVER, 'never' ],
-  [ AutoThreefold.ALWAYS, 'always' ],
-  [ AutoThreefold.TIME, 'whenTimeRemainingLessThanThirtySeconds' ]
+  [AutoThreefold.NEVER, 'never'],
+  [AutoThreefold.ALWAYS, 'always'],
+  [AutoThreefold.TIME, 'whenTimeRemainingLessThanThirtySeconds']
 ]
 
 export const Takeback = {
@@ -50,9 +50,9 @@ export const Takeback = {
   ALWAYS: 3
 }
 export const TakebackChoices = [
-  [ Takeback.NEVER, 'never' ],
-  [ Takeback.ALWAYS, 'always' ],
-  [ Takeback.CASUAL, 'inCasualGamesOnly' ]
+  [Takeback.NEVER, 'never'],
+  [Takeback.ALWAYS, 'always'],
+  [Takeback.CASUAL, 'inCasualGamesOnly']
 ]
 
 export const Animation = {
@@ -62,10 +62,10 @@ export const Animation = {
   SLOW: 3
 }
 export const AnimationChoices = [
-  [ Animation.NONE, 'none' ],
-  [ Animation.FAST, 'fast' ],
-  [ Animation.NORMAL, 'normal' ],
-  [ Animation.SLOW, 'slow' ]
+  [Animation.NONE, 'none'],
+  [Animation.FAST, 'fast'],
+  [Animation.NORMAL, 'normal'],
+  [Animation.SLOW, 'slow']
 ]
 
 export const Replay = {
@@ -74,9 +74,9 @@ export const Replay = {
   ALWAYS: 2
 }
 export const ReplayChoices = [
-  [ Replay.NEVER, 'never' ],
-  [ Replay.SLOW, 'onSlowGames' ],
-  [ Replay.ALWAYS, 'always' ]
+  [Replay.NEVER, 'never'],
+  [Replay.SLOW, 'onSlowGames'],
+  [Replay.ALWAYS, 'always']
 ]
 
 export const ClockTenths = {
@@ -85,9 +85,9 @@ export const ClockTenths = {
   ALWAYS: 2
 }
 export const ClockTenthsChoices = [
-  [ ClockTenths.NEVER, 'never' ],
-  [ ClockTenths.LOWTIME, 'whenTimeRemainingLessThanTenSeconds' ],
-  [ ClockTenths.ALWAYS, 'always' ]
+  [ClockTenths.NEVER, 'never'],
+  [ClockTenths.LOWTIME, 'whenTimeRemainingLessThanTenSeconds'],
+  [ClockTenths.ALWAYS, 'always']
 ]
 
 export const Challenge = {
@@ -97,10 +97,10 @@ export const Challenge = {
   ALWAYS: 4
 }
 export const ChallengeChoices = [
-  [ Challenge.NEVER, 'never' ],
-  [ Challenge.RATING, 'ifRatingIsPlusMinusX', '500' ],
-  [ Challenge.FRIEND, 'onlyFriends' ],
-  [ Challenge.ALWAYS, 'always' ]
+  [Challenge.NEVER, 'never'],
+  [Challenge.RATING, 'ifRatingIsPlusMinusX', '500'],
+  [Challenge.FRIEND, 'onlyFriends'],
+  [Challenge.ALWAYS, 'always']
 ]
 
 export const Message = {
@@ -109,7 +109,7 @@ export const Message = {
   ALWAYS: 3
 }
 export const MessageChoices = [
-  [ Message.NEVER, 'never' ],
-  [ Message.FRIEND, 'onlyFriends' ],
-  [ Message.ALWAYS, 'always' ]
+  [Message.NEVER, 'never'],
+  [Message.FRIEND, 'onlyFriends'],
+  [Message.ALWAYS, 'always']
 ]

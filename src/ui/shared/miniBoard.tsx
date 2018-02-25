@@ -34,37 +34,26 @@ const MiniBoard: Mithril.Component<Attrs, State> = {
     this.link = attrs.link || noop
   },
   view({ attrs }) {
-
     const { gameObj } = attrs
 
     return (
       <div className="mini_board" oncreate={helper.ontapY(() => this.link())}>
-        <div className="board_wrapper">
-          {h(ViewOnlyBoard, attrs)}
-        </div>
-        { gameObj ?
-        <div className="vsbloc">
-          <div className="antagonists">
-            <div className="player">
-              {gameObj.player.user.username}
+        <div className="board_wrapper">{h(ViewOnlyBoard, attrs)}</div>
+        {gameObj ? (
+          <div className="vsbloc">
+            <div className="antagonists">
+              <div className="player">{gameObj.player.user.username}</div>
+              <div className="opponent">{gameObj.opponent.user.username}</div>
             </div>
-            <div className="opponent">
-              {gameObj.opponent.user.username}
-            </div>
-          </div>
-          <div className="ratingAndTime">
-            <div>
-              {gameObj.player.rating}
-            </div>
-            <div className="time" data-icon="p">
-              {gameApi.time(gameObj)}
-            </div>
-            <div>
-              {gameObj.opponent.rating}
+            <div className="ratingAndTime">
+              <div>{gameObj.player.rating}</div>
+              <div className="time" data-icon="p">
+                {gameApi.time(gameObj)}
+              </div>
+              <div>{gameObj.opponent.rating}</div>
             </div>
           </div>
-        </div> : null
-        }
+        ) : null}
       </div>
     )
   }

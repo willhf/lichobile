@@ -3,7 +3,10 @@ import i18n from '../../i18n'
 import redraw from '../../utils/redraw'
 import settings from '../../settings'
 import formWidgets from '../shared/form'
-import { renderClaimDrawButton, renderEndedGameStatus } from '../shared/offlineRound/view'
+import {
+  renderClaimDrawButton,
+  renderEndedGameStatus
+} from '../shared/offlineRound/view'
 import ground from '../shared/offlineRound/ground'
 import popupWidget from '../shared/popup'
 import router from '../../router'
@@ -19,18 +22,28 @@ export interface OtbActionsCtrl {
 
 function renderAlways(ctrl: OtbRound) {
   return [
-    h('div.action', formWidgets.renderCheckbox(
-      i18n('Flip pieces and opponent info after move'), 'flipPieces', settings.otb.flipPieces,
-        (v) => ground.changeOTBMode(ctrl.chessground, v)
-    )),
-    h('div.action', formWidgets.renderCheckbox(
-      i18n('Use symmetric pieces'), 'useSymmetric', settings.otb.useSymmetric, redraw
-    ))
+    h(
+      'div.action',
+      formWidgets.renderCheckbox(
+        i18n('Flip pieces and opponent info after move'),
+        'flipPieces',
+        settings.otb.flipPieces,
+        v => ground.changeOTBMode(ctrl.chessground, v)
+      )
+    ),
+    h(
+      'div.action',
+      formWidgets.renderCheckbox(
+        i18n('Use symmetric pieces'),
+        'useSymmetric',
+        settings.otb.useSymmetric,
+        redraw
+      )
+    )
   ]
 }
 
 export default {
-
   controller(root: OtbRound) {
     let isOpen = false
 
@@ -60,9 +73,7 @@ export default {
         'offline_actions',
         undefined,
         function() {
-          return [
-            renderEndedGameStatus(ctrl.root)
-          ].concat(
+          return [renderEndedGameStatus(ctrl.root)].concat(
             renderClaimDrawButton(ctrl.root),
             renderAlways(ctrl.root)
           )

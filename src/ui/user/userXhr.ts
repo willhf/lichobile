@@ -1,4 +1,9 @@
-import { UserFullProfile, GameFilter, UserGameWithDate, PerfStats } from '../../lichess/interfaces/user'
+import {
+  UserFullProfile,
+  GameFilter,
+  UserGameWithDate,
+  PerfStats
+} from '../../lichess/interfaces/user'
 import { Paginator } from '../../lichess/interfaces'
 import { OnlineGameData } from '../../lichess/interfaces/game'
 import { Related } from '../../lichess/interfaces/user'
@@ -19,28 +24,53 @@ export interface RelationActionResult {
   blocking: boolean
 }
 
-export function games(userId: string, filter = 'all', page = 1, feedback = false): Promise<FilterResult> {
-  return fetchJSON(`/@/${userId}/${filter}`, {
-    query: {
-      page
-    }
-  }, feedback)
+export function games(
+  userId: string,
+  filter = 'all',
+  page = 1,
+  feedback = false
+): Promise<FilterResult> {
+  return fetchJSON(
+    `/@/${userId}/${filter}`,
+    {
+      query: {
+        page
+      }
+    },
+    feedback
+  )
 }
 
-export function following(userId: string, page = 1, feedback = false): Promise<RelatedResult> {
-  return fetchJSON(`/@/${userId}/following`, {
-    query: {
-      page
-    }
-  }, feedback)
+export function following(
+  userId: string,
+  page = 1,
+  feedback = false
+): Promise<RelatedResult> {
+  return fetchJSON(
+    `/@/${userId}/following`,
+    {
+      query: {
+        page
+      }
+    },
+    feedback
+  )
 }
 
-export function followers(userId: string, page = 1, feedback = false): Promise<RelatedResult> {
-  return fetchJSON(`/@/${userId}/followers`, {
-    query: {
-      page
-    }
-  }, feedback)
+export function followers(
+  userId: string,
+  page = 1,
+  feedback = false
+): Promise<RelatedResult> {
+  return fetchJSON(
+    `/@/${userId}/followers`,
+    {
+      query: {
+        page
+      }
+    },
+    feedback
+  )
 }
 
 export function follow(userId: string): Promise<RelationActionResult> {
@@ -67,6 +97,9 @@ export function tv(userId: string): Promise<OnlineGameData> {
   return fetchJSON(`/@/${userId}/tv`)
 }
 
-export function variantperf(userId: string, perfKey: PerfKey): Promise<PerfStats> {
+export function variantperf(
+  userId: string,
+  perfKey: PerfKey
+): Promise<PerfStats> {
   return fetchJSON(`/@/${userId}/perf/${perfKey}?graph=1`, undefined, false)
 }

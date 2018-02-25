@@ -1,6 +1,6 @@
 import { path as treePath, Tree } from '../shared/tree'
 import { decomposeUci, sanToRole } from '../../utils/chessFormat'
-import { Puzzle, Line, LineFeedback  } from '../../lichess/interfaces/training'
+import { Puzzle, Line, LineFeedback } from '../../lichess/interfaces/training'
 import { MoveRequest } from '../../chess'
 import { Mode, Feedback } from './interfaces'
 
@@ -19,15 +19,14 @@ export default function moveTest(
   nodeList: Tree.Node[],
   puzzle: Puzzle
 ): Feedback | MoveRequest | null {
-
   if (mode === 'view') return null
   if (!treePath.contains(path, initialPath)) return null
 
   // puzzle moves so far
   const progress: Uci[] = nodeList
-  .slice(treePath.size(initialPath) + 1)
-  // at this point we know node has uci (every node except first has uci)
-  .map(node => node.uci!)
+    .slice(treePath.size(initialPath) + 1)
+    // at this point we know node has uci (every node except first has uci)
+    .map(node => node.uci!)
 
   // search in puzzle lines with current progress
   const curLine = progress.reduce((acc: Line, uci: Uci) => {
@@ -44,22 +43,21 @@ export default function moveTest(
     const feedback = 'fail'
     node.puzzle = feedback
     return feedback
-  }
-  else if (isLineFeedback(curLine)) {
+  } else if (isLineFeedback(curLine)) {
     node.puzzle = curLine
     return curLine
-  }
-  else {
+  } else {
     // next opponent move from line
     const nextUci = Object.keys(curLine)[0]
     if (curLine[nextUci] === 'win') {
       node.puzzle = 'win'
       return 'win'
-    }
-    else {
+    } else {
       node.puzzle = 'good'
       const opponentUci = decomposeUci(nextUci)
-      const promotion = opponentUci[2] ?  sanToRole[opponentUci[2].toUpperCase()] : null
+      const promotion = opponentUci[2]
+        ? sanToRole[opponentUci[2].toUpperCase()]
+        : null
       const move: MoveRequest = {
         variant: 'standard',
         orig: opponentUci[0],

@@ -31,13 +31,16 @@ export function boardpos(pos: cg.Pos, asWhite: boolean): BoardPos {
   }
 }
 
-export function posToTranslate(pos: cg.Pos, asWhite: boolean, bounds: ClientRect): NumberPair {
+export function posToTranslate(
+  pos: cg.Pos,
+  asWhite: boolean,
+  bounds: ClientRect
+): NumberPair {
   return [
     (asWhite ? pos[0] - 1 : 8 - pos[0]) * bounds.width / 8,
     (asWhite ? 8 - pos[1] : pos[1] - 1) * bounds.height / 8
   ]
 }
-
 
 export function invertKey(k: Key): Key {
   return (files[8 - fileNumbers[k[0]]] + (9 - Number(k[1]))) as Key
@@ -45,16 +48,17 @@ export function invertKey(k: Key): Key {
 
 export const allPos: cg.Pos[] = (() => {
   const ps: cg.Pos[] = []
-  invRanks.forEach((y) => {
-    ranks.forEach((x) => {
+  invRanks.forEach(y => {
+    ranks.forEach(x => {
       ps.push([x, y])
     })
   })
   return ps
 })()
 
-export const allKeys: Key[] =
-  Array.prototype.concat(...files.map(c => ranks.map(r => c + r)))
+export const allKeys: Key[] = Array.prototype.concat(
+  ...files.map(c => ranks.map(r => c + r))
+)
 
 export const invKeys: Key[] = allKeys.slice(0).reverse()
 
@@ -67,15 +71,22 @@ export function containsX<T>(xs: T[] | undefined, x: T) {
 }
 
 export function distance(pos1: NumberPair, pos2: NumberPair) {
-  return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2))
+  return Math.sqrt(
+    Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2)
+  )
 }
 
-export function transform(state: State, pieceColor: Color, translateProp: string) {
+export function transform(
+  state: State,
+  pieceColor: Color,
+  translateProp: string
+) {
   if (state.otb) {
     const o = state.orientation
     const m = state.otbMode
     const t = state.turnColor
-    if ((m === 'facing' && o === 'white' && pieceColor === 'black') ||
+    if (
+      (m === 'facing' && o === 'white' && pieceColor === 'black') ||
       (m === 'facing' && o === 'black' && pieceColor === 'white') ||
       (m === 'flip' && o === 'white' && t === 'black') ||
       (m === 'flip' && o === 'black' && t === 'white')
@@ -105,11 +116,15 @@ export function eventPosition(e: TouchEvent): NumberPair {
   return [touch.clientX, touch.clientY]
 }
 
-export function computeSquareBounds(orientation: Color, bounds: ClientRect, key: Key) {
+export function computeSquareBounds(
+  orientation: Color,
+  bounds: ClientRect,
+  key: Key
+) {
   const pos = key2pos(key)
   if (orientation !== 'white') {
-    pos[0] = (9 - pos[0] as cg.Coord)
-    pos[1] = (9 - pos[1] as cg.Coord)
+    pos[0] = (9 - pos[0]) as cg.Coord
+    pos[1] = (9 - pos[1]) as cg.Coord
   }
   return {
     left: bounds.left + bounds.width * (pos[0] - 1) / 8,
@@ -127,4 +142,3 @@ export function getPieceByKey(dom: cg.DOM, key: Key): cg.PieceNode | null {
   }
   return null
 }
-

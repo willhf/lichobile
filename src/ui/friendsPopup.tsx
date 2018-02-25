@@ -12,7 +12,6 @@ export default {
   open,
   close,
   view() {
-
     function header() {
       return [
         h('span.nbFriends', friendsApi.count()),
@@ -21,7 +20,7 @@ export default {
     }
 
     return popupWidget(
-      {onlineFriends: true, native_scroller: false},
+      { onlineFriends: true, native_scroller: false },
       header,
       renderFriends,
       isOpen,
@@ -41,19 +40,14 @@ function close(fromBB?: string) {
 }
 
 function renderFriends() {
-
-  return friendsApi.list().length ?
-    (
-      <ul>
-        {friendsApi.list().map(renderFriend)}
-      </ul>
-    ) : (
-      <div className="native_scroller nofriend">{i18n('noFriendsOnline')}</div>
-    )
+  return friendsApi.list().length ? (
+    <ul>{friendsApi.list().map(renderFriend)}</ul>
+  ) : (
+    <div className="native_scroller nofriend">{i18n('noFriendsOnline')}</div>
+  )
 }
 
 function renderFriend(user: Friend) {
-
   const userId = utils.userFullNameToId(user.name)
 
   function action() {
@@ -70,18 +64,20 @@ function renderFriend(user: Friend) {
   return (
     <li className="list_item" key={userId} oncreate={helper.ontapY(action)}>
       <div className="friends-name">
-        { user.patron ?
+        {user.patron ? (
           <span className="patron is-green" data-icon="" />
-          :
-          null
-        }
+        ) : null}
         <span>{user.name}</span>
       </div>
-      { user.playing ?
-        <span className="friend_tv" data-icon="1" oncreate={helper.ontapY(onTapTv)}> </span>
-        :
-        null
-      }
+      {user.playing ? (
+        <span
+          className="friend_tv"
+          data-icon="1"
+          oncreate={helper.ontapY(onTapTv)}
+        >
+          {' '}
+        </span>
+      ) : null}
     </li>
   )
 }

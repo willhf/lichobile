@@ -1,14 +1,25 @@
 import redraw from '../../../../utils/redraw'
 import sound from '../../../../sound'
 
-import { ClockType, IBasicClock, IChessHandicapIncClockState } from '../interfaces'
+import {
+  ClockType,
+  IBasicClock,
+  IChessHandicapIncClockState
+} from '../interfaces'
 import { CLOCK_TICK_STEP } from '../utils'
 
-export default function HandicapIncClock(whiteTimeParam: number, whiteIncrement: number, blackTimeParam: number, blackIncrement: number, onFlag: (color: Color) => void, soundOn: boolean): IBasicClock {
+export default function HandicapIncClock(
+  whiteTimeParam: number,
+  whiteIncrement: number,
+  blackTimeParam: number,
+  blackIncrement: number,
+  onFlag: (color: Color) => void,
+  soundOn: boolean
+): IBasicClock {
   let state: IChessHandicapIncClockState = {
     clockType: 'handicapInc',
-    whiteTime: (whiteTimeParam !== 0) ? whiteTimeParam : whiteIncrement,
-    blackTime: (blackTimeParam !== 0) ? blackTimeParam : blackIncrement,
+    whiteTime: whiteTimeParam !== 0 ? whiteTimeParam : whiteIncrement,
+    blackTime: blackTimeParam !== 0 ? blackTimeParam : blackIncrement,
     whiteIncrement: whiteIncrement,
     blackIncrement: blackIncrement,
     activeSide: undefined,
@@ -20,7 +31,7 @@ export default function HandicapIncClock(whiteTimeParam: number, whiteIncrement:
   let whiteTimestamp: number
   let blackTimestamp: number
 
-  function tick () {
+  function tick() {
     const now = performance.now()
     if (activeSide() === 'white') {
       const elapsed = now - whiteTimestamp
@@ -32,8 +43,7 @@ export default function HandicapIncClock(whiteTimeParam: number, whiteIncrement:
         if (soundOn) sound.dong()
         clearInterval(clockInterval)
       }
-    }
-    else if (activeSide() === 'black') {
+    } else if (activeSide() === 'black') {
       const elapsed = now - blackTimestamp
       blackTimestamp = now
       state.blackTime = Math.max(state.blackTime - elapsed, 0)
@@ -72,12 +82,11 @@ export default function HandicapIncClock(whiteTimeParam: number, whiteIncrement:
     redraw()
   }
 
-  function startStop () {
+  function startStop() {
     if (isRunning()) {
       clearInterval(clockInterval)
       state.isRunning = false
-    }
-    else {
+    } else {
       state.isRunning = true
       if (activeSide() === 'white') {
         whiteTimestamp = performance.now()
@@ -89,11 +98,11 @@ export default function HandicapIncClock(whiteTimeParam: number, whiteIncrement:
   }
 
   function activeSide(): Color | undefined {
-     return state.activeSide
+    return state.activeSide
   }
 
   function flagged(): Color | undefined {
-     return state.flagged
+    return state.flagged
   }
 
   function isRunning(): boolean {

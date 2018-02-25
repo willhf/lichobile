@@ -25,11 +25,19 @@ const UserTv: Mithril.Component<Attrs, State> = {
     const onRedirect = () => router.set(`/@/${userId}/tv`, true)
 
     tv(userId)
-    .then(data => {
-      data.userTV = userId
-      this.round = new OnlineRound(data.game.id, data, false, undefined, undefined, userId, onRedirect)
-    })
-    .catch(handleXhrError)
+      .then(data => {
+        data.userTV = userId
+        this.round = new OnlineRound(
+          data.game.id,
+          data,
+          false,
+          undefined,
+          undefined,
+          userId,
+          onRedirect
+        )
+      })
+      .catch(handleXhrError)
   },
 
   oncreate: helper.viewFadeIn,

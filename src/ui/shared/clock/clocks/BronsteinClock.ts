@@ -4,11 +4,16 @@ import sound from '../../../../sound'
 import { ClockType, IBasicClock, IChessDelayClockState } from '../interfaces'
 import { CLOCK_TICK_STEP } from '../utils'
 
-export default function BronsteinClock(time: number, increment: number, onFlag: (color: Color) => void, soundOn: boolean): IBasicClock {
+export default function BronsteinClock(
+  time: number,
+  increment: number,
+  onFlag: (color: Color) => void,
+  soundOn: boolean
+): IBasicClock {
   let state: IChessDelayClockState = {
     clockType: 'bronstein',
-    whiteTime: (time !== 0) ? time : increment,
-    blackTime: (time !== 0) ? time : increment,
+    whiteTime: time !== 0 ? time : increment,
+    blackTime: time !== 0 ? time : increment,
     whiteDelay: increment,
     blackDelay: increment,
     increment: increment,
@@ -21,7 +26,7 @@ export default function BronsteinClock(time: number, increment: number, onFlag: 
   let whiteTimestamp: number
   let blackTimestamp: number
 
-  function tick () {
+  function tick() {
     const now = performance.now()
     if (state.activeSide === 'white') {
       const elapsed = now - whiteTimestamp
@@ -34,8 +39,7 @@ export default function BronsteinClock(time: number, increment: number, onFlag: 
         if (soundOn) sound.dong()
         clearInterval(clockInterval)
       }
-    }
-    else if (activeSide() === 'black') {
+    } else if (activeSide() === 'black') {
       const elapsed = now - blackTimestamp
       blackTimestamp = now
       state.blackTime = Math.max(state.blackTime - elapsed, 0)
@@ -64,8 +68,7 @@ export default function BronsteinClock(time: number, increment: number, onFlag: 
       }
       blackTimestamp = performance.now()
       state.activeSide = 'black'
-    }
-    else {
+    } else {
       if (state.activeSide === 'black') {
         state.activeSide = 'white'
         state.blackTime = state.blackTime + (state.increment - state.blackDelay)
@@ -82,12 +85,11 @@ export default function BronsteinClock(time: number, increment: number, onFlag: 
     redraw()
   }
 
-  function startStop () {
+  function startStop() {
     if (state.isRunning) {
       state.isRunning = false
       clearInterval(clockInterval)
-    }
-    else {
+    } else {
       state.isRunning = true
       clockInterval = setInterval(tick, CLOCK_TICK_STEP)
       if (state.activeSide === 'white') {

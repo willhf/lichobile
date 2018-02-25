@@ -19,7 +19,6 @@ export interface Controller {
 }
 
 export default {
-
   controller(root: OtbRound) {
     let isOpen = false
     function open() {
@@ -51,16 +50,23 @@ export default {
         const white = settings.otb.whitePlayer
         const black = settings.otb.blackPlayer
         return h('div', [
-          h('p', 'Import current game state with following player names to lichess?'),
+          h(
+            'p',
+            'Import current game state with following player names to lichess?'
+          ),
           h('form', [
-            h('div.exchange', {
-              oncreate: helper.ontap(() => {
-                const w = white()
-                const b = black()
-                white(b)
-                black(w)
-              })
-            }, h('span.fa.fa-exchange.fa-rotate-90')),
+            h(
+              'div.exchange',
+              {
+                oncreate: helper.ontap(() => {
+                  const w = white()
+                  const b = black()
+                  white(b)
+                  black(w)
+                })
+              },
+              h('span.fa.fa-exchange.fa-rotate-90')
+            ),
             h('div.importMeta.text_input_container', [
               h('label', i18n('white')),
               h('input[type=text]', {
@@ -91,20 +97,24 @@ export default {
             ])
           ]),
           h('div.popupActionWrapper', [
-            ctrl.importer.importing() ?
-              h('div', [h('span.fa.fa-hourglass-half'), h('span', 'Importing...')]) :
-              h('button.popupAction.withIcon[data-icon=E]', {
-                oncreate: helper.ontap(
-                  () => {
-                    const white = settings.otb.whitePlayer
-                    const black = settings.otb.blackPlayer
-                    ctrl.root.replay.pgn(white(), black())
-                    .then(data => {
-                      ctrl.importer.importGame(data.pgn)
+            ctrl.importer.importing()
+              ? h('div', [
+                  h('span.fa.fa-hourglass-half'),
+                  h('span', 'Importing...')
+                ])
+              : h(
+                  'button.popupAction.withIcon[data-icon=E]',
+                  {
+                    oncreate: helper.ontap(() => {
+                      const white = settings.otb.whitePlayer
+                      const black = settings.otb.blackPlayer
+                      ctrl.root.replay.pgn(white(), black()).then(data => {
+                        ctrl.importer.importGame(data.pgn)
+                      })
                     })
-                  }
+                  },
+                  'Import to lichess'
                 )
-              }, 'Import to lichess')
           ])
         ])
       },

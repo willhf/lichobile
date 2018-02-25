@@ -5,7 +5,11 @@ import i18n from '../../../i18n'
 import storage from '../../../storage'
 import session from '../../../session'
 import * as gameApi from '../../../lichess/game'
-import { OnlineGameData, ChatMsg, Player } from '../../../lichess/interfaces/game'
+import {
+  OnlineGameData,
+  ChatMsg,
+  Player
+} from '../../../lichess/interfaces/game'
 import router from '../../../router'
 import socket from '../../../socket'
 import { closeIcon } from '../../shared/icons'
@@ -23,7 +27,6 @@ export class Chat {
   private storageId: string
 
   constructor(root: OnlineRoundInterface, isShadowban: boolean) {
-
     this.storageId = 'chat.' + root.data.game.id
     this.root = root
     this.isShadowban = isShadowban
@@ -86,11 +89,13 @@ export class Chat {
     let prev: ChatMsg
     let ls: ChatMsg[] = []
     this.messages.forEach((line: ChatMsg) => {
-      if (!line.d &&
+      if (
+        !line.d &&
         (!prev || !compactableDeletedLines(prev, line)) &&
         (!line.r || this.isShadowban) &&
         !isSpam(line.t)
-      ) ls.push(line)
+      )
+        ls.push(line)
       prev = line
     })
     return ls
@@ -104,11 +109,13 @@ export class Chat {
 }
 
 export function chatView(ctrl: Chat) {
-
   if (!ctrl.showing) return null
 
   const player = ctrl.root.data.player
-  let header = (!ctrl.root.data.opponent.user || ctrl.root.data.player.spectator) ? i18n('chat') : ctrl.root.data.opponent.user.username
+  let header =
+    !ctrl.root.data.opponent.user || ctrl.root.data.player.spectator
+      ? i18n('chat')
+      : ctrl.root.data.opponent.user.username
   const watchers = ctrl.root.data.watchers
   if (ctrl.root.data.player.spectator && watchers && watchers.nb >= 2) {
     header = i18n('spectators') + ' ' + watchers.nb
@@ -116,117 +123,160 @@ export function chatView(ctrl: Chat) {
 
   return h('div#chat.modal', { oncreate: helper.slidesInUp }, [
     h('header', [
-      h('button.modal_close', {
-        oncreate: helper.ontap(helper.slidesOutDown(ctrl.close, 'chat'))
-      }, closeIcon),
+      h(
+        'button.modal_close',
+        {
+          oncreate: helper.ontap(helper.slidesOutDown(ctrl.close, 'chat'))
+        },
+        closeIcon
+      ),
       h('h2', header)
     ]),
     h('div#chat_content.modal_content.chat_content', [
-      h('div.chat_scroller.native_scroller', {
-        oncreate: ({ dom }: Mithril.DOMNode) => scrollChatToBottom(dom as HTMLElement),
-        onupdate: ({ dom }: Mithril.DOMNode) => scrollChatToBottom(dom as HTMLElement)
-      }, [
-        h('ul.chat_messages', ctrl.selectLines().map((msg: ChatMsg, i: number, all: ChatMsg[]) => {
-          if (ctrl.root.data.player.spectator) return spectatorChatRender(msg, i, all)
-          else return playerChatRender(player, msg, i, all)
-        }))
-      ]),
-      h('form.chat_form', {
-        onsubmit: (e: Event) => {
-          e.preventDefault()
-          const target = (e.target as HTMLFormElement)
-          const ta = target[0]
-          ta.focus()
-          const msg = ta.value.trim()
-          if (!validateMsg(msg)) return
-          ctrl.inputValue = ''
-          ta.setAttribute('rows', '1')
-          ta.style.paddingTop = '8px'
-          socket.send('talk', msg)
-          const sendButton = document.getElementById('chat_send')
-          if (sendButton) {
-            sendButton.classList.add('disabled')
-          }
-        }
-      }, [
-        h('textarea#chat_input.chat_input', {
-          placeholder: ctrl.canTalk(ctrl.root.data) ? i18n('talkInChat') : 'Login to chat',
-          disabled: !ctrl.canTalk(ctrl.root.data),
-          rows: 1,
-          maxlength: 140,
-          value: ctrl.inputValue,
-          style: { lineHeight: '18px', margin: '8px 0 8px 10px', paddingTop: '8px' },
-          oninput(e: Event) {
-            const ta = (e.target as HTMLTextAreaElement)
-            if (ta.value.length > 140) ta.value = ta.value.substr(0, 140)
-            ctrl.inputValue = ta.value
-            const style = window.getComputedStyle(ta)
-            const taLineHeight = parseInt(style.lineHeight || '18', 10)
-            const taHeight = calculateContentHeight(ta, taLineHeight)
-            const computedNbLines = Math.ceil(taHeight / taLineHeight)
-            const nbLines =
-              computedNbLines <= 1 ? 1 :
-              computedNbLines > 5 ? 5 : computedNbLines - 1
-            ta.setAttribute('rows', String(nbLines))
-            if (nbLines === 1) ta.style.paddingTop = '8px'
-            else ta.style.paddingTop = '0'
+      h(
+        'div.chat_scroller.native_scroller',
+        {
+          oncreate: ({ dom }: Mithril.DOMNode) =>
+            scrollChatToBottom(dom as HTMLElement),
+          onupdate: ({ dom }: Mithril.DOMNode) =>
+            scrollChatToBottom(dom as HTMLElement)
+        },
+        [
+          h(
+            'ul.chat_messages',
+            ctrl
+              .selectLines()
+              .map((msg: ChatMsg, i: number, all: ChatMsg[]) => {
+                if (ctrl.root.data.player.spectator)
+                  return spectatorChatRender(msg, i, all)
+                else return playerChatRender(player, msg, i, all)
+              })
+          )
+        ]
+      ),
+      h(
+        'form.chat_form',
+        {
+          onsubmit: (e: Event) => {
+            e.preventDefault()
+            const target = e.target as HTMLFormElement
+            const ta = target[0]
+            ta.focus()
+            const msg = ta.value.trim()
+            if (!validateMsg(msg)) return
+            ctrl.inputValue = ''
+            ta.setAttribute('rows', '1')
+            ta.style.paddingTop = '8px'
+            socket.send('talk', msg)
             const sendButton = document.getElementById('chat_send')
             if (sendButton) {
-              if (validateMsg(ctrl.inputValue)) sendButton.classList.remove('disabled')
-              else sendButton.classList.add('disabled')
+              sendButton.classList.add('disabled')
             }
           }
-        }),
-        h('button#chat_send.chat_send.fa.fa-telegram.disabled')
-      ])
+        },
+        [
+          h('textarea#chat_input.chat_input', {
+            placeholder: ctrl.canTalk(ctrl.root.data)
+              ? i18n('talkInChat')
+              : 'Login to chat',
+            disabled: !ctrl.canTalk(ctrl.root.data),
+            rows: 1,
+            maxlength: 140,
+            value: ctrl.inputValue,
+            style: {
+              lineHeight: '18px',
+              margin: '8px 0 8px 10px',
+              paddingTop: '8px'
+            },
+            oninput(e: Event) {
+              const ta = e.target as HTMLTextAreaElement
+              if (ta.value.length > 140) ta.value = ta.value.substr(0, 140)
+              ctrl.inputValue = ta.value
+              const style = window.getComputedStyle(ta)
+              const taLineHeight = parseInt(style.lineHeight || '18', 10)
+              const taHeight = calculateContentHeight(ta, taLineHeight)
+              const computedNbLines = Math.ceil(taHeight / taLineHeight)
+              const nbLines =
+                computedNbLines <= 1
+                  ? 1
+                  : computedNbLines > 5 ? 5 : computedNbLines - 1
+              ta.setAttribute('rows', String(nbLines))
+              if (nbLines === 1) ta.style.paddingTop = '8px'
+              else ta.style.paddingTop = '0'
+              const sendButton = document.getElementById('chat_send')
+              if (sendButton) {
+                if (validateMsg(ctrl.inputValue))
+                  sendButton.classList.remove('disabled')
+                else sendButton.classList.add('disabled')
+              }
+            }
+          }),
+          h('button#chat_send.chat_send.fa.fa-telegram.disabled')
+        ]
+      )
     ])
   ])
 }
 
-function playerChatRender(player: Player, msg: ChatMsg, i: number, all: ChatMsg[]) {
+function playerChatRender(
+  player: Player,
+  msg: ChatMsg,
+  i: number,
+  all: ChatMsg[]
+) {
   const lichessTalking = msg.u === 'lichess'
-  const playerTalking = msg.c ? msg.c === player.color :
-  player.user && msg.u === player.user.username
+  const playerTalking = msg.c
+    ? msg.c === player.color
+    : player.user && msg.u === player.user.username
 
   let closeBalloon = true
   let next = all[i + 1]
   let nextTalking
   if (next) {
-    nextTalking = next.c ? next.c === player.color :
-    player.user && next.u === player.user.username
+    nextTalking = next.c
+      ? next.c === player.color
+      : player.user && next.u === player.user.username
   }
   if (nextTalking !== undefined) closeBalloon = nextTalking !== playerTalking
 
-  return h('li.chat_msg.allow_select', {
-    className: helper.classSet({
-      system: lichessTalking,
-      player: !!playerTalking,
-      opponent: !lichessTalking && !playerTalking,
-      'close_balloon': closeBalloon
-    })
-  }, msg.t)
+  return h(
+    'li.chat_msg.allow_select',
+    {
+      className: helper.classSet({
+        system: lichessTalking,
+        player: !!playerTalking,
+        opponent: !lichessTalking && !playerTalking,
+        close_balloon: closeBalloon
+      })
+    },
+    msg.t
+  )
 }
 
 function spectatorChatRender(msg: ChatMsg, i: number, all: ChatMsg[]) {
   const lichessTalking = msg.u === 'lichess'
-  const meTalking = msg.u && (msg.u === session.getUserId())
+  const meTalking = msg.u && msg.u === session.getUserId()
 
   let closeBalloon = true
   let next = all[i + 1]
   let nextTalking
   if (next) {
-    nextTalking = next.u && (next.u === session.getUserId())
+    nextTalking = next.u && next.u === session.getUserId()
   }
   if (nextTalking !== undefined) closeBalloon = nextTalking !== meTalking
 
-  return h('li.chat_msg.allow_select', {
-    className: helper.classSet({
-      system: lichessTalking,
-      player: !!meTalking,
-      opponent: !lichessTalking && !meTalking,
-      'close_balloon': closeBalloon
-    })
-  }, (meTalking || lichessTalking) ? msg.t : (msg.u + ': ' + msg.t))
+  return h(
+    'li.chat_msg.allow_select',
+    {
+      className: helper.classSet({
+        system: lichessTalking,
+        player: !!meTalking,
+        opponent: !lichessTalking && !meTalking,
+        close_balloon: closeBalloon
+      })
+    },
+    meTalking || lichessTalking ? msg.t : msg.u + ': ' + msg.t
+  )
 }
 
 function scrollChatToBottom(el: HTMLElement) {
@@ -238,7 +288,7 @@ function onKeyboardShow(e: Ionic.KeyboardEvent) {
     const chat = document.getElementById('chat_content')
     if (!chat) return
     chatHeight = chat.offsetHeight
-    chat.style.height = (chatHeight - e.keyboardHeight) + 'px'
+    chat.style.height = chatHeight - e.keyboardHeight + 'px'
   }
 }
 
@@ -253,18 +303,18 @@ function onKeyboardHide() {
 
 function calculateContentHeight(ta: HTMLElement, scanAmount: number): number {
   const origHeight = ta.style.height,
-  scrollHeight = ta.scrollHeight,
-  overflow = ta.style.overflow
+    scrollHeight = ta.scrollHeight,
+    overflow = ta.style.overflow
   let height = ta.offsetHeight
   /// only bother if the ta is bigger than content
   if (height >= scrollHeight) {
     /// check that our browser supports changing dimension
     /// calculations mid-way through a function call...
-    ta.style.height = (height + scanAmount) + 'px'
+    ta.style.height = height + scanAmount + 'px'
     /// because the scrollbar can cause calculation problems
     ta.style.overflow = 'hidden'
     /// by checking that scrollHeight has updated
-    if ( scrollHeight < ta.scrollHeight ) {
+    if (scrollHeight < ta.scrollHeight) {
       /// now try and scan the ta's height downwards
       /// until scrollHeight becomes larger than height
       while (ta.offsetHeight >= ta.scrollHeight) {
@@ -272,7 +322,7 @@ function calculateContentHeight(ta: HTMLElement, scanAmount: number): number {
       }
       /// be more specific to get the exact height
       while (ta.offsetHeight < ta.scrollHeight) {
-        ta.style.height = (height++) + 'px'
+        ta.style.height = height++ + 'px'
       }
       /// reset the ta back to it's original height
       ta.style.height = origHeight

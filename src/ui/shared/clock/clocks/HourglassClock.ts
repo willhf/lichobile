@@ -4,11 +4,15 @@ import sound from '../../../../sound'
 import { ClockType, IBasicClock, IChessBasicClockState } from '../interfaces'
 import { CLOCK_TICK_STEP } from '../utils'
 
-export default function HourglassClock(time: number, onFlag: (color: Color) => void, soundOn: boolean): IBasicClock {
+export default function HourglassClock(
+  time: number,
+  onFlag: (color: Color) => void,
+  soundOn: boolean
+): IBasicClock {
   let state: IChessBasicClockState = {
     clockType: 'hourglass',
     whiteTime: time / 2,
-    blackTime: time /   2,
+    blackTime: time / 2,
     activeSide: undefined,
     flagged: undefined,
     isRunning: false
@@ -18,7 +22,7 @@ export default function HourglassClock(time: number, onFlag: (color: Color) => v
   let whiteTimestamp: number
   let blackTimestamp: number
 
-  function tick () {
+  function tick() {
     const now = performance.now()
     if (activeSide() === 'white') {
       const elapsed = now - whiteTimestamp
@@ -31,8 +35,7 @@ export default function HourglassClock(time: number, onFlag: (color: Color) => v
         if (soundOn) sound.dong()
         clearInterval(clockInterval)
       }
-    }
-    else if (activeSide() === 'black') {
+    } else if (activeSide() === 'black') {
       const elapsed = now - blackTimestamp
       blackTimestamp = now
       state.blackTime = Math.max(state.blackTime - elapsed, 0)
@@ -56,8 +59,7 @@ export default function HourglassClock(time: number, onFlag: (color: Color) => v
     if (side === 'white') {
       blackTimestamp = performance.now()
       state.activeSide = 'black'
-    }
-    else {
+    } else {
       whiteTimestamp = performance.now()
       state.activeSide = 'white'
     }
@@ -69,12 +71,11 @@ export default function HourglassClock(time: number, onFlag: (color: Color) => v
     redraw()
   }
 
-  function startStop () {
+  function startStop() {
     if (isRunning()) {
       state.isRunning = false
       clearInterval(clockInterval)
-    }
-    else {
+    } else {
       state.isRunning = true
       clockInterval = setInterval(tick, CLOCK_TICK_STEP)
       if (activeSide() === 'white') {
@@ -86,11 +87,11 @@ export default function HourglassClock(time: number, onFlag: (color: Color) => v
   }
 
   function activeSide(): Color | undefined {
-     return state.activeSide
+    return state.activeSide
   }
 
   function flagged(): Color | undefined {
-     return state.flagged
+    return state.flagged
   }
 
   function isRunning(): boolean {

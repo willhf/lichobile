@@ -18,7 +18,7 @@ export interface State {
   closeSearch: (fbb?: string) => void
   goSearch(): void
   goToProfile(u: string): void
-  onKeyboardShow(e: Ionic.KeyboardEvent): void,
+  onKeyboardShow(e: Ionic.KeyboardEvent): void
   onKeyboardHide(): void
 }
 
@@ -36,7 +36,7 @@ const PlayersScreen: Mithril.Component<{}, State> = {
         let ul = document.getElementById('players_search_results')
         if (ul) {
           listHeight = ul.offsetHeight
-          ul.style.height = (listHeight - e.keyboardHeight) + 'px'
+          ul.style.height = listHeight - e.keyboardHeight + 'px'
         }
       }
     }
@@ -51,19 +51,21 @@ const PlayersScreen: Mithril.Component<{}, State> = {
     }
 
     function closeSearch(fromBB?: string) {
-      if (fromBB !== 'backbutton' && isSearchOpen()) router.backbutton.stack.pop()
+      if (fromBB !== 'backbutton' && isSearchOpen())
+        router.backbutton.stack.pop()
       isSearchOpen(false)
     }
 
     window.addEventListener('native.keyboardshow', onKeyboardShow)
     window.addEventListener('native.keyboardhide', onKeyboardHide)
 
-    xhr.onlinePlayers()
-    .then(data => {
-      players(data)
-      redraw()
-    })
-    .catch(utils.handleXhrError)
+    xhr
+      .onlinePlayers()
+      .then(data => {
+        players(data)
+        redraw()
+      })
+      .catch(utils.handleXhrError)
 
     vnode.state = {
       players,

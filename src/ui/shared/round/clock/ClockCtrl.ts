@@ -22,7 +22,7 @@ interface Times {
 interface EmergSound {
   play(): void
   next?: number
-  delay: Millis,
+  delay: Millis
   playable: {
     white: boolean
     black: boolean
@@ -30,7 +30,6 @@ interface EmergSound {
 }
 
 export default class ClockCtrl {
-
   emergSound: EmergSound = {
     play: sound.lowtime,
     delay: 20000,
@@ -52,14 +51,20 @@ export default class ClockCtrl {
   constructor(d: GameData, public opts: ClockOpts) {
     const cdata = d.clock!
 
-    this.emergMs = 1000 * Math.min(60, Math.max(10, cdata.initial * .125))
+    this.emergMs = 1000 * Math.min(60, Math.max(10, cdata.initial * 0.125))
 
     this.setClock(d, cdata.white, cdata.black)
   }
 
-  setClock = (d: GameData, white: Seconds, black: Seconds, delay: Centis = 0) => {
-    const isClockRunning = gameApi.playable(d) &&
-           ((d.game.turns - d.game.startedAtTurn) > 1 || d.clock!.running)
+  setClock = (
+    d: GameData,
+    white: Seconds,
+    black: Seconds,
+    delay: Centis = 0
+  ) => {
+    const isClockRunning =
+      gameApi.playable(d) &&
+      (d.game.turns - d.game.startedAtTurn > 1 || d.clock!.running)
 
     this.times = {
       white: white * 1000,
@@ -114,11 +119,13 @@ export default class ClockCtrl {
     }
   }
 
-  elapsed = (now = performance.now()) => Math.max(0, now - this.times.lastUpdate)
+  elapsed = (now = performance.now()) =>
+    Math.max(0, now - this.times.lastUpdate)
 
-  millisOf = (color: Color): Millis => (this.times.activeColor === color ?
-     Math.max(0, this.times[color] - this.elapsed()) : this.times[color]
-  )
+  millisOf = (color: Color): Millis =>
+    this.times.activeColor === color
+      ? Math.max(0, this.times[color] - this.elapsed())
+      : this.times[color]
 
   isRunning = () => this.times.activeColor !== undefined
 }

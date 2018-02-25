@@ -32,12 +32,19 @@ const TV: Mithril.Component<TVAttrs, State> = {
       settings.tv.channel(vnode.attrs.channel)
     }
 
-    xhr.featured(settings.tv.channel(), vnode.attrs.flip)
-    .then(d => {
-      d.tv = settings.tv.channel()
-      this.round = new OnlineRound(vnode.attrs.id, d, vnode.attrs.flip, onFeatured, onChannelChange)
-    })
-    .catch(handleXhrError)
+    xhr
+      .featured(settings.tv.channel(), vnode.attrs.flip)
+      .then(d => {
+        d.tv = settings.tv.channel()
+        this.round = new OnlineRound(
+          vnode.attrs.id,
+          d,
+          vnode.attrs.flip,
+          onFeatured,
+          onChannelChange
+        )
+      })
+      .catch(handleXhrError)
   },
 
   oncreate: helper.viewFadeIn,

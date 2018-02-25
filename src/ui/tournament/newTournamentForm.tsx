@@ -35,57 +35,113 @@ function close(fromBB?: string) {
   isOpen = false
 }
 
-
 function renderForm(ctrl: TournamentsListCtrl) {
   return (
-    <form id="tournamentCreateForm"
-    onsubmit={function(e: Event) {
-      e.preventDefault()
-      return create(e.target as HTMLFormElement)
-    }}>
+    <form
+      id="tournamentCreateForm"
+      onsubmit={function(e: Event) {
+        e.preventDefault()
+        return create(e.target as HTMLFormElement)
+      }}
+    >
       <fieldset>
         <div className="select_input">
-          {formWidgets.renderSelect('Variant', 'variant', settings.tournament.availableVariants, settings.tournament.variant, false)}
+          {formWidgets.renderSelect(
+            'Variant',
+            'variant',
+            settings.tournament.availableVariants,
+            settings.tournament.variant,
+            false
+          )}
         </div>
-        <div className={'select_input' + (settings.tournament.variant() !== '1' ? ' notVisible' : '')}>
-          <label for="select_start_position">
-            Position
-          </label>
+        <div
+          className={
+            'select_input' +
+            (settings.tournament.variant() !== '1' ? ' notVisible' : '')
+          }
+        >
+          <label for="select_start_position">Position</label>
           <select id="select_start_position" className="positions">
             <option value={standardFen}>Initial Position</option>
             {ctrl.startPositions.map(c => {
               return (
                 <optgroup label={c.name}>
-                  {c.positions.map(p =>
+                  {c.positions.map(p => (
                     <option value={p.fen}>{p.eco + ' ' + p.name}</option>
-                  )}
+                  ))}
                 </optgroup>
               )
             })}
           </select>
         </div>
         <div className="select_input">
-          {formWidgets.renderSelect('Mode', 'mode', settings.tournament.availableModes, settings.tournament.mode, false)}
+          {formWidgets.renderSelect(
+            'Mode',
+            'mode',
+            settings.tournament.availableModes,
+            settings.tournament.mode,
+            false
+          )}
         </div>
         <div className="select_input inline">
-          {formWidgets.renderSelect('Time', 'time', settings.tournament.availableTimes, settings.tournament.time, false)}
+          {formWidgets.renderSelect(
+            'Time',
+            'time',
+            settings.tournament.availableTimes,
+            settings.tournament.time,
+            false
+          )}
         </div>
         <div className="select_input inline no-margin">
-          {formWidgets.renderSelect('Increment', 'increment', settings.tournament.availableIncrements.map((x: string) => utils.tupleOf(Number(x))), settings.tournament.increment, false)}
+          {formWidgets.renderSelect(
+            'Increment',
+            'increment',
+            settings.tournament.availableIncrements.map((x: string) =>
+              utils.tupleOf(Number(x))
+            ),
+            settings.tournament.increment,
+            false
+          )}
         </div>
         <div className="select_input inline">
-          {formWidgets.renderSelect('Duration', 'duration', settings.tournament.availableDurations.map((x: string) => utils.tupleOf(Number(x))), settings.tournament.duration, false)}
+          {formWidgets.renderSelect(
+            'Duration',
+            'duration',
+            settings.tournament.availableDurations.map((x: string) =>
+              utils.tupleOf(Number(x))
+            ),
+            settings.tournament.duration,
+            false
+          )}
         </div>
         <div className="select_input inline no-margin">
-          {formWidgets.renderSelect('Time to Start', 'timeToStart', settings.tournament.availableTimesToStart.map((x: string) => utils.tupleOf(Number(x))), settings.tournament.timeToStart, false)}
+          {formWidgets.renderSelect(
+            'Time to Start',
+            'timeToStart',
+            settings.tournament.availableTimesToStart.map((x: string) =>
+              utils.tupleOf(Number(x))
+            ),
+            settings.tournament.timeToStart,
+            false
+          )}
         </div>
         <div className="select_input">
-          {formWidgets.renderCheckbox(i18n('isPrivate'), 'private', settings.tournament.private)}
+          {formWidgets.renderCheckbox(
+            i18n('isPrivate'),
+            'private',
+            settings.tournament.private
+          )}
         </div>
-        <div className={'select_input no_arrow_after' + (settings.tournament.private() ? '' : ' notVisible')}>
+        <div
+          className={
+            'select_input no_arrow_after' +
+            (settings.tournament.private() ? '' : ' notVisible')
+          }
+        >
           <div className="text_input_container">
             <label>Password: </label>
-            <input type="text"
+            <input
+              type="text"
               id="password"
               className="passwordField"
               autocomplete="off"
@@ -109,19 +165,35 @@ function renderForm(ctrl: TournamentsListCtrl) {
 function create(form: HTMLFormElement) {
   const elements: HTMLCollection = form[0].elements as HTMLCollection
   const variant = (elements[0] as HTMLInputElement).value
-  const position = settings.tournament.variant() === '1' ? (elements[1] as HTMLInputElement).value : '---'
+  const position =
+    settings.tournament.variant() === '1'
+      ? (elements[1] as HTMLInputElement).value
+      : '---'
   const mode = (elements[2] as HTMLInputElement).value
   const time = (elements[3] as HTMLTextAreaElement).value
   const increment = (elements[4] as HTMLTextAreaElement).value
   const duration = (elements[5] as HTMLTextAreaElement).value
   const timeToStart = (elements[6] as HTMLTextAreaElement).value
-  const isPrivate = (elements[7] as HTMLInputElement).checked ? (elements[7] as HTMLInputElement).value : ''
+  const isPrivate = (elements[7] as HTMLInputElement).checked
+    ? (elements[7] as HTMLInputElement).value
+    : ''
   const password = isPrivate ? (elements[8] as HTMLInputElement).value : ''
 
-  xhr.create(variant, position, mode, time, increment, duration, timeToStart, isPrivate, password)
-  .then((data: TournamentCreateResponse) => {
-    close()
-    router.set('/tournament/' + data.id)
-  })
-  .catch(utils.handleXhrError)
+  xhr
+    .create(
+      variant,
+      position,
+      mode,
+      time,
+      increment,
+      duration,
+      timeToStart,
+      isPrivate,
+      password
+    )
+    .then((data: TournamentCreateResponse) => {
+      close()
+      router.set('/tournament/' + data.id)
+    })
+    .catch(utils.handleXhrError)
 }

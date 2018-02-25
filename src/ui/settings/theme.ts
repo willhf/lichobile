@@ -61,48 +61,62 @@ export default ThemePrefScreen
 function renderBody(ctrl: State) {
   const list = settings.general.theme.availableBackgroundThemes
   return [
-    h('div#bgThemes.native_scroller.page.settings_list.radio_list', {
-      className: ctrl.loading ? 'loading' : ''
-    }, [
-      h('ul', list.map((t) => {
-        const selected = settings.general.theme.background() === t.key
-        return h('li.list_item', [
-          formWidgets.renderRadio(
-            t.name,
-            'bg_theme',
-            t.key,
-            selected,
-            e => {
-              const val = (e.target as HTMLInputElement).value
-              const prevTheme = settings.general.theme.background()
-              settings.general.theme.background(val)
-              if (val === 'dark' || val === 'light') {
-                layout.onBackgroundChange(val)
-                redraw()
-              } else {
-                ctrl.loading = true
-                loadImage(val + '.' + t.ext, ctrl.onProgress)
-                .then(() => {
-                  layout.onBackgroundChange(val)
-                  ctrl.stopLoading()
-                })
-                .catch((err) => {
-                  settings.general.theme.background(prevTheme)
-                  ctrl.stopLoading()
-                  handleError(err)
-                })
-                redraw()
-              }
-            },
-            ctrl.loading
-          ),
-          selected && ctrl.progress ? h('div.theme-progressBarContainer', [
-            h('div.theme-progressBar', { style: { transform: `translateX(-${100 - progressPercent(ctrl.progress)}%)` }}),
-            h('div.theme-progressInner', progressAmount(ctrl.progress))
-          ]) : null
-        ])
-      }))
-    ])
+    h(
+      'div#bgThemes.native_scroller.page.settings_list.radio_list',
+      {
+        className: ctrl.loading ? 'loading' : ''
+      },
+      [
+        h(
+          'ul',
+          list.map(t => {
+            const selected = settings.general.theme.background() === t.key
+            return h('li.list_item', [
+              formWidgets.renderRadio(
+                t.name,
+                'bg_theme',
+                t.key,
+                selected,
+                e => {
+                  const val = (e.target as HTMLInputElement).value
+                  const prevTheme = settings.general.theme.background()
+                  settings.general.theme.background(val)
+                  if (val === 'dark' || val === 'light') {
+                    layout.onBackgroundChange(val)
+                    redraw()
+                  } else {
+                    ctrl.loading = true
+                    loadImage(val + '.' + t.ext, ctrl.onProgress)
+                      .then(() => {
+                        layout.onBackgroundChange(val)
+                        ctrl.stopLoading()
+                      })
+                      .catch(err => {
+                        settings.general.theme.background(prevTheme)
+                        ctrl.stopLoading()
+                        handleError(err)
+                      })
+                    redraw()
+                  }
+                },
+                ctrl.loading
+              ),
+              selected && ctrl.progress
+                ? h('div.theme-progressBarContainer', [
+                    h('div.theme-progressBar', {
+                      style: {
+                        transform: `translateX(-${100 -
+                          progressPercent(ctrl.progress)}%)`
+                      }
+                    }),
+                    h('div.theme-progressInner', progressAmount(ctrl.progress))
+                  ])
+                : null
+            ])
+          })
+        )
+      ]
+    )
   ]
 }
 
@@ -113,5 +127,5 @@ function progressAmount(p: Progress) {
 }
 
 function progressPercent(p: Progress) {
-  return (p.loaded / p.total) * 100
+  return p.loaded / p.total * 100
 }

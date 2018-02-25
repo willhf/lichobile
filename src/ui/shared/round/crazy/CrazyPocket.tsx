@@ -53,15 +53,19 @@ const CrazyPocket: Mithril.Component<Attrs, State> = {
     ].join(' ')
 
     return (
-      <div className={className} oncreate={this.pocketOnCreate} onremove={this.pocketOnRemove}>
-        {pieceRoles.map(role =>
+      <div
+        className={className}
+        oncreate={this.pocketOnCreate}
+        onremove={this.pocketOnRemove}
+      >
+        {pieceRoles.map(role => (
           <piece
             data-role={role}
             data-color={color}
             data-nb={pocket[role] || 0}
             className={role + ' ' + color}
           />
-        )}
+        ))}
       </div>
     )
   }

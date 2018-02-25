@@ -16,7 +16,7 @@ interface Promoting {
 let promoting: Promoting | null = null
 
 function promote(ground: Chessground, key: Key, role: Role) {
-  const pieces: {[k: string]: Piece } = {}
+  const pieces: { [k: string]: Piece } = {}
   const piece = ground.state.pieces[key]
   if (piece && piece.role === 'pawn') {
     pieces[key] = {
@@ -27,11 +27,19 @@ function promote(ground: Chessground, key: Key, role: Role) {
   }
 }
 
-function start(chessground: Chessground, orig: Key, dest: Key, callback: PromoteCallback) {
+function start(
+  chessground: Chessground,
+  orig: Key,
+  dest: Key,
+  callback: PromoteCallback
+) {
   const piece = chessground.state.pieces[dest]
-  if (piece && piece.role === 'pawn' && (
-    (dest[1] === '1' && chessground.state.turnColor === 'white') ||
-    (dest[1] === '8' && chessground.state.turnColor === 'black'))) {
+  if (
+    piece &&
+    piece.role === 'pawn' &&
+    ((dest[1] === '1' && chessground.state.turnColor === 'white') ||
+      (dest[1] === '8' && chessground.state.turnColor === 'black'))
+  ) {
     promoting = {
       orig: orig,
       dest: dest,
@@ -45,7 +53,8 @@ function start(chessground: Chessground, orig: Key, dest: Key, callback: Promote
 
 function finish(ground: Chessground, role: Role) {
   if (promoting) promote(ground, promoting.dest, role)
-  if (promoting && promoting.callback) promoting.callback(promoting.orig, promoting.dest, role)
+  if (promoting && promoting.callback)
+    promoting.callback(promoting.orig, promoting.dest, role)
   promoting = null
 }
 
@@ -65,14 +74,20 @@ export function view(ctrl: PromotingInterface) {
     pieces.push('king')
   }
 
-  return h('div.overlay.open', [h('div#promotion_choice', {
-    className: settings.general.theme.piece(),
-    style: { top: (helper.viewportDim().vh - 100) / 2 + 'px' }
-  }, pieces.map((role: Role) => {
-    return h('piece.' + role + '.' + ctrl.player(), {
-      oncreate: helper.ontap(() => finish(ctrl.chessground, role))
-    })
-  }))])
+  return h('div.overlay.open', [
+    h(
+      'div#promotion_choice',
+      {
+        className: settings.general.theme.piece(),
+        style: { top: (helper.viewportDim().vh - 100) / 2 + 'px' }
+      },
+      pieces.map((role: Role) => {
+        return h('piece.' + role + '.' + ctrl.player(), {
+          oncreate: helper.ontap(() => finish(ctrl.chessground, role))
+        })
+      })
+    )
+  ])
 }
 
 export default {

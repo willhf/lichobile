@@ -3,7 +3,7 @@ import * as util from './util'
 
 const initial = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
 
-const roles: {[i: string]: Role} = {
+const roles: { [i: string]: Role } = {
   p: 'pawn',
   r: 'rook',
   n: 'knight',
@@ -35,7 +35,8 @@ export function read(fen: string): { [k: string]: Piece } {
   for (let i = 0; i < fen.length; i++) {
     const c = fen[i]
     switch (c) {
-      case ' ': return pieces
+      case ' ':
+        return pieces
       case '/':
         --row
         if (row === 0) return pieces
@@ -65,15 +66,20 @@ function write(pieces: cg.Pieces) {
     function(str, nb) {
       return str.replace(new RegExp(Array(nb + 1).join('1'), 'g'), String(nb))
     },
-    util.invRanks.map(function(y) {
-      return util.ranks.map(function(x) {
-        const piece = pieces[util.pos2key([x, y])]
-        if (piece) {
-          const letter = letters[piece.role]
-          return piece.color === 'white' ? letter.toUpperCase() : letter
-        } else return '1'
-      }).join('')
-    }).join('/'))
+    util.invRanks
+      .map(function(y) {
+        return util.ranks
+          .map(function(x) {
+            const piece = pieces[util.pos2key([x, y])]
+            if (piece) {
+              const letter = letters[piece.role]
+              return piece.color === 'white' ? letter.toUpperCase() : letter
+            } else return '1'
+          })
+          .join('')
+      })
+      .join('/')
+  )
 }
 
 export default {

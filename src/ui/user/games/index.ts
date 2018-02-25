@@ -33,5 +33,4 @@ const UserGames: Mithril.Component<Attrs, State> = {
   }
 }
 
-
 export default UserGames

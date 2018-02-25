@@ -18,17 +18,27 @@ let pieceNotation: boolean
 function getChecksCount(ctrl: OfflineRoundInterface, color: Color) {
   const sit = ctrl.replay.situation()
   if (sit.checkCount)
-    return utils.oppositeColor(color) === 'white' ?
-      sit.checkCount.white : sit.checkCount.black
-  else
-    return 0
+    return utils.oppositeColor(color) === 'white'
+      ? sit.checkCount.white
+      : sit.checkCount.black
+  else return 0
 }
 
-export function renderAntagonist(ctrl: OfflineRoundInterface, content: Mithril.Children, material: Material, position: Position, isPortrait: boolean, otbFlip?: boolean, customPieceTheme?: string, clock?: IChessClock) {
+export function renderAntagonist(
+  ctrl: OfflineRoundInterface,
+  content: Mithril.Children,
+  material: Material,
+  position: Position,
+  isPortrait: boolean,
+  otbFlip?: boolean,
+  customPieceTheme?: string,
+  clock?: IChessClock
+) {
   const sit = ctrl.replay.situation()
   const isCrazy = !!sit.crazyhouse
   const key = isPortrait ? position + '-portrait' : position + '-landscape'
-  const antagonist = position === 'player' ? ctrl.data.player : ctrl.data.opponent
+  const antagonist =
+    position === 'player' ? ctrl.data.player : ctrl.data.opponent
   const antagonistColor = antagonist.color
 
   const className = [
@@ -36,62 +46,73 @@ export function renderAntagonist(ctrl: OfflineRoundInterface, content: Mithril.C
     'offline',
     position,
     isCrazy ? 'crazy' : '',
-    otbFlip !== undefined ? otbFlip ? 'mode_flip' : 'mode_facing' : '',
-    ctrl.chessground.state.turnColor === ctrl.data.player.color ? 'player_turn' : 'opponent_turn'
+    otbFlip !== undefined ? (otbFlip ? 'mode_flip' : 'mode_facing') : '',
+    ctrl.chessground.state.turnColor === ctrl.data.player.color
+      ? 'player_turn'
+      : 'opponent_turn'
   ].join(' ')
 
   return (
     <section id={position + '_info'} className={className} key={key}>
-      <div key="infos" className={'antagonistInfos offline' + (isCrazy ? ' crazy' : '')}>
+      <div
+        key="infos"
+        className={'antagonistInfos offline' + (isCrazy ? ' crazy' : '')}
+      >
         <div className="antagonistUser">
           {content}
           {isCrazy && clock ? renderClock(clock, antagonistColor) : ''}
         </div>
-        { !isCrazy ? <div className="ratingAndMaterial">
-          {ctrl.data.game.variant.key === 'horde' ? null : renderMaterial(material)}
-          { ctrl.data.game.variant.key === 'threeCheck' ?
-            <div className="checkCount">&nbsp;+{getChecksCount(ctrl, antagonistColor)}</div> : null
-          }
-        </div> : null
-        }
+        {!isCrazy ? (
+          <div className="ratingAndMaterial">
+            {ctrl.data.game.variant.key === 'horde'
+              ? null
+              : renderMaterial(material)}
+            {ctrl.data.game.variant.key === 'threeCheck' ? (
+              <div className="checkCount">
+                &nbsp;+{getChecksCount(ctrl, antagonistColor)}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
-      {sit.crazyhouse ?
-        h(CrazyPocket, {
-          ctrl,
-          crazyData: sit.crazyhouse,
-          color: antagonistColor,
-          position,
-          customPieceTheme
-        })
-        :
-        clock ? renderClock(clock, antagonistColor) : null}
+      {sit.crazyhouse
+        ? h(CrazyPocket, {
+            ctrl,
+            crazyData: sit.crazyhouse,
+            color: antagonistColor,
+            position,
+            customPieceTheme
+          })
+        : clock ? renderClock(clock, antagonistColor) : null}
     </section>
   )
 }
 
-
 export function renderGameActionsBar(ctrl: OfflineRoundInterface) {
   return (
     <section key="actionsBar" className="actions_bar">
-      <button className="action_bar_button fa fa-ellipsis-h"
+      <button
+        className="action_bar_button fa fa-ellipsis-h"
         oncreate={helper.ontap(ctrl.actions.open)}
       />
-      <button className="action_bar_button" data-icon="U"
-        oncreate={helper.ontap(
-          ctrl.newGameMenu.open,
-          () => window.plugins.toast.show(i18n('createAGame'), 'short', 'bottom')
+      <button
+        className="action_bar_button"
+        data-icon="U"
+        oncreate={helper.ontap(ctrl.newGameMenu.open, () =>
+          window.plugins.toast.show(i18n('createAGame'), 'short', 'bottom')
         )}
       />
-      <button data-icon="A" className="action_bar_button"
-        oncreate={helper.ontap(
-          ctrl.goToAnalysis,
-          () => window.plugins.toast.show(i18n('analysis'), 'short', 'bottom')
+      <button
+        data-icon="A"
+        className="action_bar_button"
+        oncreate={helper.ontap(ctrl.goToAnalysis, () =>
+          window.plugins.toast.show(i18n('analysis'), 'short', 'bottom')
         )}
       />
-      <button className="fa fa-share-alt action_bar_button"
-        oncreate={helper.ontap(
-          ctrl.sharePGN,
-          () => window.plugins.toast.show(i18n('sharePGN'), 'short', 'bottom')
+      <button
+        className="fa fa-share-alt action_bar_button"
+        oncreate={helper.ontap(ctrl.sharePGN, () =>
+          window.plugins.toast.show(i18n('sharePGN'), 'short', 'bottom')
         )}
       />
       {renderBackwardButton(ctrl)}
@@ -103,14 +124,23 @@ export function renderGameActionsBar(ctrl: OfflineRoundInterface) {
 export function renderGameActionsBarTablet(ctrl: OfflineRoundInterface) {
   return (
     <section className="actions_bar">
-      <button className="action_bar_button" data-icon="U"
-        oncreate={helper.ontap(ctrl.newGameMenu.open, () => window.plugins.toast.show(i18n('createAGame'), 'short', 'bottom'))}
+      <button
+        className="action_bar_button"
+        data-icon="U"
+        oncreate={helper.ontap(ctrl.newGameMenu.open, () =>
+          window.plugins.toast.show(i18n('createAGame'), 'short', 'bottom')
+        )}
       />
-      <button data-icon="A" className="action_bar_button"
+      <button
+        data-icon="A"
+        className="action_bar_button"
         oncreate={helper.ontap(ctrl.goToAnalysis)}
       />
-      <button className="fa fa-share-alt action_bar_button"
-        oncreate={helper.ontap(ctrl.actions.sharePGN, () => window.plugins.toast.show(i18n('sharePGN'), 'short', 'bottom'))}
+      <button
+        className="fa fa-share-alt action_bar_button"
+        oncreate={helper.ontap(ctrl.actions.sharePGN, () =>
+          window.plugins.toast.show(i18n('sharePGN'), 'short', 'bottom')
+        )}
       />
       {renderBackwardButton(ctrl)}
       {renderForwardButton(ctrl)}
@@ -125,8 +155,17 @@ export function renderEndedGameStatus(ctrl: OfflineRoundInterface) {
   if (gameStatusApi.finished(ctrl.data)) {
     const result = gameApi.result(ctrl.data)
     const winner = sit.winner
-    const status = gameStatusApi.toLabel(ctrl.data.game.status.name, ctrl.data.game.winner, ctrl.data.game.variant.key) +
-      (winner ? '. ' + i18n(winner === 'white' ? 'whiteIsVictorious' : 'blackIsVictorious') + '.' : '')
+    const status =
+      gameStatusApi.toLabel(
+        ctrl.data.game.status.name,
+        ctrl.data.game.winner,
+        ctrl.data.game.variant.key
+      ) +
+      (winner
+        ? '. ' +
+          i18n(winner === 'white' ? 'whiteIsVictorious' : 'blackIsVictorious') +
+          '.'
+        : '')
     return (
       <div key="result" className="result">
         {result}
@@ -140,15 +179,24 @@ export function renderEndedGameStatus(ctrl: OfflineRoundInterface) {
 }
 
 export function renderClaimDrawButton(ctrl: OfflineRoundInterface) {
-  return gameApi.playable(ctrl.data) ? h('div.claimDraw', {
-    key: 'claimDraw'
-  }, [
-    h('button[data-icon=2].draw-yes', {
-      oncreate: helper.ontap(() => ctrl.replay.claimDraw())
-    }, i18n('threefoldRepetition'))
-  ]) : null
+  return gameApi.playable(ctrl.data)
+    ? h(
+        'div.claimDraw',
+        {
+          key: 'claimDraw'
+        },
+        [
+          h(
+            'button[data-icon=2].draw-yes',
+            {
+              oncreate: helper.ontap(() => ctrl.replay.claimDraw())
+            },
+            i18n('threefoldRepetition')
+          )
+        ]
+      )
+    : null
 }
-
 
 export function renderReplayTable(ctrl: Replay) {
   const curPly = ctrl.ply
@@ -158,9 +206,14 @@ export function renderReplayTable(ctrl: Replay) {
 
   return (
     <div key="replay-table" className="replay">
-      <div className="gameMovesList native_scroller"
-        oncreate={(vnode: Mithril.DOMNode) => { autoScroll(vnode.dom as HTMLElement) }}
-        onupdate={(vnode: Mithril.DOMNode) => setTimeout(autoScroll.bind(undefined, vnode.dom), 100)}
+      <div
+        className="gameMovesList native_scroller"
+        oncreate={(vnode: Mithril.DOMNode) => {
+          autoScroll(vnode.dom as HTMLElement)
+        }}
+        onupdate={(vnode: Mithril.DOMNode) =>
+          setTimeout(autoScroll.bind(undefined, vnode.dom), 100)
+        }
       >
         {renderTable(ctrl, curPly)}
       </div>
@@ -203,14 +256,15 @@ function renderTable(ctrl: Replay, curPly: number) {
   const steps = ctrl.situations
   const pairs: Array<[GameSituation, GameSituation]> = []
   for (let i = 1; i < steps.length; i += 2) pairs.push([steps[i], steps[i + 1]])
-  pieceNotation = pieceNotation === undefined ? settings.game.pieceNotation() : pieceNotation
+  pieceNotation =
+    pieceNotation === undefined ? settings.game.pieceNotation() : pieceNotation
   return (
     <table className={'moves' + (pieceNotation ? ' displayPieces' : '')}>
       <tbody>
         {pairs.map((pair, i) => {
           return (
             <tr>
-              <td className="replayMoveIndex">{ (i + 1) + '.' }</td>
+              <td className="replayMoveIndex">{i + 1 + '.'}</td>
               {renderTd(pair[0], curPly)}
               {renderTd(pair[1], curPly)}
             </tr>
@@ -223,8 +277,11 @@ function renderTable(ctrl: Replay, curPly: number) {
 
 function autoScroll(movelist: HTMLElement) {
   if (!movelist) return
-  const plyEl = (movelist.querySelector('.current') || movelist.querySelector('tr:first-child')) as HTMLElement
-  if (plyEl) movelist.scrollTop = plyEl.offsetTop - movelist.offsetHeight / 2 + plyEl.offsetHeight / 2
+  const plyEl = (movelist.querySelector('.current') ||
+    movelist.querySelector('tr:first-child')) as HTMLElement
+  if (plyEl)
+    movelist.scrollTop =
+      plyEl.offsetTop - movelist.offsetHeight / 2 + plyEl.offsetHeight / 2
 }
 
 function renderClock(clock: IChessClock, color: Color) {
@@ -237,17 +294,29 @@ function renderClock(clock: IChessClock, color: Color) {
     running: isRunning,
     offlineClock: true
   })
-  const clockTime = h('div', {
-    className
-  }, formatClockTime(time, isRunning))
+  const clockTime = h(
+    'div',
+    {
+      className
+    },
+    formatClockTime(time, isRunning)
+  )
 
-  const moves = clock.clockType === 'stage' ? (clock as IStageClock).getMoves(color) : null
+  const moves =
+    clock.clockType === 'stage' ? (clock as IStageClock).getMoves(color) : null
   className = helper.classSet({
     clockMoves: true
   })
-  const clockMoves = h('div', {
-    className
-  }, 'Moves: ' + moves)
-  const clockInfo = h('div', {className: 'clockInfo'}, [clockTime, moves ? clockMoves : null])
+  const clockMoves = h(
+    'div',
+    {
+      className
+    },
+    'Moves: ' + moves
+  )
+  const clockInfo = h('div', { className: 'clockInfo' }, [
+    clockTime,
+    moves ? clockMoves : null
+  ])
   return clockInfo
 }

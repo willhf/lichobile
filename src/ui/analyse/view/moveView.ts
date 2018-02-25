@@ -14,9 +14,15 @@ function plyToTurn(ply: Ply): number {
 }
 
 export function renderGlyphs(glyphs: Tree.Glyph[]): Mithril.BaseNode[] {
-  return glyphs.map(glyph => h('glyph', {
-    attrs: { title: glyph.name }
-  }, glyph.symbol))
+  return glyphs.map(glyph =>
+    h(
+      'glyph',
+      {
+        attrs: { title: glyph.name }
+      },
+      glyph.symbol
+    )
+  )
 }
 
 function renderEval(e: string): Mithril.BaseNode {
@@ -32,18 +38,23 @@ export function renderIndex(ply: Ply, withDots?: boolean): Mithril.BaseNode {
 }
 
 export function renderMove(ctx: Ctx, node: Tree.Node): Mithril.BaseNode[] {
-  const ev: any = getBestEval({client: node.ceval, server: node.eval}) || {}
+  const ev: any = getBestEval({ client: node.ceval, server: node.eval }) || {}
   return [h('san', fixCrazySan(node.san!))]
-    .concat((node.glyphs && ctx.showGlyphs) ? renderGlyphs(node.glyphs) : [])
-    .concat(ctx.showEval ? (
-      ev.cp !== undefined ? [renderEval(normalizeEval(ev.cp))] : (
-        ev.mate !== undefined ? [renderEval('#' + ev.mate)] : []
-      )
-    ) : [])
+    .concat(node.glyphs && ctx.showGlyphs ? renderGlyphs(node.glyphs) : [])
+    .concat(
+      ctx.showEval
+        ? ev.cp !== undefined
+          ? [renderEval(normalizeEval(ev.cp))]
+          : ev.mate !== undefined ? [renderEval('#' + ev.mate)] : []
+        : []
+    )
 }
 
-export function renderIndexAndMove(ctx: Ctx, node: Tree.Node): Mithril.BaseNode[] {
-  return node.uci ?
-  [renderIndex(node.ply, ctx.withDots)].concat(renderMove(ctx, node)) :
-  [h('span.init', 'Initial position')]
+export function renderIndexAndMove(
+  ctx: Ctx,
+  node: Tree.Node
+): Mithril.BaseNode[] {
+  return node.uci
+    ? [renderIndex(node.ply, ctx.withDots)].concat(renderMove(ctx, node))
+    : [h('span.init', 'Initial position')]
 }

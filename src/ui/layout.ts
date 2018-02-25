@@ -15,7 +15,6 @@ import lobby from './lobby'
 let background: string
 
 export default {
-
   onBackgroundChange: function(bg: string) {
     background = bg
   },
@@ -28,14 +27,18 @@ export default {
   ) {
     background = background || settings.general.theme.background()
     return h('div.view-container', { className: bgClass(background) }, [
-      h('main#page', {
-        className: color,
-        oncreate: handleMenuOpen
-      }, [
-        h('header.main_header.board', header()),
-        h('div.content_round', content()),
-        h('div#menu-close-overlay', { oncreate: menu.backdropCloseHandler })
-      ]),
+      h(
+        'main#page',
+        {
+          className: color,
+          oncreate: handleMenuOpen
+        },
+        [
+          h('header.main_header.board', header()),
+          h('div.content_round', content()),
+          h('div#menu-close-overlay', { oncreate: menu.backdropCloseHandler })
+        ]
+      ),
       h(MenuView),
       gamesMenu.view(),
       loginModal.view(),
@@ -79,9 +82,7 @@ export default {
   clock(content: () => Mithril.Children, overlay?: () => Mithril.Children) {
     background = background || settings.general.theme.background()
     return h('div.view-container', { className: bgClass(background) }, [
-      h('main#page', [
-        h('div.content.fullScreen', content())
-      ]),
+      h('main#page', [h('div.content.fullScreen', content())]),
       overlay ? overlay() : null
     ])
   }
@@ -92,5 +93,7 @@ function handleMenuOpen({ dom }: Mithril.DOMNode) {
 }
 
 function bgClass(bgTheme: string) {
-  return bgTheme === 'dark' || bgTheme === 'light' ? bgTheme : 'transp ' + bgTheme
+  return bgTheme === 'dark' || bgTheme === 'light'
+    ? bgTheme
+    : 'transp ' + bgTheme
 }

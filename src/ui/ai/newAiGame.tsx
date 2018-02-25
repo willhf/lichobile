@@ -25,7 +25,6 @@ export interface NewAiGameCtrl {
 }
 
 export default {
-
   controller(root: AiRoundInterface) {
     const isOpen = stream(false)
 
@@ -35,7 +34,8 @@ export default {
     }
 
     function close(fromBB?: string) {
-      if (fromBB !== 'backbutton' && isOpen() === true) router.backbutton.stack.pop()
+      if (fromBB !== 'backbutton' && isOpen() === true)
+        router.backbutton.stack.pop()
       isOpen(false)
     }
 
@@ -54,22 +54,24 @@ export default {
         undefined,
         function() {
           const availVariants = settings.ai.availableVariants
-          const variants = ctrl.root.vm.setupFen ?
-            availVariants.filter(i => !specialFenVariants.has(i[1])) :
-            availVariants
+          const variants = ctrl.root.vm.setupFen
+            ? availVariants.filter(i => !specialFenVariants.has(i[1]))
+            : availVariants
 
           const setupVariant = settings.ai.variant()
-          const hasSpecialSetup = ctrl.root.vm.setupFen && specialFenVariants.has(setupVariant)
+          const hasSpecialSetup =
+            ctrl.root.vm.setupFen && specialFenVariants.has(setupVariant)
 
           const settingsColor = settings.ai.color()
-          const setupColor = settingsColor !== 'random' ? settingsColor : 'white'
+          const setupColor =
+            settingsColor !== 'random' ? settingsColor : 'white'
 
           return (
             <div>
               <div className="action">
                 {opponentSelector()}
                 {sideSelector()}
-                {hasSpecialSetup ?
+                {hasSpecialSetup ? (
                   <div className="select_input disabled">
                     <label for="variant">{i18n('variant')}</label>
                     <select disabled id="variant">
@@ -77,12 +79,18 @@ export default {
                         {getVariant(setupVariant).name}
                       </option>
                     </select>
-                  </div> :
-                  <div className="select_input">
-                    {formWidgets.renderSelect('variant', 'variant', variants, settings.ai.variant)}
                   </div>
-                }
-                { ctrl.root.vm.setupFen ?
+                ) : (
+                  <div className="select_input">
+                    {formWidgets.renderSelect(
+                      'variant',
+                      'variant',
+                      variants,
+                      settings.ai.variant
+                    )}
+                  </div>
+                )}
+                {ctrl.root.vm.setupFen ? (
                   <div className="from_position_wrapper">
                     <p>{i18n('fromPosition')}</p>
                     <div className="from_position">
@@ -92,7 +100,12 @@ export default {
                           height: '130px'
                         }}
                         oncreate={helper.ontap(() => {
-                          if (ctrl.root.vm.setupFen) router.set(`/editor/${encodeURIComponent(ctrl.root.vm.setupFen)}`)
+                          if (ctrl.root.vm.setupFen)
+                            router.set(
+                              `/editor/${encodeURIComponent(
+                                ctrl.root.vm.setupFen
+                              )}`
+                            )
                         })}
                       >
                         {h(ViewOnlyBoard, {
@@ -102,14 +115,20 @@ export default {
                         })}
                       </div>
                     </div>
-                  </div> : null
-                }
+                  </div>
+                ) : null}
               </div>
               <div className="popupActionWrapper">
-                <button className="popupAction" data-icon="E"
+                <button
+                  className="popupAction"
+                  data-icon="E"
                   oncreate={helper.ontap(() => {
-                    ctrl.root.startNewGame(settings.ai.variant() as VariantKey, ctrl.root.vm.setupFen)
-                  })}>
+                    ctrl.root.startNewGame(
+                      settings.ai.variant() as VariantKey,
+                      ctrl.root.vm.setupFen
+                    )
+                  })}
+                >
                   {i18n('play')}
                 </button>
               </div>

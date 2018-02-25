@@ -28,13 +28,23 @@ export function validateFen(fen: string, variant: VariantKey = 'standard') {
   const rows = tokens[0].split('/')
 
   if (variant === 'threeCheck')
-    return validateThreeCheck(tokens, rows) && validateTokens(tokens) && validateRows(rows)
-
+    return (
+      validateThreeCheck(tokens, rows) &&
+      validateTokens(tokens) &&
+      validateRows(rows)
+    )
   else if (variant === 'crazyhouse')
-    return validateCrazy(tokens, rows) && validateTokens(tokens) && validateCrazyRows(rows)
-
+    return (
+      validateCrazy(tokens, rows) &&
+      validateTokens(tokens) &&
+      validateCrazyRows(rows)
+    )
   else
-    return validateStandard(tokens, rows) && validateTokens(tokens) && validateRows(rows)
+    return (
+      validateStandard(tokens, rows) &&
+      validateTokens(tokens) &&
+      validateRows(rows)
+    )
 }
 
 function validateStandard(tokens: string[], rows: string[]) {
@@ -143,12 +153,12 @@ function validateCrazyRows(rows: string[]): boolean {
 // modified for lichobile
 function validateTokens(tokens: string[]): boolean {
   /* move number field is a integer value > 0? */
-  if (isNaN(Number(tokens[5])) || (parseInt(tokens[5], 10) <= 0)) {
+  if (isNaN(Number(tokens[5])) || parseInt(tokens[5], 10) <= 0) {
     return false
   }
 
   /* half move counter is an integer >= 0? */
-  if (isNaN(Number(tokens[4])) || (parseInt(tokens[4], 10) < 0)) {
+  if (isNaN(Number(tokens[4])) || parseInt(tokens[4], 10) < 0) {
     return false
   }
 
@@ -158,7 +168,7 @@ function validateTokens(tokens: string[]): boolean {
   }
 
   /* 3th field is a valid castle-string? */
-  if ( !/^(KQ?k?q?|Qk?q?|kq?|q|-)$/.test(tokens[2])) {
+  if (!/^(KQ?k?q?|Qk?q?|kq?|q|-)$/.test(tokens[2])) {
     return false
   }
 
@@ -170,10 +180,12 @@ function validateTokens(tokens: string[]): boolean {
   return true
 }
 
-
 export function positionLooksLegit(fen: string) {
   const pieces = fen.split(' ')[0]
-  return (pieces.match(/k/g) || []).length === 1 && (pieces.match(/K/g) || []).length === 1
+  return (
+    (pieces.match(/k/g) || []).length === 1 &&
+    (pieces.match(/K/g) || []).length === 1
+  )
 }
 
 export function playerFromFen(fen?: string): Color {

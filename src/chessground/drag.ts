@@ -14,19 +14,23 @@ export interface DragCurrent {
   pos: NumberPair // relative current position
   dec: NumberPair // piece center decay
   over: Key | null // square being moused over
-  prevOver: Key | null// square previously moused over
+  prevOver: Key | null // square previously moused over
   started: boolean // whether the drag has started; as per the distance setting
   element: cg.PieceNode | null
   showGhost: boolean // whether to show ghost when dragging
-  originTarget: EventTarget,
+  originTarget: EventTarget
   previouslySelected: Key | null
   newPiece?: boolean // it it a new piece from outside the board
   force?: boolean // can the new piece replace an existing one (editor)
   scheduledAnimationFrame?: boolean
 }
 
-export function dragNewPiece(ctrl: Chessground, piece: Piece, e: TouchEvent, force?: boolean): void {
-
+export function dragNewPiece(
+  ctrl: Chessground,
+  piece: Piece,
+  e: TouchEvent,
+  force?: boolean
+): void {
   const key: Key = 'a0'
   const s = ctrl.state
   const dom = ctrl.dom!
@@ -53,9 +57,9 @@ export function dragNewPiece(ctrl: Chessground, piece: Piece, e: TouchEvent, for
     rel,
     epos: position,
     pos: [position[0] - rel[0], position[1] - rel[1]],
-    dec: s.draggable.magnified ?
-      [-squareBounds.width, -squareBounds.height * 2] :
-      [-squareBounds.width / 2, -squareBounds.height / 2],
+    dec: s.draggable.magnified
+      ? [-squareBounds.width, -squareBounds.height * 2]
+      : [-squareBounds.width / 2, -squareBounds.height / 2],
     over: null,
     prevOver: null,
     started: true,
@@ -89,7 +93,11 @@ export function start(ctrl: Chessground, e: TouchEvent) {
   }
   const stillSelected = state.selected === orig
   if (state.pieces[orig] && stillSelected && board.isDraggable(state, orig)) {
-    const squareBounds = util.computeSquareBounds(state.orientation, bounds, orig)
+    const squareBounds = util.computeSquareBounds(
+      state.orientation,
+      bounds,
+      orig
+    )
     const origPos = util.key2pos(orig)
     state.draggable.current = {
       previouslySelected,
@@ -99,13 +107,15 @@ export function start(ctrl: Chessground, e: TouchEvent) {
       epos: position,
       pos: [0, 0],
       origPos,
-      dec: state.draggable.magnified ? [
-        position[0] - (squareBounds.left + squareBounds.width),
-        position[1] - (squareBounds.top + squareBounds.height * 2)
-      ] : [
-        position[0] - (squareBounds.left + squareBounds.width / 2),
-        position[1] - (squareBounds.top + squareBounds.height / 2)
-      ],
+      dec: state.draggable.magnified
+        ? [
+            position[0] - (squareBounds.left + squareBounds.width),
+            position[1] - (squareBounds.top + squareBounds.height * 2)
+          ]
+        : [
+            position[0] - (squareBounds.left + squareBounds.width / 2),
+            position[1] - (squareBounds.top + squareBounds.height / 2)
+          ],
       started: false,
       over: orig,
       prevOver: null,
@@ -115,7 +125,8 @@ export function start(ctrl: Chessground, e: TouchEvent) {
       scheduledAnimationFrame: false
     }
     if (state.draggable.magnified && state.draggable.centerPiece) {
-      state.draggable.current.dec[1] = position[1] - (squareBounds.top + squareBounds.height)
+      state.draggable.current.dec[1] =
+        position[1] - (squareBounds.top + squareBounds.height)
     }
   } else {
     if (hadPremove) board.unsetPremove(state)
@@ -135,7 +146,10 @@ export function move(ctrl: Chessground, e: TouchEvent) {
 
   if (cur.orig) {
     cur.epos = util.eventPosition(e)
-    if (!cur.started && util.distance(cur.epos, cur.rel) >= state.draggable.distance) {
+    if (
+      !cur.started &&
+      util.distance(cur.epos, cur.rel) >= state.draggable.distance
+    ) {
       cur.started = true
       processDrag(ctrl)
     }
@@ -164,22 +178,23 @@ export function end(ctrl: Chessground, e: TouchEvent) {
   if (cur.started && dest) {
     if (cur.newPiece) {
       board.dropNewPiece(state, cur.orig, dest, cur.force)
-    }
-    else {
+    } else {
       board.userMove(state, cur.orig, dest)
     }
-  }
-  // board editor mode: delete any piece dropped off the board
-  else if (cur.started && draggable.deleteOnDropOff) {
+  } else if (cur.started && draggable.deleteOnDropOff) {
+    // board editor mode: delete any piece dropped off the board
     delete state.pieces[cur.orig]
     setTimeout(state.events.change, 0)
-  }
-  // crazy invalid drop (no dest): delete the piece
-  else if (cur.newPiece) {
+  } else if (cur.newPiece) {
+    // crazy invalid drop (no dest): delete the piece
     delete state.pieces[cur.orig]
   }
 
-  if (cur && cur.orig === cur.previouslySelected && (cur.orig === dest || !dest)) {
+  if (
+    cur &&
+    cur.orig === cur.previouslySelected &&
+    (cur.orig === dest || !dest)
+  ) {
     board.unselect(state)
   }
 
@@ -199,14 +214,18 @@ export function cancel(ctrl: Chessground) {
   }
 }
 
-function getKeyAtDomPos(state: State, pos: NumberPair, bounds: ClientRect): Key | null {
+function getKeyAtDomPos(
+  state: State,
+  pos: NumberPair,
+  bounds: ClientRect
+): Key | null {
   if (typeof bounds !== 'object') {
     throw new Error('function getKeyAtDomPos require bounds object arg')
   }
   const asWhite = state.orientation === 'white'
   const x = Math.ceil(8 * ((pos[0] - bounds.left) / bounds.width))
   const ox = (asWhite ? x : 9 - x) as cg.Coord
-  const y = Math.ceil(8 - (8 * ((pos[1] - bounds.top) / bounds.height)))
+  const y = Math.ceil(8 - 8 * ((pos[1] - bounds.top) / bounds.height))
   const oy = (asWhite ? y : 9 - y) as cg.Coord
   if (ox > 0 && ox < 9 && oy > 0 && oy < 9) {
     return util.pos2key([ox, oy])
@@ -233,14 +252,16 @@ function processDrag(ctrl: Chessground) {
       }
 
       // cancel animations while dragging
-      if (state.animation.current && state.animation.current.plan.anims[cur.orig]) {
+      if (
+        state.animation.current &&
+        state.animation.current.plan.anims[cur.orig]
+      ) {
         state.animation.current = null
       }
 
       const pieceEl = cur.element
 
       if (cur.started && pieceEl) {
-
         if (!pieceEl.cgDragging) {
           pieceEl.cgDragging = true
           pieceEl.classList.add('dragging')
@@ -251,16 +272,19 @@ function processDrag(ctrl: Chessground) {
           if (ghost && cur.showGhost) {
             ghost.className = `ghost ${cur.piece.color} ${cur.piece.role}`
             const translation = util.posToTranslate(
-              util.key2pos(cur.orig), state.orientation === 'white', bounds
+              util.key2pos(cur.orig),
+              state.orientation === 'white',
+              bounds
             )
-            ghost.style.transform = util.transform(state, cur.piece.color, util.translate(translation))
+            ghost.style.transform = util.transform(
+              state,
+              cur.piece.color,
+              util.translate(translation)
+            )
           }
         }
 
-        cur.pos = [
-          cur.epos[0] - cur.rel[0],
-          cur.epos[1] - cur.rel[1]
-        ]
+        cur.pos = [cur.epos[0] - cur.rel[0], cur.epos[1] - cur.rel[1]]
 
         cur.over = getKeyAtDomPos(state, cur.epos, bounds)
 
@@ -268,14 +292,18 @@ function processDrag(ctrl: Chessground) {
         const translate = util.posToTranslate(cur.origPos, asWhite, bounds)
         translate[0] += cur.pos[0] + cur.dec[0]
         translate[1] += cur.pos[1] + cur.dec[1]
-        pieceEl.style.transform = util.transform(state, cur.piece.color, util.translate3d(translate))
+        pieceEl.style.transform = util.transform(
+          state,
+          cur.piece.color,
+          util.translate3d(translate)
+        )
 
         // move square target
         const shadow = dom.elements.shadow
         if (shadow) {
           if (cur.over && cur.over !== cur.prevOver) {
             const sqSize = bounds.width / 8
-            const pos =  util.key2pos(cur.over)
+            const pos = util.key2pos(cur.over)
             const translate = util.posToTranslate(pos, asWhite, bounds)
             shadow.style.transform = util.translate3d([
               translate[0] - sqSize / 2,
@@ -300,4 +328,3 @@ function removeDragElements(dom: cg.DOM) {
     dom.elements.ghost.style.transform = util.translateAway
   }
 }
-

@@ -24,38 +24,48 @@ import { BaseUser, User } from '../../lichess/interfaces/user'
 
 export const LoadingBoard = {
   view() {
-    return layout.board(
-      connectingHeader,
-      () => viewOnlyBoardContent(emptyFen, 'white')
+    return layout.board(connectingHeader, () =>
+      viewOnlyBoardContent(emptyFen, 'white')
     )
   }
 }
 
 export function menuButton() {
   return (
-    <button key="main-menu" className="fa fa-navicon main_header_button menu_button" oncreate={helper.ontap(menu.toggle)}>
-    </button>
+    <button
+      key="main-menu"
+      className="fa fa-navicon main_header_button menu_button"
+      oncreate={helper.ontap(menu.toggle)}
+    />
   )
 }
 
-export function backButton(title?: Mithril.BaseNode | string): Mithril.Children {
+export function backButton(
+  title?: Mithril.BaseNode | string
+): Mithril.Children {
   return h('div.back_button', { key: 'default-history-backbutton' }, [
     h('button', { oncreate: helper.ontap(router.backHistory) }, backArrow),
-    title !== undefined ? typeof title === 'string' ? h('div.main_header_title', title) : title : null
+    title !== undefined
+      ? typeof title === 'string' ? h('div.main_header_title', title) : title
+      : null
   ])
 }
 
 export function friendsButton() {
   const nbFriends = friendsApi.count()
-  const longAction = () => window.plugins.toast.show(i18n('onlineFriends'), 'short', 'top')
+  const longAction = () =>
+    window.plugins.toast.show(i18n('onlineFriends'), 'short', 'top')
 
   return (
-    <button className="main_header_button friends_button" key="friends" data-icon="f"
+    <button
+      className="main_header_button friends_button"
+      key="friends"
+      data-icon="f"
       oncreate={helper.ontap(friendsPopup.open, longAction)}
     >
-    {nbFriends > 0 ?
-      <span className="chip nb_friends">{nbFriends}</span> : null
-    }
+      {nbFriends > 0 ? (
+        <span className="chip nb_friends">{nbFriends}</span>
+      ) : null}
     </button>
   )
 }
@@ -85,16 +95,25 @@ function gamesButton() {
     nbIncomingChallenges ? 'new_challenge' : '',
     !utils.hasNetwork() && !hasOfflineGames() ? 'invisible' : ''
   ].join(' ')
-  const longAction = () => window.plugins.toast.show(i18n('nbGamesInPlay', session.nowPlaying().length), 'short', 'top')
+  const longAction = () =>
+    window.plugins.toast.show(
+      i18n('nbGamesInPlay', session.nowPlaying().length),
+      'short',
+      'top'
+    )
 
   return (
-    <button key={key} className={className} oncreate={helper.ontap(action, longAction)}>
-      {!nbIncomingChallenges && myTurns ?
-        <span className="chip nb_playing">{myTurns}</span> : null
-      }
-      {nbIncomingChallenges ?
-        <span className="chip nb_challenges">{nbChallenges}</span> : null
-      }
+    <button
+      key={key}
+      className={className}
+      oncreate={helper.ontap(action, longAction)}
+    >
+      {!nbIncomingChallenges && myTurns ? (
+        <span className="chip nb_playing">{myTurns}</span>
+      ) : null}
+      {nbIncomingChallenges ? (
+        <span className="chip nb_challenges">{nbChallenges}</span>
+      ) : null}
     </button>
   )
 }
@@ -113,15 +132,18 @@ export function headerBtns() {
         {gamesButton()}
       </div>
     )
-  } else if (utils.hasNetwork() && session.isConnected() && friendsApi.count()) {
+  } else if (
+    utils.hasNetwork() &&
+    session.isConnected() &&
+    friendsApi.count()
+  ) {
     return (
       <div key="buttons" className="buttons">
         {friendsButton()}
         {gamesButton()}
       </div>
     )
-  }
-  else {
+  } else {
     return (
       <div key="buttons" className="buttons">
         {gamesButton()}
@@ -131,22 +153,37 @@ export function headerBtns() {
 }
 
 // TODO refactor this
-export function header(title: Mithril.BaseNode | string | null, leftButton?: Mithril.Children): Mithril.Children {
+export function header(
+  title: Mithril.BaseNode | string | null,
+  leftButton?: Mithril.Children
+): Mithril.Children {
   return h('nav', [
     leftButton ? leftButton : menuButton(),
-    typeof title === 'string' ?
-      h('div.main_header_title', {
-        key: title
-      }, title) : title,
+    typeof title === 'string'
+      ? h(
+          'div.main_header_title',
+          {
+            key: title
+          },
+          title
+        )
+      : title,
     headerBtns()
   ])
 }
 
-export function dropShadowHeader(title: Mithril.BaseNode | string | null, leftButton?: Mithril.Children): Mithril.Children {
+export function dropShadowHeader(
+  title: Mithril.BaseNode | string | null,
+  leftButton?: Mithril.Children
+): Mithril.Children {
   return [
     h('nav', [
       leftButton ? leftButton : menuButton(),
-      title ? <div className="main_header_title" key="title">{title}</div> : null,
+      title ? (
+        <div className="main_header_title" key="title">
+          {title}
+        </div>
+      ) : null,
       headerBtns()
     ]),
     h('div.main_header_drop_shadow')
@@ -163,7 +200,12 @@ export function connectingHeader(title?: string) {
   return (
     <nav>
       {menuButton()}
-      <div key="connecting-title" className={'main_header_title reconnecting' + (title ? 'withTitle' : '')}>
+      <div
+        key="connecting-title"
+        className={
+          'main_header_title reconnecting' + (title ? 'withTitle' : '')
+        }
+      >
         {title ? <span>{title}</span> : null}
         {loader}
       </div>
@@ -176,7 +218,12 @@ export function loadingBackbutton(title?: string) {
   return (
     <nav>
       {backButton()}
-      <div key="connecting-backbutton" className={'main_header_title reconnecting' + (title ? 'withTitle' : '')}>
+      <div
+        key="connecting-backbutton"
+        className={
+          'main_header_title reconnecting' + (title ? 'withTitle' : '')
+        }
+      >
         {title ? <span>{title}</span> : null}
         {loader}
       </div>
@@ -185,15 +232,31 @@ export function loadingBackbutton(title?: string) {
   )
 }
 
-export function viewOnlyBoardContent(fen: string, orientation: Color, lastMove?: string, variant?: VariantKey, wrapperClass?: string, customPieceTheme?: string) {
+export function viewOnlyBoardContent(
+  fen: string,
+  orientation: Color,
+  lastMove?: string,
+  variant?: VariantKey,
+  wrapperClass?: string,
+  customPieceTheme?: string
+) {
   const isPortrait = helper.isPortrait()
   const { vw, vh } = helper.viewportDim()
   const orientKey = 'viewonlyboard' + (isPortrait ? 'portrait' : 'landscape')
-  const bounds = isPortrait ? { width: vw, height: vw } : { width: vh - 50, height: vh - 50 }
+  const bounds = isPortrait
+    ? { width: vw, height: vw }
+    : { width: vh - 50, height: vh - 50 }
   const className = 'board_wrapper' + (wrapperClass ? ' ' + wrapperClass : '')
   const board = (
     <section className={className}>
-      {h(ViewOnlyBoard, {bounds, fen, lastMove, orientation, variant, customPieceTheme})}
+      {h(ViewOnlyBoard, {
+        bounds,
+        fen,
+        lastMove,
+        orientation,
+        variant,
+        customPieceTheme
+      })}
     </section>
   )
   if (isPortrait) {
@@ -204,7 +267,7 @@ export function viewOnlyBoardContent(fen: string, orientation: Color, lastMove?:
       <section className="actions_bar">&nbsp;</section>
     ])
   } else {
-    return h.fragment({ key: orientKey}, [
+    return h.fragment({ key: orientKey }, [
       board,
       <section className="table" />
     ])
@@ -219,19 +282,26 @@ export function userStatus(user: BaseUser) {
   const status = user.online ? 'online' : 'offline'
   return (
     <div className="user">
-      {user.patron ?
-        <span className={'patron userStatus ' + status} data-icon="" /> :
+      {user.patron ? (
+        <span className={'patron userStatus ' + status} data-icon="" />
+      ) : (
         <span className={'fa fa-circle userStatus ' + status} />
-      }
-      {user.title ? <span className="userTitle">{user.title}&nbsp;</span> : null}
+      )}
+      {user.title ? (
+        <span className="userTitle">{user.title}&nbsp;</span>
+      ) : null}
       {user.username}
     </div>
   )
 }
 
-export function miniUser(user: User | undefined, mini: any, isOpen: boolean, close: () => void) {
+export function miniUser(
+  user: User | undefined,
+  mini: any,
+  isOpen: boolean,
+  close: () => void
+) {
   if (user) {
-
     const status = userStatus(user)
 
     function content() {
@@ -246,52 +316,59 @@ export function miniUser(user: User | undefined, mini: any, isOpen: boolean, clo
       const sessionUserId = curSess && curSess.id
       return (
         <div key="loaded" className="miniUser">
-        <div className="title">
-        <div className="username" oncreate={helper.ontap(() => router.set(`/@/${user.username}`))}>
-        {status}
-        </div>
-        { user.profile && user.profile.country ?
-          <p className="country">
-          <img className="flag" src={utils.lichessAssetSrc('images/flags/' + user.profile.country + '.png')} />
-          {countries[user.profile.country]}
-          </p> : user.language ?
-          <p className="language">
-          <span className="fa fa-comment-o" />
-          {getLanguageNativeName(user.language)}
-          </p> : null
-        }
-        </div>
-        { mini.perfs ?
-          <div className="mini_perfs">
-          {Object.keys(mini.perfs).map((p: PerfKey) => {
-            const perf = mini.perfs[p]
-            return (
-              <div className="perf">
-              <span data-icon={utils.gameIcon(p)} />
-              {perf.games > 0 ? perf.rating + (perf.prov ? '?' : '') : '-'}
-              </div>
-            )
-          })}
-          </div> : null
-        }
-        { sessionUserId && mini.crosstable && mini.crosstable.nbGames > 0 ?
-          <div className="yourScore">
-          Your score: <span className="score">{`${mini.crosstable.users[sessionUserId]} - ${mini.crosstable.users[user.id]}`}</span>
-          </div> : null
-        }
+          <div className="title">
+            <div
+              className="username"
+              oncreate={helper.ontap(() => router.set(`/@/${user.username}`))}
+            >
+              {status}
+            </div>
+            {user.profile && user.profile.country ? (
+              <p className="country">
+                <img
+                  className="flag"
+                  src={utils.lichessAssetSrc(
+                    'images/flags/' + user.profile.country + '.png'
+                  )}
+                />
+                {countries[user.profile.country]}
+              </p>
+            ) : user.language ? (
+              <p className="language">
+                <span className="fa fa-comment-o" />
+                {getLanguageNativeName(user.language)}
+              </p>
+            ) : null}
+          </div>
+          {mini.perfs ? (
+            <div className="mini_perfs">
+              {Object.keys(mini.perfs).map((p: PerfKey) => {
+                const perf = mini.perfs[p]
+                return (
+                  <div className="perf">
+                    <span data-icon={utils.gameIcon(p)} />
+                    {perf.games > 0
+                      ? perf.rating + (perf.prov ? '?' : '')
+                      : '-'}
+                  </div>
+                )
+              })}
+            </div>
+          ) : null}
+          {sessionUserId && mini.crosstable && mini.crosstable.nbGames > 0 ? (
+            <div className="yourScore">
+              Your score:{' '}
+              <span className="score">{`${
+                mini.crosstable.users[sessionUserId]
+              } - ${mini.crosstable.users[user.id]}`}</span>
+            </div>
+          ) : null}
         </div>
       )
     }
 
-    return popupWidget(
-      'miniUserInfos',
-      undefined,
-      content,
-      isOpen,
-      close
-    )
+    return popupWidget('miniUserInfos', undefined, content, isOpen, close)
   }
 
   return null
 }
-

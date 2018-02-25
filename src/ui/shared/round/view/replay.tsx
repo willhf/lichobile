@@ -9,12 +9,13 @@ const emptyTd = <td className="move">...</td>
 let pieceNotation: boolean
 
 function renderTd(step: GameStep | null, curPly: number, orEmpty: boolean) {
-  if (!step || !step.san) return (orEmpty ? emptyTd : null)
+  if (!step || !step.san) return orEmpty ? emptyTd : null
 
   const san = step.san[0] === 'P' ? step.san.slice(1) : step.san
 
   return (
-    <td className={'replayMove' + (step.ply === curPly ? ' current' : '')}
+    <td
+      className={'replayMove' + (step.ply === curPly ? ' current' : '')}
       data-ply={step.ply}
     >
       {san}
@@ -27,7 +28,7 @@ function renderTr(index: number, pairs: StepPair[], curPly: number) {
   const second = pairs[index][1]
   return (
     <tr>
-      <td className="replayMoveIndex">{ (index + 1) + '.' }</td>
+      <td className="replayMoveIndex">{index + 1 + '.'}</td>
       {renderTd(first, curPly, true)}
       {renderTd(second, curPly, false)}
     </tr>
@@ -36,8 +37,12 @@ function renderTr(index: number, pairs: StepPair[], curPly: number) {
 
 function autoScroll(movelist?: HTMLElement) {
   if (!movelist) return
-  const plyEl = movelist.querySelector('.current') as HTMLElement || movelist.querySelector('tr:first-child') as HTMLElement
-  if (plyEl) movelist.scrollTop = plyEl.offsetTop - movelist.offsetHeight / 2 + plyEl.offsetHeight / 2
+  const plyEl =
+    (movelist.querySelector('.current') as HTMLElement) ||
+    (movelist.querySelector('tr:first-child') as HTMLElement)
+  if (plyEl)
+    movelist.scrollTop =
+      plyEl.offsetTop - movelist.offsetHeight / 2 + plyEl.offsetHeight / 2
 }
 
 function getTdEl(e: Event) {
@@ -66,22 +71,30 @@ export function renderTable(ctrl: OnlineRound) {
   const trs = []
   for (let i = 0, len = pairs.length; i < len; i++)
     trs.push(renderTr(i, pairs, ctrl.vm.ply))
-  pieceNotation = pieceNotation === undefined ? settings.game.pieceNotation() : pieceNotation
+  pieceNotation =
+    pieceNotation === undefined ? settings.game.pieceNotation() : pieceNotation
 
   return (
     <div className="replay">
-      <div className="gameMovesList native_scroller"
+      <div
+        className="gameMovesList native_scroller"
         oncreate={(vnode: Mithril.DOMNode) => {
           setTimeout(() => autoScroll(vnode.dom as HTMLElement), 100)
         }}
-        onupdate={(vnode: Mithril.DOMNode) => autoScroll(vnode.dom as HTMLElement)}
+        onupdate={(vnode: Mithril.DOMNode) =>
+          autoScroll(vnode.dom as HTMLElement)
+        }
       >
-        <table className={'moves' + (pieceNotation ? ' displayPieces' : '')}
-          oncreate={helper.ontap((e: Event) => onTableTap(ctrl, e), undefined, undefined, getTdEl)}
+        <table
+          className={'moves' + (pieceNotation ? ' displayPieces' : '')}
+          oncreate={helper.ontap(
+            (e: Event) => onTableTap(ctrl, e),
+            undefined,
+            undefined,
+            getTdEl
+          )}
         >
-          <tbody>
-            {trs}
-          </tbody>
+          <tbody>{trs}</tbody>
         </table>
       </div>
     </div>

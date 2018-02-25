@@ -14,22 +14,29 @@ export interface IImporterCtrl {
 }
 
 export default function ImporterCtrl(): IImporterCtrl {
-
   const importing = stream(false)
 
-  function submitOnline(pgn: string, analyse: boolean): Promise<OnlineGameData> {
-    const data: {[i: string]: string } = { pgn }
+  function submitOnline(
+    pgn: string,
+    analyse: boolean
+  ): Promise<OnlineGameData> {
+    const data: { [i: string]: string } = { pgn }
     if (analyse) data.analyse = '1'
 
-    return fetchJSON('/import', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Accept': 'application/vnd.lichess.v' + globalConfig.apiVersion + '+json'
+    return fetchJSON(
+      '/import',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          'X-Requested-With': 'XMLHttpRequest',
+          Accept:
+            'application/vnd.lichess.v' + globalConfig.apiVersion + '+json'
+        },
+        body: serializeQueryParameters(data)
       },
-      body: serializeQueryParameters(data)
-    }, true)
+      true
+    )
   }
 
   window.addEventListener('native.keyboardhide', helper.onKeyboardHide)
@@ -40,15 +47,15 @@ export default function ImporterCtrl(): IImporterCtrl {
       importing(true)
       redraw()
       submitOnline(pgn, settings.importer.analyse())
-      .then(data => {
-        router.set(`/analyse/online${data.url.round}`)
-      })
-      .catch(err => {
-        importing(false)
-        redraw()
-        console.error(err)
-        handleXhrError(err)
-      })
+        .then(data => {
+          router.set(`/analyse/online${data.url.round}`)
+        })
+        .catch(err => {
+          importing(false)
+          redraw()
+          console.error(err)
+          handleXhrError(err)
+        })
     },
     importing
   }

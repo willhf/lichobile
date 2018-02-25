@@ -1,7 +1,11 @@
 import router from '../../router'
 import { hasNetwork, handleXhrError } from '../../utils'
 import { positionsCache } from '../../utils/gamePosition'
-import { getOfflineGameData, saveOfflineGameData, removeOfflineGameData } from '../../utils/offlineGames'
+import {
+  getOfflineGameData,
+  saveOfflineGameData,
+  removeOfflineGameData
+} from '../../utils/offlineGames'
 import { game as gameXhr } from '../../xhr'
 import storage from '../../storage'
 import * as sleepUtils from '../../utils/sleep'
@@ -18,7 +22,11 @@ import { emptyFen } from '../../utils/fen'
 import roundView from '../shared/round/view/roundView'
 import gamesMenu from '../gamesMenu'
 import layout from '../layout'
-import { connectingHeader, viewOnlyBoardContent, loadingBackbutton } from '../shared/common'
+import {
+  connectingHeader,
+  viewOnlyBoardContent,
+  loadingBackbutton
+} from '../shared/common'
 
 interface Attrs {
   id: string
@@ -39,53 +47,61 @@ const GameScreen: Mithril.Component<Attrs, State> = {
     if (hasNetwork()) {
       const now = performance.now()
       gameXhr(vnode.attrs.id, vnode.attrs.color)
-      .then(data => {
-        gameData = data
+        .then(data => {
+          gameData = data
 
-        if (!data.player.spectator && !gameApi.isSupportedVariant(data)) {
-          window.plugins.toast.show(i18n('unsupportedVariant', data.game.variant.name), 'short', 'center')
+          if (!data.player.spectator && !gameApi.isSupportedVariant(data)) {
+            window.plugins.toast.show(
+              i18n('unsupportedVariant', data.game.variant.name),
+              'short',
+              'center'
+            )
+            router.set('/')
+          } else {
+            if (
+              gameApi.isPlayerPlaying(data) &&
+              gameApi.nbMoves(data, data.player.color) === 0
+            ) {
+              sound.dong()
+              vibrate.quick()
+              const variant = variantApi(data.game.variant.key)
+              const storageKey = variantStorageKey(data.game.variant.key)
+              if (
+                variant.alert &&
+                [1, 3].indexOf(variant.id) === -1 &&
+                !storage.get(storageKey)
+              ) {
+                window.navigator.notification.alert(variant.alert, () => {
+                  storage.set(storageKey, true)
+                })
+              }
+            }
+
+            const elapsed = performance.now() - now
+
+            setTimeout(() => {
+              this.round = new OnlineRound(vnode.attrs.id, data)
+            }, Math.max(400 - elapsed, 0))
+
+            gamesMenu.resetLastJoined()
+
+            if (data.player.user === undefined) {
+              storage.set('lastPlayedGameURLAsAnon', data.url.round)
+            }
+
+            if (gameData.game.speed === 'correspondence') {
+              if (!gameApi.playable(gameData)) {
+                removeOfflineGameData(vnode.attrs.id)
+              } else {
+                saveOfflineGameData(vnode.attrs.id, gameData)
+              }
+            }
+          }
+        })
+        .catch(error => {
+          handleXhrError(error)
           router.set('/')
-        }
-        else {
-          if (gameApi.isPlayerPlaying(data) &&
-          gameApi.nbMoves(data, data.player.color) === 0) {
-            sound.dong()
-            vibrate.quick()
-            const variant = variantApi(data.game.variant.key)
-            const storageKey = variantStorageKey(data.game.variant.key)
-            if (variant.alert && [1, 3].indexOf(variant.id) === -1 &&
-            !storage.get(storageKey)) {
-              window.navigator.notification.alert(variant.alert, () => {
-                storage.set(storageKey, true)
-              })
-            }
-          }
-
-          const elapsed = performance.now() - now
-
-          setTimeout(() => {
-            this.round = new OnlineRound(vnode.attrs.id, data)
-          }, Math.max(400 - elapsed, 0))
-
-          gamesMenu.resetLastJoined()
-
-          if (data.player.user === undefined) {
-            storage.set('lastPlayedGameURLAsAnon', data.url.round)
-          }
-
-          if (gameData.game.speed === 'correspondence') {
-            if (!gameApi.playable(gameData)) {
-              removeOfflineGameData(vnode.attrs.id)
-            } else {
-              saveOfflineGameData(vnode.attrs.id, gameData)
-            }
-          }
-        }
-      })
-      .catch(error => {
-        handleXhrError(error)
-        router.set('/')
-      })
+        })
     } else {
       const savedData = getOfflineGameData(vnode.attrs.id)
       if (savedData) {
@@ -95,7 +111,11 @@ const GameScreen: Mithril.Component<Attrs, State> = {
         }
         this.round = new OnlineRound(vnode.attrs.id, gameData)
       } else {
-        window.plugins.toast.show('Could not find saved data for this game', 'short', 'center')
+        window.plugins.toast.show(
+          'Could not find saved data for this game',
+          'short',
+          'center'
+        )
         router.set('/')
       }
     }
@@ -124,14 +144,12 @@ const GameScreen: Mithril.Component<Attrs, State> = {
     let board: () => Mithril.Child
 
     if (pov) {
-      board = () => viewOnlyBoardContent(pov.fen, pov.color, pov.lastMove,
-        pov.variant.key)
+      board = () =>
+        viewOnlyBoardContent(pov.fen, pov.color, pov.lastMove, pov.variant.key)
     } else {
       const g = positionsCache.get(attrs.id)
-      if (g)
-        board = () => viewOnlyBoardContent(g.fen, g.orientation)
-      else
-        board = () => viewOnlyBoardContent(emptyFen, 'white')
+      if (g) board = () => viewOnlyBoardContent(g.fen, g.orientation)
+      else board = () => viewOnlyBoardContent(emptyFen, 'white')
     }
 
     return layout.board(

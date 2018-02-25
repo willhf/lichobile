@@ -14,24 +14,24 @@ export default {
   get,
   set,
   remove,
-  prop,
+  prop
 }
 
 function get<T>(k: string): T | null {
-  return withStorage((s) => {
+  return withStorage(s => {
     const item = s.getItem(k)
     return item ? JSON.parse(item) : null
   })
 }
 
 function remove(k: string): void {
-  withStorage((s) => {
+  withStorage(s => {
     s.removeItem(k)
   })
 }
 
 function set<T>(k: string, v: T): void {
-  withStorage((s) => {
+  withStorage(s => {
     s.removeItem(k)
     s.setItem(k, JSON.stringify(v))
   })
@@ -41,6 +41,6 @@ function prop<T>(key: string, initialValue: T): StoredProp<T> {
   return function() {
     if (arguments.length) set(key, arguments[0])
     const ret = get<T>(key)
-    return (ret !== null && ret !== undefined) ? ret : initialValue
+    return ret !== null && ret !== undefined ? ret : initialValue
   }
 }

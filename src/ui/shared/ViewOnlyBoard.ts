@@ -47,13 +47,14 @@ const ViewOnlyBoard: Mithril.Component<Attrs, State> = {
     if (
       attrs.fen !== oldattrs.fen ||
       attrs.lastMove !== oldattrs.lastMove ||
-      attrs.orientation !== oldattrs.orientation || (!oldattrs.bounds || attrs.bounds && (
-      attrs.bounds.height !== oldattrs.bounds.height ||
-      attrs.bounds.width !== oldattrs.bounds.width))
+      attrs.orientation !== oldattrs.orientation ||
+      (!oldattrs.bounds ||
+        (attrs.bounds &&
+          (attrs.bounds.height !== oldattrs.bounds.height ||
+            attrs.bounds.width !== oldattrs.bounds.width)))
     ) {
       return true
-    }
-    else return false
+    } else return false
   },
 
   onupdate({ attrs }) {
@@ -71,7 +72,6 @@ const ViewOnlyBoard: Mithril.Component<Attrs, State> = {
   },
 
   view({ attrs }) {
-
     const boardClass = [
       'display_board',
       attrs.customPieceTheme || this.pieceTheme,

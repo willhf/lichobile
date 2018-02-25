@@ -10,7 +10,7 @@ import * as gameApi from '../../lichess/game'
 import CountdownTimer from './CountdownTimer'
 
 interface Attrs {
-  data: GameData | AnalyseData,
+  data: GameData | AnalyseData
   subTitle?: 'players' | 'date' | 'tournament' | 'corres'
   kidMode?: boolean
 }
@@ -19,36 +19,37 @@ export default {
   onbeforeupdate({ attrs }, { attrs: oldattrs }) {
     // careful with that, mutability doesn't help, but it should be easy to know
     // what changes here
-    return attrs.subTitle === 'corres' || attrs.subTitle !== oldattrs.subTitle ||
+    return (
+      attrs.subTitle === 'corres' ||
+      attrs.subTitle !== oldattrs.subTitle ||
       attrs.kidMode !== oldattrs.kidMode
+    )
   },
 
   view({ attrs }) {
     const { data, subTitle, kidMode } = attrs
-    const icon = data.game.source === 'import' ? '/' :
-    utils.gameIcon(data.game.perf || data.game.variant.key)
+    const icon =
+      data.game.source === 'import'
+        ? '/'
+        : utils.gameIcon(data.game.perf || data.game.variant.key)
     const title = gameApi.title(data)
 
     let subEls: Mithril.Children = null
     if (subTitle === 'players') {
       subEls = [
         h('span', playerApi.playerName(data.player, true, true, 12)),
-        h('span.swords' , { 'data-icon': 'U' }),
+        h('span.swords', { 'data-icon': 'U' }),
         h('span', playerApi.playerName(data.opponent, true, true, 12))
       ]
-    }
-    else if (subTitle === 'date') {
+    } else if (subTitle === 'date') {
       if (gameApi.playable(data)) {
         subEls = i18n('playingRightNow')
-      }
-      else if (gameStatusApi.aborted(data)) {
+      } else if (gameStatusApi.aborted(data)) {
         subEls = i18n('gameAborted')
-      }
-      else if (data.game.createdAt) {
+      } else if (data.game.createdAt) {
         subEls = window.moment(data.game.createdAt).calendar()
       }
-    }
-    else if (subTitle === 'corres' && isGameData(data)) {
+    } else if (subTitle === 'corres' && isGameData(data)) {
       if (gameStatusApi.finished(data)) {
         subEls = i18n('gameOver')
       } else if (gameApi.isPlayerTurn(data)) {
@@ -56,8 +57,11 @@ export default {
       } else {
         subEls = i18n('waitingForOpponent')
       }
-    }
-    else if (subTitle === 'tournament' && isGameData(data) && data.tournament) {
+    } else if (
+      subTitle === 'tournament' &&
+      isGameData(data) &&
+      data.tournament
+    ) {
       const ttime = data.tournament.secondsToFinish
       if (ttime) {
         subEls = [
@@ -65,29 +69,32 @@ export default {
           h(CountdownTimer, { seconds: ttime }),
           h('span', ' • ' + data.tournament.name)
         ]
-      }
-      else {
+      } else {
         subEls = [
           h('span.fa.fa-trophy'),
           h('span', [
             data.tournament.name,
-            data.game.createdAt ?
-              (' (' + window.moment(data.game.createdAt).calendar() + ')') : null
+            data.game.createdAt
+              ? ' (' + window.moment(data.game.createdAt).calendar() + ')'
+              : null
           ])
         ]
       }
     }
 
-    return h('div.main_header_title', {
-      className: subTitle !== undefined ? 'withSub' : ''
-    }, [
-      h('h1.header-gameTitle', [
-        kidMode ? h('span.kiddo', '😊') : null,
-        h('span.withIcon', { 'data-icon': icon }),
-        h('span', title)
-      ]),
-      subEls ? h('h2.header-subTitle', subEls) : null
-    ])
+    return h(
+      'div.main_header_title',
+      {
+        className: subTitle !== undefined ? 'withSub' : ''
+      },
+      [
+        h('h1.header-gameTitle', [
+          kidMode ? h('span.kiddo', '😊') : null,
+          h('span.withIcon', { 'data-icon': icon }),
+          h('span', title)
+        ]),
+        subEls ? h('h2.header-subTitle', subEls) : null
+      ]
+    )
   }
-
 } as Mithril.Component<Attrs, {}>

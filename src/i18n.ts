@@ -6,9 +6,14 @@ const defaultCode = 'en'
 let lang = defaultCode
 let messages = {} as StringMap
 
-export default function i18n(key: string, ...args: Array<string | number>): string {
+export default function i18n(
+  key: string,
+  ...args: Array<string | number>
+): string {
   let str: string = messages[key] || untranslated[key] || key
-  args.forEach(a => { str = str.replace('%s', String(a)) })
+  args.forEach(a => {
+    str = str.replace('%s', String(a))
+  })
   return str
 }
 
@@ -33,46 +38,45 @@ export function loadPreferredLanguage(): Promise<string> {
       () => resolve(defaultCode)
     )
   })
-  .then((code: string) => {
-    settings.general.lang(code)
-    return code
-  })
-  .then(loadFile)
-  .then(loadMomentLocale)
+    .then((code: string) => {
+      settings.general.lang(code)
+      return code
+    })
+    .then(loadFile)
+    .then(loadMomentLocale)
 }
 
-export function getAvailableLanguages(): Promise<ReadonlyArray<[string, string]>> {
+export function getAvailableLanguages(): Promise<
+  ReadonlyArray<[string, string]>
+> {
   return loadLocalJsonFile('i18n/refs.json')
 }
 
 export function ensureLangIsAvailable(lang: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    getAvailableLanguages()
-    .then(langs => {
+    getAvailableLanguages().then(langs => {
       const l = langs.find(l => l[0] === lang)
       if (l !== undefined) resolve(l[0])
       else reject(new Error(`Lang ${l} is not available in the application.`))
     })
   })
-
 }
 
 export function loadLanguage(lang: string): Promise<string> {
-  return loadFile(lang)
-  .then(loadMomentLocale)
+  return loadFile(lang).then(loadMomentLocale)
 }
 
 function loadFile(code: string): Promise<string> {
   return loadLocalJsonFile<StringMap>('i18n/' + code + '.json')
-  .then(data => {
-    lang = code
-    messages = data
-    return code
-  })
-  .catch(error => {
-    if (code === defaultCode) throw new Error(error)
-    return loadFile(defaultCode)
-  })
+    .then(data => {
+      lang = code
+      messages = data
+      return code
+    })
+    .catch(error => {
+      if (code === defaultCode) throw new Error(error)
+      return loadFile(defaultCode)
+    })
 }
 
 function loadMomentLocale(code: string): string {
@@ -86,8 +90,10 @@ function loadMomentLocale(code: string): string {
 }
 
 const untranslated: StringMap = {
-  apiUnsupported: 'Your version of lichess app is too old! Please upgrade for free to the latest version.',
-  apiDeprecated: 'Upgrade for free to the latest lichess app! Support for this version will be dropped on %s.',
+  apiUnsupported:
+    'Your version of lichess app is too old! Please upgrade for free to the latest version.',
+  apiDeprecated:
+    'Upgrade for free to the latest lichess app! Support for this version will be dropped on %s.',
   resourceNotFoundError: 'Resource not found.',
   lichessIsUnavailableError: 'lichess.org is temporarily down for maintenance.',
   lichessIsUnreachable: 'lichess.org is unreachable.',
@@ -120,9 +126,11 @@ const untranslated: StringMap = {
   toATypeGame: 'To a %s game',
   unsupportedVariant: 'Variant %s is not supported in this version',
   language: 'Language',
-  notesSynchronizationHasFailed: 'Notes synchronization with lichess has failed, please try later.',
+  notesSynchronizationHasFailed:
+    'Notes synchronization with lichess has failed, please try later.',
   challengeDeclined: 'Challenge declined',
-  persistentChallengeCreated: 'Correspondence challenge created. It will remain active for two weeks. You will get notified when your friend accepts it. You can cancel it from the "Correspondence" page.',
+  persistentChallengeCreated:
+    'Correspondence challenge created. It will remain active for two weeks. You will get notified when your friend accepts it. You can cancel it from the "Correspondence" page.',
   youAreChallenging: 'You are challenging %s',
   submitMove: 'Submit move',
   returnToHome: 'Return to home',

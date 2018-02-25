@@ -3,14 +3,21 @@ import sound from '../sound'
 import settings from '../settings'
 import * as throttle from 'lodash/throttle'
 import { getChallenges } from '../xhr'
-import { Challenge, ChallengesData, isTimeControlClock, isTimeControlCorrespondence } from '../lichess/interfaces/challenge'
+import {
+  Challenge,
+  ChallengesData,
+  isTimeControlClock,
+  isTimeControlCorrespondence
+} from '../lichess/interfaces/challenge'
 
 let incoming: ReadonlyArray<Challenge> = []
 let sending: ReadonlyArray<Challenge> = []
 
 function supportedAndCreated(c: Challenge) {
-  return settings.game.supportedVariants.indexOf(c.variant.key) !== -1 &&
+  return (
+    settings.game.supportedVariants.indexOf(c.variant.key) !== -1 &&
     c.status === 'created'
+  )
 }
 
 function set(data: ChallengesData) {
@@ -23,7 +30,9 @@ function set(data: ChallengesData) {
 
 export default {
   all() {
-    return incoming.filter(supportedAndCreated).concat(sending.filter(supportedAndCreated))
+    return incoming
+      .filter(supportedAndCreated)
+      .concat(sending.filter(supportedAndCreated))
   },
 
   incoming() {
@@ -46,8 +55,10 @@ export default {
   },
 
   isPersistent(c: Challenge) {
-    return c.timeControl.type === 'correspondence' ||
+    return (
+      c.timeControl.type === 'correspondence' ||
       c.timeControl.type === 'unlimited'
+    )
   },
 
   challengeTime(c: Challenge): string {

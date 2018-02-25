@@ -4,11 +4,16 @@ import sound from '../../../../sound'
 import { ClockType, IBasicClock, IChessDelayClockState } from '../interfaces'
 import { CLOCK_TICK_STEP } from '../utils'
 
-export default function DelayClock(time: number, increment: number, onFlag: (color: Color) => void, soundOn: boolean): IBasicClock {
+export default function DelayClock(
+  time: number,
+  increment: number,
+  onFlag: (color: Color) => void,
+  soundOn: boolean
+): IBasicClock {
   let state: IChessDelayClockState = {
     clockType: 'delay',
-    whiteTime: (time !== 0) ? time : increment,
-    blackTime: (time !== 0) ? time : increment,
+    whiteTime: time !== 0 ? time : increment,
+    blackTime: time !== 0 ? time : increment,
     whiteDelay: increment,
     blackDelay: increment,
     increment: increment,
@@ -21,7 +26,7 @@ export default function DelayClock(time: number, increment: number, onFlag: (col
   let whiteTimestamp: number
   let blackTimestamp: number
 
-  function tick () {
+  function tick() {
     const now = performance.now()
     if (activeSide() === 'white') {
       const elapsed = now - whiteTimestamp
@@ -37,8 +42,7 @@ export default function DelayClock(time: number, increment: number, onFlag: (col
           clearInterval(clockInterval)
         }
       }
-    }
-    else if (activeSide() === 'black') {
+    } else if (activeSide() === 'black') {
       const elapsed = now - blackTimestamp
       blackTimestamp = now
       if (state.blackDelay > 0) {
@@ -81,12 +85,11 @@ export default function DelayClock(time: number, increment: number, onFlag: (col
     redraw()
   }
 
-  function startStop () {
+  function startStop() {
     if (state.isRunning) {
       state.isRunning = false
       clearInterval(clockInterval)
-    }
-    else {
+    } else {
       state.isRunning = true
       clockInterval = setInterval(tick, CLOCK_TICK_STEP)
       if (activeSide() === 'white') {

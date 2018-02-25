@@ -22,24 +22,36 @@ export default function renderBoard(
   let curBestShape: Shape[] = []
   if (curTab.id !== 'explorer' && !ctrl.retro && ctrl.settings.s.showBestMove) {
     nextBest = ctrl.nextNodeBest()
-    curBestShape = nextBest ? moveOrDropShape(nextBest, 'paleBlue', player) :
-      ceval && ceval.best ? moveOrDropShape(ceval.best, 'paleBlue', player) :
-      []
+    curBestShape = nextBest
+      ? moveOrDropShape(nextBest, 'paleBlue', player)
+      : ceval && ceval.best
+        ? moveOrDropShape(ceval.best, 'paleBlue', player)
+        : []
   }
-  const pastBestShape = !ctrl.retro && rEval && rEval.best ?
-    moveOrDropShape(rEval.best, 'paleGreen', player) : []
+  const pastBestShape =
+    !ctrl.retro && rEval && rEval.best
+      ? moveOrDropShape(rEval.best, 'paleGreen', player)
+      : []
 
-  const nextUci = curTab.id === 'explorer' && ctrl.node && treeOps.withMainlineChild(ctrl.node, n => n.uci)
+  const nextUci =
+    curTab.id === 'explorer' &&
+    ctrl.node &&
+    treeOps.withMainlineChild(ctrl.node, n => n.uci)
 
-  const nextMoveShape: Shape[] = nextUci ?
-    moveOrDropShape(nextUci, 'palePurple', player) : []
+  const nextMoveShape: Shape[] = nextUci
+    ? moveOrDropShape(nextUci, 'palePurple', player)
+    : []
 
   const badNode = ctrl.retro && ctrl.retro.showBadNode()
-  const badMoveShape: Shape[] = badNode && badNode.uci ?
-    moveOrDropShape(badNode.uci, 'paleRed', player) : []
+  const badMoveShape: Shape[] =
+    badNode && badNode.uci
+      ? moveOrDropShape(badNode.uci, 'paleRed', player)
+      : []
 
-  const shapes: Shape[] = nextMoveShape.length > 0 ?
-  nextMoveShape : flatten([pastBestShape, curBestShape, badMoveShape].filter(noNull))
+  const shapes: Shape[] =
+    nextMoveShape.length > 0
+      ? nextMoveShape
+      : flatten([pastBestShape, curBestShape, badMoveShape].filter(noNull))
 
   return h(Board, {
     key: ctrl.settings.s.smallBoard ? 'board-small' : 'board-full',
@@ -71,19 +83,22 @@ function moveOrDropShape(uci: string, brush: string, player: Color): Shape[] {
   } else {
     const move = chessFormat.uciToMove(uci)
     const prom = chessFormat.uciToProm(uci)
-    const shapes: Shape[] = [{
-      brush,
-      orig: move[0],
-      dest: move[1]
-    }]
-    if (prom) shapes.push({
-      brush,
-      orig: move[1],
-      piece: {
-        role: prom,
-        color: player
+    const shapes: Shape[] = [
+      {
+        brush,
+        orig: move[0],
+        dest: move[1]
       }
-    })
+    ]
+    if (prom)
+      shapes.push({
+        brush,
+        orig: move[1],
+        piece: {
+          role: prom,
+          color: player
+        }
+      })
     return shapes
   }
 }

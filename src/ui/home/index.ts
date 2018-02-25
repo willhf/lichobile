@@ -4,7 +4,11 @@ import redraw from '../../utils/redraw'
 import { timeline as timelineXhr } from '../../xhr'
 import { hasNetwork, noop } from '../../utils'
 import { isForeground, setForeground } from '../../utils/appMode'
-import { PongMessage, TimelineEntry, DailyPuzzle } from '../../lichess/interfaces'
+import {
+  PongMessage,
+  TimelineEntry,
+  DailyPuzzle
+} from '../../lichess/interfaces'
 import { TournamentListItem } from '../../lichess/interfaces/tournament'
 import { PuzzleData } from '../../lichess/interfaces/training'
 import session from '../../session'
@@ -16,7 +20,10 @@ import { supportedTypes as supportedTimelineTypes } from '../timeline'
 import offlinePuzzleDB from '../training/database'
 import { loadNewPuzzle } from '../training/offlineService'
 
-import { dailyPuzzle as dailyPuzzleXhr, featuredTournaments as featuredTournamentsXhr } from './homeXhr'
+import {
+  dailyPuzzle as dailyPuzzleXhr,
+  featuredTournaments as featuredTournamentsXhr
+} from './homeXhr'
 import { body } from './homeView'
 
 export interface Ctrl {
@@ -50,28 +57,28 @@ export default {
           }
         })
 
-        Promise.all([
-          dailyPuzzleXhr(),
-          featuredTournamentsXhr()
-        ])
-        .then(results => {
-          const [dailyData, featuredTournamentsData] = results
-          dailyPuzzle(dailyData.puzzle)
-          featuredTournaments(featuredTournamentsData.featured)
-          redraw()
-        })
-        .catch(noop)
+        Promise.all([dailyPuzzleXhr(), featuredTournamentsXhr()])
+          .then(results => {
+            const [dailyData, featuredTournamentsData] = results
+            dailyPuzzle(dailyData.puzzle)
+            featuredTournaments(featuredTournamentsData.featured)
+            redraw()
+          })
+          .catch(noop)
 
         timelineXhr()
-        .then(data => {
-          timeline(
-            data.entries
-            .filter((o: TimelineEntry) => supportedTimelineTypes.indexOf(o.type) !== -1)
-            .slice(0, 10)
-          )
-          redraw()
-        })
-        .catch(noop)
+          .then(data => {
+            timeline(
+              data.entries
+                .filter(
+                  (o: TimelineEntry) =>
+                    supportedTimelineTypes.indexOf(o.type) !== -1
+                )
+                .slice(0, 10)
+            )
+            redraw()
+          })
+          .catch(noop)
       }
     }
 
@@ -83,8 +90,7 @@ export default {
     function loadOfflinePuzzle() {
       const user = session.get()
       if (user) {
-        loadNewPuzzle(offlinePuzzleDB, user)
-        .then(data => {
+        loadNewPuzzle(offlinePuzzleDB, user).then(data => {
           offlinePuzzle(data)
           redraw()
         })
@@ -110,7 +116,7 @@ export default {
       offlinePuzzle,
       init,
       onResume,
-      loadOfflinePuzzle,
+      loadOfflinePuzzle
     }
   },
 

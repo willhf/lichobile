@@ -27,8 +27,12 @@ function addQuerystring(url: string, querystring: string): string {
 // lichess can return either json or text
 // for convenience, this wrapper returns a promise with the response body already
 // extracted
-function request<T>(url: string, type: 'json' | 'text', opts?: RequestOpts, feedback = false): Promise<T> {
-
+function request<T>(
+  url: string,
+  type: 'json' | 'text',
+  opts?: RequestOpts,
+  feedback = false
+): Promise<T> {
   let timeoutId: number
 
   function onComplete(): void {
@@ -48,7 +52,7 @@ function request<T>(url: string, type: 'json' | 'text', opts?: RequestOpts, feed
     method: 'GET',
     headers: {
       'X-Requested-With': 'XMLHttpRequest',
-      'Accept': 'application/vnd.lichess.v' + globalConfig.apiVersion + '+json'
+      Accept: 'application/vnd.lichess.v' + globalConfig.apiVersion + '+json'
     }
   }
 
@@ -61,10 +65,14 @@ function request<T>(url: string, type: 'json' | 'text', opts?: RequestOpts, feed
   }
 
   // by default POST and PUT send json except if defined otherwise in caller
-  if ((init.method === 'POST' || init.method === 'PUT') &&
+  if (
+    (init.method === 'POST' || init.method === 'PUT') &&
     !(<Headers>init.headers).get('Content-Type')
   ) {
-    (<Headers>init.headers).append('Content-Type', 'application/json; charset=UTF-8')
+    ;(<Headers>init.headers).append(
+      'Content-Type',
+      'application/json; charset=UTF-8'
+    )
     // always send a json body
     if (!init.body) {
       init.body = '{}'
@@ -96,12 +104,10 @@ function request<T>(url: string, type: 'json' | 'text', opts?: RequestOpts, feed
 
         if (r.ok) {
           resolve(r[type]())
-        }
-        else {
+        } else {
           // assume error is returned as json
           // if parsing fails, return text
-          r.text()
-          .then((bodyText: string) => {
+          r.text().then((bodyText: string) => {
             try {
               reject({
                 status: r.status,
@@ -127,15 +133,27 @@ function request<T>(url: string, type: 'json' | 'text', opts?: RequestOpts, feed
   })
 }
 
-export function fetchJSON<T>(url: string, opts?: RequestOpts, feedback = false): Promise<T> {
+export function fetchJSON<T>(
+  url: string,
+  opts?: RequestOpts,
+  feedback = false
+): Promise<T> {
   return request<T>(url, 'json', opts, feedback)
 }
 
-export function fetchText(url: string, opts?: RequestOpts, feedback = false): Promise<string> {
+export function fetchText(
+  url: string,
+  opts?: RequestOpts,
+  feedback = false
+): Promise<string> {
   return request<string>(url, 'text', opts, feedback)
 }
 
-export function post(url: string, opts?: RequestOpts, feedback = false): Promise<string> {
+export function post(
+  url: string,
+  opts?: RequestOpts,
+  feedback = false
+): Promise<string> {
   // post request usually has a text body in response (and we don't care about it)
   const mergedOpts = Object.assign({}, opts, { method: 'POST' })
   return request<string>(url, 'text', mergedOpts, feedback)

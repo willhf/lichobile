@@ -12,7 +12,6 @@ export function initBoard(cfg: cg.InitConfig): State {
 }
 
 export function configureBoard(state: State, config: cg.InitConfig): void {
-
   if (!config) return
 
   // don't merge destinations. Just override.
@@ -25,8 +24,10 @@ export function configureBoard(state: State, config: cg.InitConfig): void {
     state.pieces = fen.read(config.fen)
   }
 
-  if (config.hasOwnProperty('check')) board.setCheck(state, config.check || false)
-  if (config.hasOwnProperty('lastMove') && !config.lastMove) state.lastMove = null
+  if (config.hasOwnProperty('check'))
+    board.setCheck(state, config.check || false)
+  if (config.hasOwnProperty('lastMove') && !config.lastMove)
+    state.lastMove = null
 
   // fix move/premove dests
   if (state.selected) board.setSelected(state, state.selected)
@@ -68,7 +69,8 @@ export function setNewBoardState(d: State, config: cg.SetConfig): void {
 
 function merge(base: any, extend: any) {
   for (let key in extend) {
-    if (isObject(base[key]) && isObject(extend[key])) merge(base[key], extend[key])
+    if (isObject(base[key]) && isObject(extend[key]))
+      merge(base[key], extend[key])
     else base[key] = extend[key]
   }
 }

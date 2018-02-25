@@ -27,15 +27,20 @@ export function renderEval(e: number) {
 
 const serverNodes = 4e6
 export function getBestEval(evs: NodeEvals): Eval | undefined {
-  const serverEv = evs.server, localEv = evs.client
+  const serverEv = evs.server,
+    localEv = evs.client
 
   if (!serverEv) return localEv
   if (!localEv) return serverEv
 
   // Prefer localEv if it exeeds fishnet node limit or finds a better mate.
-  if (localEv.nodes > serverNodes ||
-    (typeof localEv.mate !== 'undefined' && (typeof serverEv.mate === 'undefined' || Math.abs(localEv.mate) < Math.abs(serverEv.mate))))
-  return localEv
+  if (
+    localEv.nodes > serverNodes ||
+    (typeof localEv.mate !== 'undefined' &&
+      (typeof serverEv.mate === 'undefined' ||
+        Math.abs(localEv.mate) < Math.abs(serverEv.mate)))
+  )
+    return localEv
 
   return serverEv
 }
@@ -47,9 +52,11 @@ export function isSynthetic(data: AnalyseData) {
 export function autoScroll(movelist: HTMLElement | null) {
   if (!movelist) return
   requestAnimationFrame(() => {
-    const plyEl = (movelist.querySelector('.current') || movelist.querySelector('turn:first-child')) as HTMLElement
+    const plyEl = (movelist.querySelector('.current') ||
+      movelist.querySelector('turn:first-child')) as HTMLElement
     if (plyEl) {
-      movelist.scrollTop = plyEl.offsetTop - movelist.offsetHeight / 2 + plyEl.offsetHeight / 2
+      movelist.scrollTop =
+        plyEl.offsetTop - movelist.offsetHeight / 2 + plyEl.offsetHeight / 2
     } else {
       movelist.scrollTop = 0
     }
@@ -61,8 +68,12 @@ export function plyToTurn(ply: number): number {
 }
 
 export function nodeFullName(node: Tree.Node) {
-  if (node.san) return plyToTurn(node.ply) + (
-    node.ply % 2 === 1 ? '.' : '...'
-  ) + ' ' + fixCrazySan(node.san)
+  if (node.san)
+    return (
+      plyToTurn(node.ply) +
+      (node.ply % 2 === 1 ? '.' : '...') +
+      ' ' +
+      fixCrazySan(node.san)
+    )
   return 'Initial position'
 }

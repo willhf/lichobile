@@ -19,26 +19,44 @@ export function body(ctrl: Ctrl) {
 
   if (!hasNetwork()) {
     const puzzleData = ctrl.offlinePuzzle()
-    const boardConf = puzzleData ? {
-      fen: puzzleData.puzzle.fen,
-      orientation: puzzleData.puzzle.color,
-      link: () => router.set('/training'),
-    } : null
+    const boardConf = puzzleData
+      ? {
+          fen: puzzleData.puzzle.fen,
+          orientation: puzzleData.puzzle.color,
+          link: () => router.set('/training')
+        }
+      : null
 
     return (
-      <div className={'native_scroller homeOfflineWrapper' + (boardConf ? ' withBoard' : '')}>
+      <div
+        className={
+          'native_scroller homeOfflineWrapper' + (boardConf ? ' withBoard' : '')
+        }
+      >
         <div className="homeOffline">
           <section className="playOffline">
             <h2>{i18n('playOffline')}</h2>
-            <button className="fatButton" oncreate={helper.ontapY(() => router.set('/ai'))}>{i18n('playOfflineComputer')}</button>
-            <button className="fatButton" oncreate={helper.ontapY(() => router.set('/otb'))}>{i18n('playOnTheBoardOffline')}</button>
+            <button
+              className="fatButton"
+              oncreate={helper.ontapY(() => router.set('/ai'))}
+            >
+              {i18n('playOfflineComputer')}
+            </button>
+            <button
+              className="fatButton"
+              oncreate={helper.ontapY(() => router.set('/otb'))}
+            >
+              {i18n('playOnTheBoardOffline')}
+            </button>
           </section>
-          { boardConf ?
-          <section className="miniPuzzle">
-            <h2 className="homeTitle">{i18n('training')}</h2>
-            {h(MiniBoard, boardConf)}
-          </section> : undefined
-          }
+          {boardConf ? (
+            <section className="miniPuzzle">
+              <h2 className="homeTitle">{i18n('training')}</h2>
+              {h(MiniBoard, boardConf)}
+            </section>
+          ) : (
+            undefined
+          )}
         </div>
       </div>
     )
@@ -71,20 +89,26 @@ function renderFeaturedTournaments(tournaments: TournamentListItem[]) {
         {renderTournamentList(tournaments)}
       </div>
     )
-  else
-    return null
+  else return null
 }
 
 function renderDailyPuzzle(ctrl: Ctrl) {
   const puzzle = ctrl.dailyPuzzle()
-  const boardConf = puzzle ? {
-    fen: puzzle.fen,
-    orientation: puzzle.color,
-    link: () => router.set(`/training/${puzzle.id}?initFen=${puzzle.fen}&initColor=${puzzle.color}`),
-  } : {
-    orientation: 'white' as Color,
-    fen: emptyFen
-  }
+  const boardConf = puzzle
+    ? {
+        fen: puzzle.fen,
+        orientation: puzzle.color,
+        link: () =>
+          router.set(
+            `/training/${puzzle.id}?initFen=${puzzle.fen}&initColor=${
+              puzzle.color
+            }`
+          )
+      }
+    : {
+        orientation: 'white' as Color,
+        fen: emptyFen
+      }
 
   return (
     <section className="miniPuzzle" key={puzzle ? puzzle.id : 'empty'}>
@@ -102,7 +126,7 @@ function renderTimeline(ctrl: Ctrl) {
     <section id="timeline">
       <h2 className="homeTitle">{i18n('timeline')}</h2>
       <ul className="items_list_block">
-        { timeline.map((e: any) => {
+        {timeline.map((e: any) => {
           if (e.type === 'follow') {
             return renderFollow(e)
           } else if (e.type === 'game-end') {

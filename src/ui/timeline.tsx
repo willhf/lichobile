@@ -21,11 +21,13 @@ const TimelineScreen: Mithril.Component<{}, State> = {
     const timeline = stream([] as TimelineEntry[])
 
     timelineXhr()
-    .then(data => {
-      timeline(data.entries.filter(o => supportedTypes.indexOf(o.type) !== -1))
-      redraw()
-    })
-    .catch(handleXhrError)
+      .then(data => {
+        timeline(
+          data.entries.filter(o => supportedTypes.indexOf(o.type) !== -1)
+        )
+        redraw()
+      })
+      .catch(handleXhrError)
 
     vnode.state = {
       timeline
@@ -65,14 +67,18 @@ export function renderTourJoin(entry: TimelineEntry) {
   const key = 'tour' + entry.date
 
   return (
-    <li className="list_item timelineEntry" key={key}
+    <li
+      className="list_item timelineEntry"
+      key={key}
       oncreate={helper.ontapY(() => {
         router.set('/tournament/' + entry.data.tourId)
       })}
     >
       <span className="fa fa-trophy" />
       {h.trust(entryText.replace(/^(\w+)\s/, '<strong>$1&nbsp;</strong>'))}
-      <small><em>&nbsp;{fromNow}</em></small>
+      <small>
+        <em>&nbsp;{fromNow}</em>
+      </small>
     </li>
   )
 }
@@ -83,32 +89,44 @@ export function renderFollow(entry: TimelineEntry) {
   const key = 'follow' + entry.date
 
   return (
-    <li className="list_item timelineEntry" key={key}
+    <li
+      className="list_item timelineEntry"
+      key={key}
       oncreate={helper.ontapY(() => {
         router.set('/@/' + entry.data.u1)
       })}
     >
       <span className="fa fa-arrow-circle-right" />
       {h.trust(entryText.replace(/^(\w+)\s/, '<strong>$1&nbsp;</strong>'))}
-      <small><em>&nbsp;{fromNow}</em></small>
+      <small>
+        <em>&nbsp;{fromNow}</em>
+      </small>
     </li>
   )
 }
 
 export function renderGameEnd(entry: TimelineEntry) {
   const icon = gameIcon(entry.data.perf)
-  const result = typeof entry.data.win === 'undefined' ? i18n('draw') : (entry.data.win ? 'Victory' : 'Defeat')
+  const result =
+    typeof entry.data.win === 'undefined'
+      ? i18n('draw')
+      : entry.data.win ? 'Victory' : 'Defeat'
   const fromNow = window.moment(entry.date).fromNow()
   const key = 'game-end' + entry.date
 
   return (
-    <li className="list_item timelineEntry" key={key} data-icon={icon}
+    <li
+      className="list_item timelineEntry"
+      key={key}
+      data-icon={icon}
       oncreate={helper.ontapY(() => {
         router.set('/game/' + entry.data.playerId + '?goingBack=1')
       })}
     >
       <strong>{result}</strong> vs. {entry.data.opponent}
-      <small><em>&nbsp;{fromNow}</em></small>
+      <small>
+        <em>&nbsp;{fromNow}</em>
+      </small>
     </li>
   )
 }

@@ -24,98 +24,111 @@ export default function drawMoveTimesChart(
   const division = aData.game.division
 
   const svg = select(element)
-  const margin = {top: 10, right: 10, bottom: 10, left: 25}
+  const margin = { top: 10, right: 10, bottom: 10, left: 25 }
   const width = +svg.attr('width') - margin.left - margin.right
   const height = +svg.attr('height') - margin.top - margin.bottom
-  const g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+  const g = svg
+    .append('g')
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
   const { max, series } = makeSerieData(aData, moveCentis)
 
   function addDivisionLine(xPos: number, name: string) {
-    g.append('line')
-    .attr('class', 'division ' + name)
-    .attr('x1', xPos)
-    .attr('x2', xPos)
-    .attr('y1', y(-max))
-    .attr('y2', y(max))
+    g
+      .append('line')
+      .attr('class', 'division ' + name)
+      .attr('x1', xPos)
+      .attr('x2', xPos)
+      .attr('y1', y(-max))
+      .attr('y2', y(max))
 
-    g.append('text')
-    .attr('class', 'chart-legend')
-    .attr('transform', 'rotate(90)')
-    .attr('y', -xPos)
-    .attr('dy', '-0.4em')
-    .text(name)
+    g
+      .append('text')
+      .attr('class', 'chart-legend')
+      .attr('transform', 'rotate(90)')
+      .attr('y', -xPos)
+      .attr('dy', '-0.4em')
+      .text(name)
   }
 
   function setCurrentPly(ply: number | null) {
     g.selectAll('.dot').remove()
     if (ply !== null) {
       const isWhite = !!(ply & 1)
-      const p = isWhite ? series.white.find(p => p.ply === ply) : series.black.find(p => p.ply === ply)
+      const p = isWhite
+        ? series.white.find(p => p.ply === ply)
+        : series.black.find(p => p.ply === ply)
       if (p) {
-        g.append('circle')
-        .attr('class', 'dot')
-        .attr('cx', x(ply))
-        .attr('cy', y(p.y))
-        .attr('r', 3)
+        g
+          .append('circle')
+          .attr('class', 'dot')
+          .attr('cx', x(ply))
+          .attr('cy', y(p.y))
+          .attr('r', 3)
       }
     }
   }
 
   const x = scaleLinear()
-  .domain([0, series.white.length + series.black.length])
-  .rangeRound([0, width])
+    .domain([0, series.white.length + series.black.length])
+    .rangeRound([0, width])
 
   const y = scaleLinear()
-  .domain([-max, max])
-  .rangeRound([height, 0])
+    .domain([-max, max])
+    .rangeRound([height, 0])
 
   const line = d3Area<Point>()
-  .x(d => x(d.ply))
-  .y(d => y(d.y))
+    .x(d => x(d.ply))
+    .y(d => y(d.y))
 
   const area = d3Area<Point>()
-  .x(d => x(d.ply))
-  .y0(y(0))
-  .y1(d => y(d.y))
+    .x(d => x(d.ply))
+    .y0(y(0))
+    .y1(d => y(d.y))
 
   const maxCentis = Math.max.apply(Math, moveCentis) / 100
   const legendScale = scaleLinear()
-  .domain([-maxCentis, maxCentis])
-  .rangeRound([height, 0])
+    .domain([-maxCentis, maxCentis])
+    .rangeRound([height, 0])
 
-  const yAxis = axisLeft<number>(legendScale)
-  .tickFormat(d => String(Math.abs(d)))
+  const yAxis = axisLeft<number>(legendScale).tickFormat(d =>
+    String(Math.abs(d))
+  )
 
-  g.append('g')
-  .call(yAxis)
-  .append('text')
-  .attr('class', 'legend')
-  .attr('transform', 'rotate(-90)')
-  .attr('y', 6)
-  .attr('dy', '0.71em')
-  .attr('text-anchor', 'end')
-  .text('Seconds')
+  g
+    .append('g')
+    .call(yAxis)
+    .append('text')
+    .attr('class', 'legend')
+    .attr('transform', 'rotate(-90)')
+    .attr('y', 6)
+    .attr('dy', '0.71em')
+    .attr('text-anchor', 'end')
+    .text('Seconds')
 
-  g.append('path')
-  .datum(series.white)
-  .attr('class', 'area above')
-  .attr('d', area)
+  g
+    .append('path')
+    .datum(series.white)
+    .attr('class', 'area above')
+    .attr('d', area)
 
-  g.append('path')
-  .datum(series.black)
-  .attr('class', 'area below')
-  .attr('d', area)
+  g
+    .append('path')
+    .datum(series.black)
+    .attr('class', 'area below')
+    .attr('d', area)
 
-  g.append('path')
-  .attr('class', 'line')
-  .datum(series.white)
-  .attr('d', line)
+  g
+    .append('path')
+    .attr('class', 'line')
+    .datum(series.white)
+    .attr('d', line)
 
-  g.append('path')
-  .attr('class', 'line')
-  .datum(series.black)
-  .attr('d', line)
+  g
+    .append('path')
+    .attr('class', 'line')
+    .datum(series.black)
+    .attr('d', line)
 
   if (division && (division.middle || division.end)) {
     if (division.middle) {
@@ -131,7 +144,10 @@ export default function drawMoveTimesChart(
   return setCurrentPly
 }
 
-function makeSerieData(data: AnalyseData, moveCentis: number[]): { max: number, series: Series } {
+function makeSerieData(
+  data: AnalyseData,
+  moveCentis: number[]
+): { max: number; series: Series } {
   const series: Series = {
     white: [],
     black: []
@@ -139,7 +155,8 @@ function makeSerieData(data: AnalyseData, moveCentis: number[]): { max: number, 
 
   const tree = data.treeParts
   const logC = Math.pow(Math.log(3), 2)
-  let ply = 0, max = 0
+  let ply = 0,
+    max = 0
 
   moveCentis.forEach((time, i) => {
     const node = tree[i + 1]
@@ -147,7 +164,7 @@ function makeSerieData(data: AnalyseData, moveCentis: number[]): { max: number, 
 
     const isWhite = !!(ply & 1)
 
-    const y = Math.pow(Math.log(.005 * Math.min(time, 12e4) + 3), 2) - logC
+    const y = Math.pow(Math.log(0.005 * Math.min(time, 12e4) + 3), 2) - logC
     max = Math.max(y, max)
 
     const point = {

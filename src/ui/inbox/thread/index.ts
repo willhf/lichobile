@@ -29,9 +29,11 @@ export default {
   },
 
   view() {
-    const headerCtrl = () => headerWidget(null,
-      backButton(this.ctrl.thread() ? this.ctrl.thread().name : undefined)
-    )
+    const headerCtrl = () =>
+      headerWidget(
+        null,
+        backButton(this.ctrl.thread() ? this.ctrl.thread().name : undefined)
+      )
     const bodyCtrl = () => threadBody(this.ctrl)
     return layout.free(headerCtrl, bodyCtrl)
   }

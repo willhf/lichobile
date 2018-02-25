@@ -32,7 +32,7 @@ const countries: StringMap = {
   CF: 'Central African Republic',
   CG: 'Congo (Brazzaville)',
   CH: 'Switzerland',
-  CI: 'Cote d\'Ivoire',
+  CI: "Cote d'Ivoire",
   CL: 'Chile',
   CM: 'Cameroon',
   CN: 'China',

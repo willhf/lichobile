@@ -7,33 +7,53 @@ import { IComposeCtrl } from './ComposeCtrl'
 export function composeBody(ctrl: IComposeCtrl) {
   return (
     <div className="composeWrapper">
-      <form id="composeForm"
-      onsubmit={(e: Event) => {
-        e.preventDefault()
-        return ctrl.send(e.target as HTMLFormElement)
-      }}>
+      <form
+        id="composeForm"
+        onsubmit={(e: Event) => {
+          e.preventDefault()
+          return ctrl.send(e.target as HTMLFormElement)
+        }}
+      >
         {ctrl.id() ? recipientWithName(ctrl) : recipientWithoutName(ctrl)}
-        {ctrl.autocompleteResults().length ?
+        {ctrl.autocompleteResults().length ? (
           <ul className="compose_autocompleteResults native_scroller">
             {ctrl.autocompleteResults().map(u => {
               return (
-                <li className="list_item nav" key={u} oncreate={helper.ontapY(() => recipientSelected(u, ctrl))}>
-                {u}
+                <li
+                  className="list_item nav"
+                  key={u}
+                  oncreate={helper.ontapY(() => recipientSelected(u, ctrl))}
+                >
+                  {u}
                 </li>
               )
             })}
-          </ul> : null
-        }
-        {(ctrl.errors() && ctrl.errors().username) ? renderError('recipientError', ctrl.errors().username[0]) : null}
+          </ul>
+        ) : null}
+        {ctrl.errors() && ctrl.errors().username
+          ? renderError('recipientError', ctrl.errors().username[0])
+          : null}
 
-        <input id="subject" key="subject" type="text" className="composeInput"
-        placeholder={i18n('subject')}
-        oncreate={ctrl.id() ? helper.autofocus : null}
+        <input
+          id="subject"
+          key="subject"
+          type="text"
+          className="composeInput"
+          placeholder={i18n('subject')}
+          oncreate={ctrl.id() ? helper.autofocus : null}
         />
-        {(ctrl.errors() && ctrl.errors().subject) ? renderError('subjectError', ctrl.errors().subject[0]) : null}
+        {ctrl.errors() && ctrl.errors().subject
+          ? renderError('subjectError', ctrl.errors().subject[0])
+          : null}
 
-        <textarea id="body" key="body" className="composeInput composeTextarea" />
-        {(ctrl.errors() && ctrl.errors().text) ? renderError('textError', ctrl.errors().text[0]) : null}
+        <textarea
+          id="body"
+          key="body"
+          className="composeInput composeTextarea"
+        />
+        {ctrl.errors() && ctrl.errors().text
+          ? renderError('textError', ctrl.errors().text[0])
+          : null}
         <button key="send" className="fatButton composeSend" type="submit">
           <span className="fa fa-check" />
           {i18n('send')}
@@ -45,7 +65,11 @@ export function composeBody(ctrl: IComposeCtrl) {
 
 function recipientWithName(ctrl: IComposeCtrl) {
   return (
-    <input id="recipient" key="recipient" type="text" className="composeInput"
+    <input
+      id="recipient"
+      key="recipient"
+      type="text"
+      className="composeInput"
       placeholder={i18n('recipient')}
       autocapitalize="off"
       autocomplete="off"
@@ -61,7 +85,11 @@ function recipientWithName(ctrl: IComposeCtrl) {
 
 function recipientWithoutName(ctrl: IComposeCtrl) {
   return (
-    <input id="recipient" key="recipient" type="text" className="composeInput"
+    <input
+      id="recipient"
+      key="recipient"
+      type="text"
+      className="composeInput"
       placeholder={i18n('recipient')}
       autocapitalize="off"
       autocomplete="off"

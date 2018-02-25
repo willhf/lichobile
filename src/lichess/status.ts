@@ -33,7 +33,11 @@ function aborted(data: GameData | AnalyseData): boolean {
   return data.game.status.id === ids.aborted
 }
 
-function toLabel(status: string, winner: Color | undefined, variant: VariantKey) {
+function toLabel(
+  status: string,
+  winner: Color | undefined,
+  variant: VariantKey
+) {
   switch (status) {
     case 'started':
       return i18n('playingRightNow')
@@ -59,7 +63,7 @@ function toLabel(status: string, winner: Color | undefined, variant: VariantKey)
     case 'outoftime':
       return i18n('timeOut')
     case 'noStart':
-      return (winner === 'white' ? 'Black' : 'White') + ' didn\'t move'
+      return (winner === 'white' ? 'Black' : 'White') + " didn't move"
     case 'unknownFinish':
       return i18n('finished')
     case 'cheat':

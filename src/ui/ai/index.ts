@@ -48,16 +48,13 @@ export default {
       header = () => renderHeader(h(GameTitle, { data: this.round.data }))
       content = () => renderContent(this.round)
     } else {
-      const fen = this.round.vm.setupFen || this.round.vm.savedFen || standardFen
+      const fen =
+        this.round.vm.setupFen || this.round.vm.savedFen || standardFen
       const color = playerFromFen(fen)
       header = () => renderHeader(i18n('playOfflineComputer'))
       content = () => viewOnlyBoardContent(fen, color, undefined)
     }
 
-    return layout.board(
-      header,
-      content,
-      () => overlay(this.round)
-    )
+    return layout.board(header, content, () => overlay(this.round))
   }
 } as Mithril.Component<Attrs, State>

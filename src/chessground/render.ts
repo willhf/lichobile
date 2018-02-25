@@ -5,15 +5,19 @@ import * as util from './util'
 export function renderBoard(d: State, dom: cg.DOM) {
   const boardElement = dom.board
   const asWhite = d.orientation === 'white'
-  const posToTranslate = d.fixed ? posToTranslateRel : posToTranslateAbs(dom.bounds)
-  const orientationChange = d.prev.orientation && d.prev.orientation !== d.orientation
+  const posToTranslate = d.fixed
+    ? posToTranslateRel
+    : posToTranslateAbs(dom.bounds)
+  const orientationChange =
+    d.prev.orientation && d.prev.orientation !== d.orientation
   d.prev.orientation = d.orientation
   const boundsChange = d.prev.bounds && d.prev.bounds !== dom.bounds
   d.prev.bounds = dom.bounds
   const allChange = boundsChange || orientationChange
   const pieces = d.pieces
   const anims = d.animation.current && d.animation.current.plan.anims
-  const capturedPieces = d.animation.current && d.animation.current.plan.captured
+  const capturedPieces =
+    d.animation.current && d.animation.current.plan.captured
   const squares: Map<Key, string> = computeSquareClasses(d)
   const samePieces: Set<Key> = new Set()
   const sameSquares: Set<Key> = new Set()
@@ -23,7 +27,9 @@ export function renderBoard(d: State, dom: cg.DOM) {
   let squareClassAtKey, pieceAtKey, anim, captured, translate
   let mvdset, mvd
 
-  let otbTurnFlipChange, otbModeChange, otbChange = false
+  let otbTurnFlipChange,
+    otbModeChange,
+    otbChange = false
   if (d.otb) {
     otbTurnFlipChange = d.prev.turnColor && d.prev.turnColor !== d.turnColor
     otbModeChange = d.prev.otbMode && d.prev.otbMode !== d.otbMode
@@ -42,7 +48,10 @@ export function renderBoard(d: State, dom: cg.DOM) {
     captured = capturedPieces && capturedPieces[k]
     if (isPieceNode(el)) {
       // if piece not being dragged anymore, remove dragging style
-      if (el.cgDragging && (!d.draggable.current || d.draggable.current.orig !== k)) {
+      if (
+        el.cgDragging &&
+        (!d.draggable.current || d.draggable.current.orig !== k)
+      ) {
         el.classList.remove('dragging')
         el.classList.remove('magnified')
         translate = posToTranslate(util.key2pos(k), asWhite)
@@ -72,29 +81,36 @@ export function renderBoard(d: State, dom: cg.DOM) {
           el.cgAnimating = false
         }
         // same piece: flag as same
-        if (el.cgPiece === pieceAtKeyName && !allChange && !otbChange && (!captured || !el.cgCaptured)) {
+        if (
+          el.cgPiece === pieceAtKeyName &&
+          !allChange &&
+          !otbChange &&
+          (!captured || !el.cgCaptured)
+        ) {
           samePieces.add(k)
-        }
-        // different piece: flag as moved unless it is a captured piece
-        else {
+        } else {
+          // different piece: flag as moved unless it is a captured piece
           if (captured && pieceNameOf(captured) === el.cgPiece) {
             el.classList.add('captured')
             el.cgCaptured = true
           } else {
-            movedPieces.set(el.cgPiece, (movedPieces.get(el.cgPiece) || []).concat(el))
+            movedPieces.set(
+              el.cgPiece,
+              (movedPieces.get(el.cgPiece) || []).concat(el)
+            )
           }
         }
+      } else {
+        // no piece: flag as moved
+        movedPieces.set(
+          el.cgPiece,
+          (movedPieces.get(el.cgPiece) || []).concat(el)
+        )
       }
-      // no piece: flag as moved
-      else {
-        movedPieces.set(el.cgPiece, (movedPieces.get(el.cgPiece) || []).concat(el))
-      }
-    }
-    else if (isSquareNode(el)) {
+    } else if (isSquareNode(el)) {
       if (!allChange && squareClassAtKey === el.className) {
         sameSquares.add(k)
-      }
-      else {
+      } else {
         movedSquares.set(
           el.className,
           (movedSquares.get(el.className) || []).concat(el)
@@ -114,8 +130,7 @@ export function renderBoard(d: State, dom: cg.DOM) {
         mvd.cgKey = k
         translate = posToTranslate(util.key2pos(k), asWhite)
         positionSquare(d, mvd, translate)
-      }
-      else {
+      } else {
         const se = document.createElement('square') as cg.SquareNode
         se.className = squareClass
         se.cgKey = k
@@ -147,9 +162,8 @@ export function renderBoard(d: State, dom: cg.DOM) {
           translate[1] += anim[1][1]
         }
         positionPiece(d, mvd, mvd.cgColor, translate)
-      }
-      // no piece in moved obj: insert the new piece
-      else {
+      } else {
+        // no piece in moved obj: insert the new piece
         const pe = document.createElement('piece') as cg.PieceNode
         const pName = pieceNameOf(p)
         pe.className = pName
@@ -177,7 +191,9 @@ export function renderBoard(d: State, dom: cg.DOM) {
 export function makeCoords(el: HTMLElement, withSymm: boolean) {
   const coords = document.createDocumentFragment()
   coords.appendChild(renderCoords(util.ranks, 'ranks'))
-  coords.appendChild(renderCoords(util.files, 'files' + (withSymm ? ' withSymm' : '')))
+  coords.appendChild(
+    renderCoords(util.files, 'files' + (withSymm ? ' withSymm' : ''))
+  )
   el.appendChild(coords)
 }
 
@@ -188,7 +204,12 @@ export function makeSymmCoords(el: HTMLElement) {
   el.appendChild(coords)
 }
 
-function posToTranslateBase(pos: cg.Pos, asWhite: boolean, xFactor: number, yFactor: number): NumberPair {
+function posToTranslateBase(
+  pos: cg.Pos,
+  asWhite: boolean,
+  xFactor: number,
+  yFactor: number
+): NumberPair {
   return [
     (asWhite ? pos[0] - 1 : 8 - pos[0]) * xFactor,
     (asWhite ? 8 - pos[1] : pos[1] - 1) * yFactor
@@ -198,18 +219,25 @@ function posToTranslateBase(pos: cg.Pos, asWhite: boolean, xFactor: number, yFac
 const posToTranslateAbs = (bounds: ClientRect) => {
   const xFactor = bounds.width / 8
   const yFactor = bounds.height / 8
-  return (pos: cg.Pos, asWhite: boolean) => posToTranslateBase(pos, asWhite, xFactor, yFactor)
+  return (pos: cg.Pos, asWhite: boolean) =>
+    posToTranslateBase(pos, asWhite, xFactor, yFactor)
 }
 
-const posToTranslateRel: (pos: cg.Pos, asWhite: boolean) => NumberPair =
-  (pos, asWhite) => posToTranslateBase(pos, asWhite, 12.5, 12.5)
+const posToTranslateRel: (pos: cg.Pos, asWhite: boolean) => NumberPair = (
+  pos,
+  asWhite
+) => posToTranslateBase(pos, asWhite, 12.5, 12.5)
 
-function positionPiece(d: State, el: HTMLElement, color: Color, pos: NumberPair) {
+function positionPiece(
+  d: State,
+  el: HTMLElement,
+  color: Color,
+  pos: NumberPair
+) {
   if (d.fixed) {
     el.style.left = pos[0] + '%'
     el.style.top = pos[1] + '%'
-  }
-  else {
+  } else {
     el.style.transform = util.transform(d, color, util.translate(pos))
   }
 }
@@ -240,30 +268,41 @@ function addSquare(squares: Map<Key, string>, key: Key, klass: string) {
 
 function computeSquareClasses(d: State): Map<Key, string> {
   const squares = new Map()
-  if (d.lastMove && d.highlight.lastMove) d.lastMove.forEach((k) => {
-    if (k) addSquare(squares, k, 'last-move')
-  })
+  if (d.lastMove && d.highlight.lastMove)
+    d.lastMove.forEach(k => {
+      if (k) addSquare(squares, k, 'last-move')
+    })
 
   if (d.check && d.highlight.check) addSquare(squares, d.check, 'check')
   if (d.selected) {
     addSquare(squares, d.selected, 'selected')
     const dests = d.movable.dests && d.movable.dests[d.selected]
-    if (dests) dests.forEach((k) => {
-      if (d.movable.showDests) addSquare(squares, k, 'move-dest' + (d.pieces[k] ? ' occupied' : ''))
-    })
+    if (dests)
+      dests.forEach(k => {
+        if (d.movable.showDests)
+          addSquare(squares, k, 'move-dest' + (d.pieces[k] ? ' occupied' : ''))
+      })
     const pDests = d.premovable.dests
-    if (pDests) pDests.forEach((k) => {
-      if (d.movable.showDests) addSquare(squares, k, 'premove-dest' + (d.pieces[k] ? ' occupied' : ''))
-    })
+    if (pDests)
+      pDests.forEach(k => {
+        if (d.movable.showDests)
+          addSquare(
+            squares,
+            k,
+            'premove-dest' + (d.pieces[k] ? ' occupied' : '')
+          )
+      })
   }
   const premove = d.premovable.current
-  if (premove) premove.forEach((k) => {
-    addSquare(squares, k, 'current-premove')
-  })
+  if (premove)
+    premove.forEach(k => {
+      addSquare(squares, k, 'current-premove')
+    })
 
-  if (d.exploding) d.exploding.keys.forEach((k) => {
-    addSquare(squares, k, 'exploding' + d.exploding!.stage)
-  })
+  if (d.exploding)
+    d.exploding.keys.forEach(k => {
+      addSquare(squares, k, 'exploding' + d.exploding!.stage)
+    })
   return squares
 }
 

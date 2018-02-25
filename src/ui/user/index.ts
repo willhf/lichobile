@@ -37,10 +37,7 @@ const UserScreen: Mithril.Component<Attrs, State> = {
         () => view.profile(user, this.user)
       )
     } else {
-      return layout.free(
-        () => loadingBackbutton(),
-        () => null
-      )
+      return layout.free(() => loadingBackbutton(), () => null)
     }
   }
 }

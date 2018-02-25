@@ -1,6 +1,15 @@
 import { GameSource, GameStatus, ClockData, Opening } from './game'
 
-export type GameFilter = 'all' | 'rated' | 'win' | 'loss' | 'draw' | 'bookmark' | 'me' | 'import' | 'playing'
+export type GameFilter =
+  | 'all'
+  | 'rated'
+  | 'win'
+  | 'loss'
+  | 'draw'
+  | 'bookmark'
+  | 'me'
+  | 'import'
+  | 'playing'
 
 export interface UserGamesCount {
   readonly all: number

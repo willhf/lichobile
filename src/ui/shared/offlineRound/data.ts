@@ -26,12 +26,14 @@ export interface OfflineDataConfig {
 }
 
 export default function data(cfg: OfflineDataConfig): OfflineGameData {
-
   const confColor = cfg.color || 'white'
 
   const player = {
     color: confColor,
-    username: cfg.id === 'offline_ai' ? session.appUser(i18n(confColor)) : i18n(confColor),
+    username:
+      cfg.id === 'offline_ai'
+        ? session.appUser(i18n(confColor))
+        : i18n(confColor),
     spectator: false
   }
 
@@ -61,7 +63,7 @@ export default function data(cfg: OfflineDataConfig): OfflineGameData {
       animationDuration: 300,
       highlight: true,
       destination: true,
-      centerPiece: cfg.pref && cfg.pref.centerPiece || false
+      centerPiece: (cfg.pref && cfg.pref.centerPiece) || false
     },
     steps: [],
     offlineClock: cfg.clock

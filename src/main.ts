@@ -15,7 +15,11 @@ import { syncWithNowPlayingGames } from './utils/offlineGames'
 import redraw from './utils/redraw'
 import session from './session'
 import settings from './settings'
-import { loadPreferredLanguage, ensureLangIsAvailable, loadLanguage } from './i18n'
+import {
+  loadPreferredLanguage,
+  ensureLangIsAvailable,
+  loadLanguage
+} from './i18n'
 import * as xhr from './xhr'
 import challengesApi from './lichess/challenges'
 import * as helper from './ui/helper'
@@ -31,7 +35,6 @@ import { loadCachedImages } from './bgtheme'
 let firstConnection = true
 
 function main() {
-
   routes.init()
   deepLinks.init()
 
@@ -55,14 +58,17 @@ function main() {
     session.restoreStoredSession()
   }
 
-  window.cordova.plugins.notification.local.on('click', (notification: LocalNotification) => {
-    try {
-      const data = JSON.parse(notification.data)
-      if (data && data.notifType === 'route') {
-        router.set(data.route)
-      }
-    } catch (_) {}
-  })
+  window.cordova.plugins.notification.local.on(
+    'click',
+    (notification: LocalNotification) => {
+      try {
+        const data = JSON.parse(notification.data)
+        if (data && data.notifType === 'route') {
+          router.set(data.route)
+        }
+      } catch (_) {}
+    }
+  )
 
   document.addEventListener('online', onOnline, false)
   document.addEventListener('offline', onOffline, false)
@@ -87,7 +93,7 @@ function main() {
   }
 
   if (cordova.platformId === 'android') {
-      window.StatusBar.backgroundColorByHexString('#151A1E')
+    window.StatusBar.backgroundColorByHexString('#151A1E')
   }
 
   setTimeout(() => {
@@ -103,32 +109,30 @@ function onResize() {
 function onOnline() {
   if (isForeground()) {
     if (firstConnection) {
-
       firstConnection = false
 
       xhr.status()
 
       getPools()
 
-      session.rememberLogin()
-      .then((user) => {
-        const serverLang = user.language && user.language.split('-')[0]
-        if (serverLang) {
-          ensureLangIsAvailable(serverLang)
-          .then(lang => {
-            settings.general.lang(lang)
-            loadLanguage(lang)
-          })
-        }
-        push.register()
-        challengesApi.refresh()
-        syncWithNowPlayingGames(session.nowPlaying())
-        redraw()
-      })
-      .catch(() => {
-        console.log('connected as anonymous')
-      })
-
+      session
+        .rememberLogin()
+        .then(user => {
+          const serverLang = user.language && user.language.split('-')[0]
+          if (serverLang) {
+            ensureLangIsAvailable(serverLang).then(lang => {
+              settings.general.lang(lang)
+              loadLanguage(lang)
+            })
+          }
+          push.register()
+          challengesApi.refresh()
+          syncWithNowPlayingGames(session.nowPlaying())
+          redraw()
+        })
+        .catch(() => {
+          console.log('connected as anonymous')
+        })
     } else {
       socket.connect()
       session.refresh()
@@ -160,19 +164,21 @@ function onPause() {
 // retry 5 times
 let nbRetries = 1
 function getPools() {
-  xhr.lobby()
-  .then(() => {
-    if (nbRetries > 1) redraw()
-  })
-  .catch(() => {
-    if (nbRetries <= 5) {
-      nbRetries++
-      setTimeout(getPools, nbRetries * 1000)
-    }
-  })
+  xhr
+    .lobby()
+    .then(() => {
+      if (nbRetries > 1) redraw()
+    })
+    .catch(() => {
+      if (nbRetries <= 5) {
+        nbRetries++
+        setTimeout(getPools, nbRetries * 1000)
+      }
+    })
 }
 
-document.addEventListener('deviceready',
+document.addEventListener(
+  'deviceready',
   // i18n must be loaded before any rendering happens
   () => loadPreferredLanguage().then(main),
   false

@@ -71,8 +71,7 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
       }
     }
 
-    this.engine.init()
-    .then(() => {
+    this.engine.init().then(() => {
       const currentVariant = <VariantKey>settings.ai.variant()
       if (!setupFen) {
         if (saved) {
@@ -89,7 +88,11 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
     })
   }
 
-  public init(data: OfflineGameData, situations: Array<chess.GameSituation>, ply: number) {
+  public init(
+    data: OfflineGameData,
+    situations: Array<chess.GameSituation>,
+    ply: number
+  ) {
     this.newGameMenu.close()
     this.actions.close()
     this.data = data
@@ -111,13 +114,19 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
     }
 
     if (!this.chessground) {
-      this.chessground = ground.make(this.data, this.replay.situation(), this.userMove, this.onUserNewPiece, this.onMove, this.onNewPiece)
+      this.chessground = ground.make(
+        this.data,
+        this.replay.situation(),
+        this.userMove,
+        this.onUserNewPiece,
+        this.onMove,
+        this.onNewPiece
+      )
     } else {
       ground.reload(this.chessground, this.data, this.replay.situation())
     }
 
-    this.engine.prepare(this.data.game.variant.key)
-    .then(() => {
+    this.engine.prepare(this.data.game.variant.key).then(() => {
       if (this.isEngineToMove()) {
         this.engineMove()
       }
@@ -128,7 +137,12 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
   }
 
   // clockType preceded by underscore until we implement AI timed games
-  public startNewGame(variant: VariantKey, setupFen?: string, _clockType?: ClockType, setupColor?: Color) {
+  public startNewGame(
+    variant: VariantKey,
+    setupFen?: string,
+    _clockType?: ClockType,
+    setupColor?: Color
+  ) {
     const payload: InitPayload = {
       variant
     }
@@ -136,27 +150,36 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
       payload.fen = setupFen
     }
 
-    chess.init(payload)
-    .then((data: chess.InitResponse) => {
-      this.init(makeData({
-        id: 'offline_ai',
-        variant: data.variant,
-        initialFen: data.setup.fen,
-        fen: data.setup.fen,
-        color: setupColor || getColorFromSettings(),
-        player: data.setup.player
-      }), [data.setup], 0)
-    })
-    .then(() => {
-      if (setupFen) {
-        this.vm.setupFen = undefined
-        router.replacePath('/ai')
-      }
-    })
+    chess
+      .init(payload)
+      .then((data: chess.InitResponse) => {
+        this.init(
+          makeData({
+            id: 'offline_ai',
+            variant: data.variant,
+            initialFen: data.setup.fen,
+            fen: data.setup.fen,
+            color: setupColor || getColorFromSettings(),
+            player: data.setup.player
+          }),
+          [data.setup],
+          0
+        )
+      })
+      .then(() => {
+        if (setupFen) {
+          this.vm.setupFen = undefined
+          router.replacePath('/ai')
+        }
+      })
   }
 
   public goToAnalysis = () => {
-    router.set(`/analyse/offline/ai/${this.data.player.color}?ply=${this.replay.ply}&curFen=${this.replay.situation().fen}`)
+    router.set(
+      `/analyse/offline/ai/${this.data.player.color}?ply=${
+        this.replay.ply
+      }&curFen=${this.replay.situation().fen}`
+    )
   }
 
   public save() {
@@ -168,10 +191,11 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
   }
 
   public sharePGN = () => {
-    this.replay.pgn(this.white(), this.black())
-    .then((data: chess.PgnDumpResponse) =>
-      window.plugins.socialsharing.share(data.pgn)
-    )
+    this.replay
+      .pgn(this.white(), this.black())
+      .then((data: chess.PgnDumpResponse) =>
+        window.plugins.socialsharing.share(data.pgn)
+      )
   }
 
   public playerName = (): string => {
@@ -182,22 +206,20 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
     if (this.data.player.color === 'white')
       // set in offlineround data
       return this.data.player.username!
-    else
-      return this.getOpponent().name
+    else return this.getOpponent().name
   }
 
   public black(): string {
     if (this.data.player.color === 'black')
       // set in offlineround data
       return this.data.player.username!
-    else
-      return this.getOpponent().name
+    else return this.getOpponent().name
   }
 
   public getOpponent() {
     const level = settings.ai.opponent()
     const opp = settings.ai.availableOpponents.find(e => e[1] === level)
-    const name = opp && opp.length && opp[0] || 'Stockfish'
+    const name = (opp && opp.length && opp[0]) || 'Stockfish'
     return {
       name: i18n('aiNameLevelAiLevel', name, level),
       level: parseInt(level) || 1
@@ -235,8 +257,11 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
       this.data.opponent.name = aiName({
         ai: l
       })
-      this.engine.setLevel(l)
-      .then(() => this.engine.search(this.data.game.initialFen, sit.uciMoves.join(' ')))
+      this.engine
+        .setLevel(l)
+        .then(() =>
+          this.engine.search(this.data.game.initialFen, sit.uciMoves.join(' '))
+        )
     }, 500)
   }
 
@@ -260,8 +285,7 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
       if (this.data.game.variant.key === 'atomic') {
         atomic.capture(this.chessground, dest)
         sound.explosion()
-      }
-      else sound.capture()
+      } else sound.capture()
     } else {
       sound.move()
     }
@@ -283,7 +307,9 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
 
   public apply(sit: chess.GameSituation) {
     if (sit) {
-      const lastUci = sit.uciMoves.length ? sit.uciMoves[sit.uciMoves.length - 1] : null
+      const lastUci = sit.uciMoves.length
+        ? sit.uciMoves[sit.uciMoves.length - 1]
+        : null
       this.chessground.set({
         fen: sit.fen,
         turnColor: sit.player,
@@ -325,7 +351,11 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
   }
 
   public resign = () => {
-    setResult(this, { id: 31, name: 'resign' }, oppositeColor(this.data.player.color))
+    setResult(
+      this,
+      { id: 31, name: 'resign' },
+      oppositeColor(this.data.player.color)
+    )
     this.save()
     this.onGameEnd()
   }
@@ -335,7 +365,9 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
   }
 
   public firstPly = () => {
-    return this.data.player.color === oppositeColor(this.firstPlayerColor()) ? 1 : 0
+    return this.data.player.color === oppositeColor(this.firstPlayerColor())
+      ? 1
+      : 0
   }
 
   public lastPly = () => {
@@ -344,7 +376,12 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
 
   public jump = (ply: number) => {
     this.chessground.cancelMove()
-    if (this.replay.ply === ply || ply < 0 || ply >= this.replay.situations.length) return false
+    if (
+      this.replay.ply === ply ||
+      ply < 0 ||
+      ply >= this.replay.situations.length
+    )
+      return false
     this.replay.ply = ply
     this.apply(this.replay.situation())
     return false
@@ -376,10 +413,8 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
 function getColorFromSettings(): Color {
   let color = settings.ai.color()
   if (color === 'random') {
-    if (getRandomArbitrary(0, 2) > 1)
-      color = 'white'
-    else
-      color = 'black'
+    if (getRandomArbitrary(0, 2) > 1) color = 'white'
+    else color = 'black'
   }
 
   return <Color>color

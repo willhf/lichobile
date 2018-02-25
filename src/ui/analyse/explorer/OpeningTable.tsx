@@ -49,20 +49,21 @@ export function showEmpty(ctrl: AnalyseCtrl) {
           <i className="withIcon" data-icon="" />
           No game found
         </h3>
-        <p>{
-          ctrl.explorer.config.fullHouse() ?
-          'Already searching through all available games.' :
-          'Maybe include more games from the preferences menu?'
-        }</p>
+        <p>
+          {ctrl.explorer.config.fullHouse()
+            ? 'Already searching through all available games.'
+            : 'Maybe include more games from the preferences menu?'}
+        </p>
       </div>
     </div>
   )
 }
 
 export function getTR(e: Event): HTMLElement {
-  const target = (e.target as HTMLElement)
-  return target.tagName === 'TR' ? target :
-    helper.findParentBySelector(target, 'tr')
+  const target = e.target as HTMLElement
+  return target.tagName === 'TR'
+    ? target
+    : helper.findParentBySelector(target, 'tr')
 }
 
 function resultBar(move: Move) {
@@ -70,9 +71,9 @@ function resultBar(move: Move) {
   function section(key: string) {
     const num: number = (move as any)[key]
     const percent = num * 100 / sum
-    const width = (Math.round(num * 1000 / sum) / 10) + '%'
+    const width = Math.round(num * 1000 / sum) / 10 + '%'
     return percent === 0 ? null : (
-      <span className={'explorerBar ' + key} style={{width}}>
+      <span className={'explorerBar ' + key} style={{ width }}>
         {percent > 12 ? Math.round(percent) + (percent > 20 ? '%' : '') : null}
       </span>
     )
@@ -99,17 +100,19 @@ function link(ctrl: AnalyseCtrl, e: Event) {
   if (gameId && ctrl.explorer.config.data.db.selected() === 'lichess') {
     router.set(`/analyse/online/${gameId}/${orientation}`)
   } else if (gameId) {
-    xhr.importMasterGame(gameId, orientation)
-    .then((data: OnlineGameData) =>
-      router.set(`/analyse/online/${data.game.id}/${orientation}`)
-    )
+    xhr
+      .importMasterGame(gameId, orientation)
+      .then((data: OnlineGameData) =>
+        router.set(`/analyse/online/${data.game.id}/${orientation}`)
+      )
   }
 }
 
 function showGameTable(ctrl: AnalyseCtrl, type: string, games: Array<Game>) {
   if (!ctrl.explorer.withGames || !games.length) return null
   return (
-    <table className="games"
+    <table
+      className="games"
       oncreate={helper.ontapXY(e => link(ctrl, e!), undefined, getTR)}
     >
       <thead>
@@ -118,28 +121,24 @@ function showGameTable(ctrl: AnalyseCtrl, type: string, games: Array<Game>) {
         </tr>
       </thead>
       <tbody>
-      { games.map((game: Game) => {
-        return (
-          <tr key={game.id} data-id={game.id}>
-            <td>
-              {[game.white, game.black].map((p: Player) =>
-                <span>{p.rating}</span>
-              )}
-            </td>
-            <td>
-              {[game.white, game.black].map((p: Player) =>
-                <span>{p.name}</span>
-              )}
-            </td>
-            <td>
-              {showResult(game.winner)}
-            </td>
-            <td>
-              {game.year}
-            </td>
-          </tr>
-        )
-      })}
+        {games.map((game: Game) => {
+          return (
+            <tr key={game.id} data-id={game.id}>
+              <td>
+                {[game.white, game.black].map((p: Player) => (
+                  <span>{p.rating}</span>
+                ))}
+              </td>
+              <td>
+                {[game.white, game.black].map((p: Player) => (
+                  <span>{p.name}</span>
+                ))}
+              </td>
+              <td>{showResult(game.winner)}</td>
+              <td>{game.year}</td>
+            </tr>
+          )
+        })}
       </tbody>
     </table>
   )
@@ -147,9 +146,11 @@ function showGameTable(ctrl: AnalyseCtrl, type: string, games: Array<Game>) {
 
 function showMoveTable(ctrl: AnalyseCtrl, moves: Array<Move>) {
   if (!moves.length) return null
-  pieceNotation = pieceNotation === undefined ? settings.game.pieceNotation() : pieceNotation
+  pieceNotation =
+    pieceNotation === undefined ? settings.game.pieceNotation() : pieceNotation
   return (
-    <table className={'moves' + (pieceNotation ? ' displayPieces' : '')}
+    <table
+      className={'moves' + (pieceNotation ? ' displayPieces' : '')}
       oncreate={helper.ontapXY(e => onTableTap(ctrl, e!), undefined, getTR)}
     >
       <thead>
@@ -160,7 +161,7 @@ function showMoveTable(ctrl: AnalyseCtrl, moves: Array<Move>) {
         </tr>
       </thead>
       <tbody>
-        { moves.map(move => {
+        {moves.map(move => {
           return (
             <tr key={move.uci} data-uci={move.uci}>
               <td className="explorerMove-move">
@@ -169,9 +170,7 @@ function showMoveTable(ctrl: AnalyseCtrl, moves: Array<Move>) {
               <td className="explorerMove-games">
                 {move.white + move.draws + move.black}
               </td>
-              <td className="explorerMove-result">
-                {resultBar(move)}
-              </td>
+              <td className="explorerMove-result">{resultBar(move)}</td>
             </tr>
           )
         })}

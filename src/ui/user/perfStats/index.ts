@@ -34,21 +34,18 @@ const VariantPerfScreen: Mithril.Component<Attrs, State> = {
     socket.createDefault()
 
     spinner.spin()
-    Promise.all([
-      xhr.user(userId, false),
-      xhr.variantperf(userId, perf)
-    ])
-    .then(results => {
-      spinner.stop()
-      const [userData, variantData] = results
-      user(userData)
-      perfData(variantData)
-      redraw()
-    })
-    .catch(err => {
-      spinner.stop()
-      handleXhrError(err)
-    })
+    Promise.all([xhr.user(userId, false), xhr.variantperf(userId, perf)])
+      .then(results => {
+        spinner.stop()
+        const [userData, variantData] = results
+        user(userData)
+        perfData(variantData)
+        redraw()
+      })
+      .catch(err => {
+        spinner.stop()
+        handleXhrError(err)
+      })
 
     vnode.state = {
       user,
@@ -60,12 +57,16 @@ const VariantPerfScreen: Mithril.Component<Attrs, State> = {
     const ctrl = vnode.state
     const userId = vnode.attrs.id
     const perf = vnode.attrs.perf
-    const header = () => headerWidget(null,
-      backButton(h('div.main_header_title', [
-        h('span.withIcon', { 'data-icon': gameIcon(perf) }),
-        userId + ' ' + shortPerfTitle(perf as PerfKey) + ' stats'
-      ]))
-    )
+    const header = () =>
+      headerWidget(
+        null,
+        backButton(
+          h('div.main_header_title', [
+            h('span.withIcon', { 'data-icon': gameIcon(perf) }),
+            userId + ' ' + shortPerfTitle(perf as PerfKey) + ' stats'
+          ])
+        )
+      )
 
     return layout.free(header, () => renderBody(ctrl))
   }

@@ -12,16 +12,25 @@ export interface Shape {
 
 const usedBrushes = defs(Object.keys(brushes).map(name => brushes[name]))
 
-export default function BoardBrush(bounds: Bounds, orientation: Color, shapes: Shape[], pieceTheme: string) {
+export default function BoardBrush(
+  bounds: Bounds,
+  orientation: Color,
+  shapes: Shape[],
+  pieceTheme: string
+) {
   if (!shapes) return null
   if (!bounds) return null
   if (bounds.width !== bounds.height) return null
 
-  return h('svg', {
-    xmlns: 'http://www.w3.org/2000/svg',
-    version: '1.1'
-  }, [
-    usedBrushes,
-    shapes.map(renderShape(orientation, false, brushes, bounds, pieceTheme))
-  ])
+  return h(
+    'svg',
+    {
+      xmlns: 'http://www.w3.org/2000/svg',
+      version: '1.1'
+    },
+    [
+      usedBrushes,
+      shapes.map(renderShape(orientation, false, brushes, bounds, pieceTheme))
+    ]
+  )
 }

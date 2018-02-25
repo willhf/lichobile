@@ -27,7 +27,10 @@ export default {
     this.seconds = attrs.seconds
     this.render = (sec: Seconds) => {
       if (this.el) {
-        const t = formatTimeInSecs(sec, attrs.showOnlySecs ? 'secs_only' : undefined)
+        const t = formatTimeInSecs(
+          sec,
+          attrs.showOnlySecs ? 'secs_only' : undefined
+        )
         if (attrs.textWrap) this.el.innerHTML = attrs.textWrap(t)
         else this.el.textContent = t
       }
@@ -39,7 +42,11 @@ export default {
       const diff = this.seconds - elapsed
       const remaining = diff > 0 ? diff : 0
       this.render(remaining)
-      if (attrs.emergTime !== undefined && !this.rang && remaining < attrs.emergTime) {
+      if (
+        attrs.emergTime !== undefined &&
+        !this.rang &&
+        remaining < attrs.emergTime
+      ) {
         if (this.el) this.el.classList.add('emerg')
         sound.lowtime()
         this.rang = true

@@ -21,18 +21,19 @@ export default function ThreadCtrl(threadId: string): IThreadCtrl {
   const deleteAttempted = stream<boolean>(false)
 
   function onKeyboardShow(e: Ionic.KeyboardEvent) {
-    helper.onKeyboardShow(e);
-    (document.activeElement as HTMLElement).scrollIntoView(true)
+    helper.onKeyboardShow(e)
+    ;(document.activeElement as HTMLElement).scrollIntoView(true)
   }
   window.addEventListener('native.keyboardshow', onKeyboardShow)
   window.addEventListener('native.keyboardhide', helper.onKeyboardHide)
 
-  xhr.thread(id())
-  .then(data => {
-    thread(data)
-    redraw()
-  })
-  .catch(handleXhrError)
+  xhr
+    .thread(id())
+    .then(data => {
+      thread(data)
+      redraw()
+    })
+    .catch(handleXhrError)
 
   return {
     id,
@@ -49,20 +50,21 @@ function sendResponse(form: HTMLFormElement) {
   const response = (form[1] as HTMLTextAreaElement).value
   if (!response) return
 
-  xhr.respond(id, response)
-  .then(data => {
-    if (data.ok) {
-      router.set('/inbox/' + id)
-    }
-    else {
-      redraw()
-    }
-  })
-  .catch(handleXhrError)
+  xhr
+    .respond(id, response)
+    .then(data => {
+      if (data.ok) {
+        router.set('/inbox/' + id)
+      } else {
+        redraw()
+      }
+    })
+    .catch(handleXhrError)
 }
 
 function deleteThread(id: string) {
-  xhr.deleteThread(id)
-  .then(() => router.set('/inbox/'))
-  .catch(handleXhrError)
+  xhr
+    .deleteThread(id)
+    .then(() => router.set('/inbox/'))
+    .catch(handleXhrError)
 }

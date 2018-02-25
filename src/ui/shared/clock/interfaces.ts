@@ -1,6 +1,13 @@
 import { StoredProp } from '../../../storage'
 
-export type ClockType = 'simple' | 'increment' | 'handicapInc' | 'delay' | 'bronstein' | 'hourglass' | 'stage'
+export type ClockType =
+  | 'simple'
+  | 'increment'
+  | 'handicapInc'
+  | 'delay'
+  | 'bronstein'
+  | 'hourglass'
+  | 'stage'
 export type ClockTypeWithNone = ClockType | 'none'
 
 export interface IBasicClock {
@@ -18,9 +25,15 @@ export interface IBasicClock {
   clear(): void
 }
 
-export interface Stage { time: number, moves: number | null }
+export interface Stage {
+  time: number
+  moves: number | null
+}
 
-export interface StageSetting { time: string, moves: string | null }
+export interface StageSetting {
+  time: string
+  moves: string | null
+}
 
 export interface IStageClock extends IBasicClock {
   whiteMoves(): number | null
@@ -59,59 +72,64 @@ export interface IChessStageClockState extends IChessBasicClockState {
   increment: number
 }
 
-export type ClockState = IChessBasicClockState | IChessHandicapIncClockState | IChessDelayClockState | IChessStageClockState | null
+export type ClockState =
+  | IChessBasicClockState
+  | IChessHandicapIncClockState
+  | IChessDelayClockState
+  | IChessStageClockState
+  | null
 
 export type ClockSettings = ClockClockSettings | OtbClockSettings
 
 export interface ClockClockSettings extends BaseClockSettings {
-  clockType: StoredProp<ClockType>,
+  clockType: StoredProp<ClockType>
 }
 
 export interface OtbClockSettings extends BaseClockSettings {
-  clockType: StoredProp<ClockTypeWithNone>,
+  clockType: StoredProp<ClockTypeWithNone>
 }
 
 export interface BaseClockSettings {
-  availableClocks: Array<Array<string>>,
+  availableClocks: Array<Array<string>>
 
   simple: {
     time: StoredProp<string>
-  },
+  }
 
   increment: {
-    time: StoredProp<string>,
+    time: StoredProp<string>
     increment: StoredProp<string>
-  },
+  }
 
   handicapInc: {
-    topTime: StoredProp<string>,
-    topIncrement: StoredProp<string>,
-    bottomTime: StoredProp<string>,
+    topTime: StoredProp<string>
+    topIncrement: StoredProp<string>
+    bottomTime: StoredProp<string>
     bottomIncrement: StoredProp<string>
-  },
+  }
 
   delay: {
-    time: StoredProp<string>,
+    time: StoredProp<string>
     increment: StoredProp<string>
-  },
+  }
 
   bronstein: {
-    time: StoredProp<string>,
+    time: StoredProp<string>
     increment: StoredProp<string>
-  },
+  }
 
   hourglass: {
     time: StoredProp<string>
-  },
+  }
 
   stage: {
-    stages: StoredProp<Array<StageSetting>>,
+    stages: StoredProp<Array<StageSetting>>
     increment: StoredProp<string>
-  },
+  }
 
-  availableTimes: Array<Array<string>>,
+  availableTimes: Array<Array<string>>
 
-  availableIncrements: Array<string>,
+  availableIncrements: Array<string>
 
   availableMoves: Array<string>
 }

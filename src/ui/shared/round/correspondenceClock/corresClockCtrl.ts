@@ -48,7 +48,10 @@ export default class CorresClockCtrl {
   }
 
   public tick(color: Color) {
-    this.data[color] = Math.max(0, this.lastUpdate[color] - (Date.now() - this.lastUpdate.at) / 1000)
+    this.data[color] = Math.max(
+      0,
+      this.lastUpdate[color] - (Date.now() - this.lastUpdate.at) / 1000
+    )
     if (this.data[color] === 0) this.onFlag()
 
     const time = this.data[color] * 1000
@@ -56,5 +59,4 @@ export default class CorresClockCtrl {
 
     if (el) el.textContent = formatClockTime(time)
   }
-
 }

@@ -6,7 +6,6 @@ import { nodeFullName } from './util'
 import AnalyseCtrl from './AnalyseCtrl'
 
 export function view(ctrl: AnalyseCtrl): Mithril.BaseNode | null {
-
   if (!ctrl.contextMenu) return null
 
   const path = ctrl.contextMenu
@@ -18,8 +17,12 @@ export function view(ctrl: AnalyseCtrl): Mithril.BaseNode | null {
     () => nodeFullName(node),
     () => {
       return [
-        onMainline ? null : action('S', 'Promote variation', () => ctrl.promote(path, false)),
-        onMainline ? null : action('E', 'Make main line', () => ctrl.promote(path, true)),
+        onMainline
+          ? null
+          : action('S', 'Promote variation', () => ctrl.promote(path, false)),
+        onMainline
+          ? null
+          : action('E', 'Make main line', () => ctrl.promote(path, true)),
         action('q', 'Delete from here', () => ctrl.deleteNode(path))
       ]
     },
@@ -31,9 +34,17 @@ export function view(ctrl: AnalyseCtrl): Mithril.BaseNode | null {
   )
 }
 
-function action(icon: string, text: string, handler: () => void): Mithril.BaseNode {
-  return h('button.withIcon', {
-    'data-icon': icon,
-    oncreate: helper.ontapXY(handler)
-  }, text)
+function action(
+  icon: string,
+  text: string,
+  handler: () => void
+): Mithril.BaseNode {
+  return h(
+    'button.withIcon',
+    {
+      'data-icon': icon,
+      oncreate: helper.ontapXY(handler)
+    },
+    text
+  )
 }

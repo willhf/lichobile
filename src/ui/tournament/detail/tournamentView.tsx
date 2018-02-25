@@ -2,9 +2,18 @@ import * as h from 'mithril/hyperscript'
 import router from '../../../router'
 import session from '../../../session'
 import i18n from '../../../i18n'
-import { Tournament, StandingPlayer, PodiumPlace, Spotlight, Verdicts } from '../../../lichess/interfaces/tournament'
+import {
+  Tournament,
+  StandingPlayer,
+  PodiumPlace,
+  Spotlight,
+  Verdicts
+} from '../../../lichess/interfaces/tournament'
 import { Opening } from '../../../lichess/interfaces/game'
-import { formatTournamentDuration, formatTournamentTimeControl } from '../../../utils'
+import {
+  formatTournamentDuration,
+  formatTournamentTimeControl
+} from '../../../utils'
 import * as helper from '../../helper'
 import settings from '../../../settings'
 import miniBoard from '../../shared/miniBoard'
@@ -16,15 +25,11 @@ import passwordForm from './passwordForm'
 import TournamentCtrl from './TournamentCtrl'
 
 export function renderFAQOverlay(ctrl: TournamentCtrl) {
-  return [
-    faq.view(ctrl.faqCtrl)
-  ]
+  return [faq.view(ctrl.faqCtrl)]
 }
 
 export function renderPlayerInfoOverlay(ctrl: TournamentCtrl) {
-  return [
-    playerInfo.view(ctrl.playerInfoCtrl)
-  ]
+  return [playerInfo.view(ctrl.playerInfoCtrl)]
 }
 
 export function tournamentBody(ctrl: TournamentCtrl) {
@@ -46,24 +51,36 @@ export function renderFooter(ctrl: TournamentCtrl) {
 
   return (
     <div className="actions_bar">
-      <button key="faq" className="action_bar_button" oncreate={helper.ontap(ctrl.faqCtrl.open)}>
+      <button
+        key="faq"
+        className="action_bar_button"
+        oncreate={helper.ontap(ctrl.faqCtrl.open)}
+      >
         <span className="fa fa-question-circle" />
         FAQ
       </button>
-      <button key="share" className="action_bar_button" oncreate={helper.ontap(() => window.plugins.socialsharing.share(tUrl))}>
+      <button
+        key="share"
+        className="action_bar_button"
+        oncreate={helper.ontap(() => window.plugins.socialsharing.share(tUrl))}
+      >
         <span className="fa fa-share-alt" />
         Share
       </button>
-      { ctrl.hasJoined ? withdrawButton(ctrl, t) : joinButton(ctrl, t) }
+      {ctrl.hasJoined ? withdrawButton(ctrl, t) : joinButton(ctrl, t)}
     </div>
   )
 }
 
-export function timeInfo(key: string, seconds?: number, preceedingText?: string) {
+export function timeInfo(
+  key: string,
+  seconds?: number,
+  preceedingText?: string
+) {
   if (seconds === undefined) return null
 
   return [
-    preceedingText ? (preceedingText + ' ') : null,
+    preceedingText ? preceedingText + ' ' : null,
     h(CountdownTimer, { key, seconds })
   ]
 }
@@ -75,8 +92,10 @@ function tournamentHeader(data: Tournament) {
       {data.spotlight ? tournamentSpotlightInfo(data.spotlight) : null}
       {tournamentCreatorInfo(data)}
       {data.position ? tournamentPositionInfo(data.position) : null}
-      {data.verdicts.list.length > 0 ? tournamentConditions(data.verdicts) : null}
-   </div>
+      {data.verdicts.list.length > 0
+        ? tournamentConditions(data.verdicts)
+        : null}
+    </div>
   )
 }
 
@@ -86,7 +105,11 @@ function tournamentTimeInfo(data: Tournament) {
   return (
     <div className="tournamentTimeInfo">
       <strong className="tournamentInfo withIcon" data-icon={data.perf.icon}>
-        {variant + ' • ' + control + ' • ' + formatTournamentDuration(data.minutes)}
+        {variant +
+          ' • ' +
+          control +
+          ' • ' +
+          formatTournamentDuration(data.minutes)}
       </strong>
     </div>
   )
@@ -95,18 +118,26 @@ function tournamentTimeInfo(data: Tournament) {
 function tournamentCreatorInfo(data: Tournament) {
   return (
     <div className="tournamentCreatorInfo">
-      {data.createdBy === 'lichess' ? i18n('tournamentOfficial') : i18n('by', data.createdBy)}
+      {data.createdBy === 'lichess'
+        ? i18n('tournamentOfficial')
+        : i18n('by', data.createdBy)}
       &nbsp;•&nbsp;
-          {window.moment(data.startsAt).calendar()}
+      {window.moment(data.startsAt).calendar()}
     </div>
   )
 }
 
 function tournamentPositionInfo(position: Opening) {
   return (
-    <div className={'tournamentPositionInfo' + (position.wikiPath ? ' withLink' : '')}
-      oncreate={helper.ontapY(() => position && position.wikiPath &&
-        window.open(`https://en.wikipedia.org/wiki/${position.wikiPath}`)
+    <div
+      className={
+        'tournamentPositionInfo' + (position.wikiPath ? ' withLink' : '')
+      }
+      oncreate={helper.ontapY(
+        () =>
+          position &&
+          position.wikiPath &&
+          window.open(`https://en.wikipedia.org/wiki/${position.wikiPath}`)
       )}
     >
       {position.eco + ' ' + position.name}
@@ -124,7 +155,11 @@ function tournamentConditions(verdicts: Verdicts) {
     <div className={conditionsClass} data-icon="7">
       {verdicts.list.map(o => {
         return (
-          <p className={'condition ' + (o.verdict === 'ok' ? 'accepted' : 'rejected')}>
+          <p
+            className={
+              'condition ' + (o.verdict === 'ok' ? 'accepted' : 'rejected')
+            }
+          >
             {o.condition}
           </p>
         )
@@ -134,27 +169,29 @@ function tournamentConditions(verdicts: Verdicts) {
 }
 
 function tournamentSpotlightInfo(spotlight: Spotlight) {
-  return (
-    <div className="tournamentSpotlightInfo">
-      {spotlight.description}
-    </div>
-  )
+  return <div className="tournamentSpotlightInfo">{spotlight.description}</div>
 }
 
 function joinButton(ctrl: TournamentCtrl, t: Tournament) {
-  if (!session.isConnected() ||
+  if (
+    !session.isConnected() ||
     t.isFinished ||
     settings.game.supportedVariants.indexOf(t.variant) < 0 ||
-    !t.verdicts.accepted) {
+    !t.verdicts.accepted
+  ) {
     return null
   }
 
-  const action = ctrl.tournament.private ?
-    () => passwordForm.open(ctrl) :
-    () => ctrl.join()
+  const action = ctrl.tournament.private
+    ? () => passwordForm.open(ctrl)
+    : () => ctrl.join()
 
   return (
-    <button key="join" className="action_bar_button" oncreate={helper.ontap(action)}>
+    <button
+      key="join"
+      className="action_bar_button"
+      oncreate={helper.ontap(action)}
+    >
       <span className="fa fa-play" />
       {i18n('join')}
     </button>
@@ -166,7 +203,11 @@ function withdrawButton(ctrl: TournamentCtrl, t: Tournament) {
     return null
   }
   return (
-    <button key="withdraw" className="action_bar_button" oncreate={helper.ontap(ctrl.withdraw)}>
+    <button
+      key="withdraw"
+      className="action_bar_button"
+      oncreate={helper.ontap(ctrl.withdraw)}
+    >
       <span className="fa fa-flag" />
       {i18n('withdraw')}
     </button>
@@ -175,8 +216,9 @@ function withdrawButton(ctrl: TournamentCtrl, t: Tournament) {
 
 function getLeaderboardItemEl(e: Event) {
   const target = e.target as HTMLElement
-  return (target as HTMLElement).classList.contains('list_item') ? target :
-    helper.findParentBySelector(target, '.list_item')
+  return (target as HTMLElement).classList.contains('list_item')
+    ? target
+    : helper.findParentBySelector(target, '.list_item')
 }
 
 function handlePlayerInfoTap(ctrl: TournamentCtrl, e: Event) {
@@ -190,8 +232,8 @@ function tournamentLeaderboard(ctrl: TournamentCtrl) {
   const data = ctrl.tournament
   const players = ctrl.currentPageResults
   const page = ctrl.page
-  const firstPlayer = (players.length > 0) ? players[0].rank : 0
-  const lastPlayer = (players.length > 0) ? players[players.length - 1].rank : 0
+  const firstPlayer = players.length > 0 ? players[0].rank : 0
+  const lastPlayer = players.length > 0 ? players[players.length - 1].rank : 0
   const backEnabled = page > 1
   const forwardEnabled = page < data.nbPlayers / 10
   const user = session.get()
@@ -199,30 +241,51 @@ function tournamentLeaderboard(ctrl: TournamentCtrl) {
 
   return (
     <div key="leaderboard" className="tournamentLeaderboard">
-      { data.nbPlayers > 0 ?
-        <p className="tournamentTitle"> {i18n('leaderboard')} ({i18n('nbConnectedPlayers', data.nbPlayers)})</p> : null
-      }
+      {data.nbPlayers > 0 ? (
+        <p className="tournamentTitle">
+          {' '}
+          {i18n('leaderboard')} ({i18n('nbConnectedPlayers', data.nbPlayers)})
+        </p>
+      ) : null}
 
       <table
-        className={'tournamentStandings' + (ctrl.isLoadingPage ? ' loading' : '')}
-        oncreate={helper.ontap(e => handlePlayerInfoTap(ctrl, e!), undefined, undefined, getLeaderboardItemEl)}
+        className={
+          'tournamentStandings' + (ctrl.isLoadingPage ? ' loading' : '')
+        }
+        oncreate={helper.ontap(
+          e => handlePlayerInfoTap(ctrl, e!),
+          undefined,
+          undefined,
+          getLeaderboardItemEl
+        )}
       >
         {players.map(p => renderPlayerEntry(userName, p))}
       </table>
-      <div className={'navigationButtons' + (players.length < 1 ? ' invisible' : '')}>
+      <div
+        className={
+          'navigationButtons' + (players.length < 1 ? ' invisible' : '')
+        }
+      >
         {renderNavButton('W', !ctrl.isLoadingPage && backEnabled, ctrl.first)}
         {renderNavButton('Y', !ctrl.isLoadingPage && backEnabled, ctrl.prev)}
-        <span class="pageInfo"> {firstPlayer + '-' + lastPlayer + ' / ' + data.nbPlayers} </span>
+        <span class="pageInfo">
+          {' '}
+          {firstPlayer + '-' + lastPlayer + ' / ' + data.nbPlayers}{' '}
+        </span>
         {renderNavButton('X', !ctrl.isLoadingPage && forwardEnabled, ctrl.next)}
         {renderNavButton('V', !ctrl.isLoadingPage && forwardEnabled, ctrl.last)}
-        {data.me ?
-          <button className={'navigationButton tournament-me' + (ctrl.focusOnMe ? ' activated' : '')}
+        {data.me ? (
+          <button
+            className={
+              'navigationButton tournament-me' +
+              (ctrl.focusOnMe ? ' activated' : '')
+            }
             data-icon="7"
             oncreate={helper.ontap(ctrl.toggleFocusOnMe)}
           >
             <span>Me</span>
-          </button> : null
-        }
+          </button>
+        ) : null}
       </div>
     </div>
   )
@@ -239,13 +302,23 @@ function renderNavButton(icon: string, isEnabled: boolean, action: () => void) {
 function renderPlayerEntry(userName: string, player: StandingPlayer) {
   const isMe = player.name === userName
   return (
-    <tr key={player.name} data-player={player.name} className={'list_item' + (isMe ? ' tournament-me' : '')} >
+    <tr
+      key={player.name}
+      data-player={player.name}
+      className={'list_item' + (isMe ? ' tournament-me' : '')}
+    >
       <td className="tournamentPlayer">
-        <span className="flagRank" data-icon={player.withdraw ? 'b' : ''}> {player.withdraw ? '' : (player.rank + '. ')} </span>
+        <span className="flagRank" data-icon={player.withdraw ? 'b' : ''}>
+          {' '}
+          {player.withdraw ? '' : player.rank + '. '}{' '}
+        </span>
         <span> {player.name + ' (' + player.rating + ') '} </span>
       </td>
       <td className="tournamentPoints">
-        <span className={player.sheet.fire ? 'on-fire' : 'off-fire'} data-icon="Q">
+        <span
+          className={player.sheet.fire ? 'on-fire' : 'off-fire'}
+          data-icon="Q"
+        >
           {player.score}
         </span>
       </td>
@@ -260,9 +333,18 @@ function tournamentFeaturedGame(ctrl: TournamentCtrl) {
 
   const isPortrait = helper.isPortrait()
 
-  featured.player = {user: {username: featured.white.name}, rating: featured.white.rating}
-  featured.opponent = {user: {username: featured.black.name}, rating: featured.black.rating}
-  featured.clock = {initial: data.clock.limit, increment: data.clock.increment}
+  featured.player = {
+    user: { username: featured.white.name },
+    rating: featured.white.rating
+  }
+  featured.opponent = {
+    user: { username: featured.black.name },
+    rating: featured.black.rating
+  }
+  featured.clock = {
+    initial: data.clock.limit,
+    increment: data.clock.increment
+  }
 
   return (
     <div className="tournamentGames">
@@ -274,14 +356,16 @@ function tournamentFeaturedGame(ctrl: TournamentCtrl) {
           fen: featured.fen,
           lastMove: featured.lastMove,
           orientation: 'white',
-          link: () => router.set(`/tournament/${data.id}/game/${featured.id}?goingBack=1`),
-          gameObj: featured}
-        )}
+          link: () =>
+            router.set(
+              `/tournament/${data.id}/game/${featured.id}?goingBack=1`
+            ),
+          gameObj: featured
+        })}
       </div>
     </div>
   )
 }
-
 
 function miniBoardSize(isPortrait: boolean) {
   const { vh, vw } = helper.viewportDim()
@@ -296,9 +380,9 @@ function miniBoardSize(isPortrait: boolean) {
 function tournamentPodium(podium: ReadonlyArray<PodiumPlace>) {
   return (
     <div key="podium" className="podium">
-      { renderPlace(podium[1]) }
-      { renderPlace(podium[0]) }
-      { renderPlace(podium[2]) }
+      {renderPlace(podium[1])}
+      {renderPlace(podium[0])}
+      {renderPlace(podium[2])}
     </div>
   )
 }
@@ -311,42 +395,33 @@ function renderPlace(data: PodiumPlace) {
   return (
     <div className={'place' + rank}>
       <div className="trophy"> </div>
-      <div className="username" oncreate={helper.ontap(() => router.set('/@/' + data.name))}>
+      <div
+        className="username"
+        oncreate={helper.ontap(() => router.set('/@/' + data.name))}
+      >
         {data.name}
       </div>
       <div className="rating"> {data.rating} </div>
       <table className="stats">
         <tr>
-          <td className="statName">
-            {i18n('gamesPlayed')}
-          </td>
+          <td className="statName">{i18n('gamesPlayed')}</td>
+          <td className="statData">{data.nb.game}</td>
+        </tr>
+        <tr>
+          <td className="statName">Win Rate</td>
           <td className="statData">
-            {data.nb.game}
+            {(data.nb.win / data.nb.game * 100).toFixed(0) + '%'}
           </td>
         </tr>
         <tr>
-          <td className="statName">
-            Win Rate
-          </td>
+          <td className="statName">Berserk Rate</td>
           <td className="statData">
-            {((data.nb.win / data.nb.game) * 100).toFixed(0) + '%'}
+            {(data.nb.berserk / data.nb.game * 100).toFixed(0) + '%'}
           </td>
         </tr>
         <tr>
-          <td className="statName">
-            Berserk Rate
-          </td>
-          <td className="statData">
-            {((data.nb.berserk / data.nb.game) * 100).toFixed(0) + '%'}
-          </td>
-        </tr>
-        <tr>
-          <td className="statName">
-            Performance
-          </td>
-          <td className="statData">
-            {data.performance}
-          </td>
+          <td className="statName">Performance</td>
+          <td className="statData">{data.performance}</td>
         </tr>
       </table>
     </div>

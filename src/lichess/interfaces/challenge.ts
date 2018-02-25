@@ -1,4 +1,9 @@
-type ChallengeStatus = 'created' | 'offline' | 'canceled' | 'declined' | 'accepted'
+type ChallengeStatus =
+  | 'created'
+  | 'offline'
+  | 'canceled'
+  | 'declined'
+  | 'accepted'
 
 export interface ChallengeUser {
   readonly id: string
@@ -49,6 +54,8 @@ export function isTimeControlClock(t: TimeControl): t is TimeControlClock {
   return t.type === 'clock'
 }
 
-export function isTimeControlCorrespondence(t: TimeControl): t is TimeControlCorrespondence {
+export function isTimeControlCorrespondence(
+  t: TimeControl
+): t is TimeControlCorrespondence {
   return t.type === 'correspondence'
 }

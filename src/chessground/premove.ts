@@ -8,14 +8,12 @@ function diff(a: number, b: number): number {
 }
 
 function pawn(color: Color): Mobility {
-  return (x1, y1, x2, y2) => diff(x1, x2) < 2 && (
-    color === 'white' ? (
-      // allow 2 squares from 1 and 8, for horde
-      y2 === y1 + 1 || (y1 <= 2 && y2 === (y1 + 2) && x1 === x2)
-    ) : (
-      y2 === y1 - 1 || (y1 >= 7 && y2 === (y1 - 2) && x1 === x2)
-    )
-  )
+  return (x1, y1, x2, y2) =>
+    diff(x1, x2) < 2 &&
+    (color === 'white'
+      ? // allow 2 squares from 1 and 8, for horde
+        y2 === y1 + 1 || (y1 <= 2 && y2 === y1 + 2 && x1 === x2)
+      : y2 === y1 - 1 || (y1 >= 7 && y2 === y1 - 2 && x1 === x2))
 }
 
 const knight: Mobility = (x1, y1, x2, y2) => {
@@ -37,26 +35,29 @@ const queen: Mobility = (x1, y1, x2, y2) => {
 }
 
 function king(color: Color, rookFiles: number[], canCastle: boolean): Mobility {
-  return (x1, y1, x2, y2)  => (
-    diff(x1, x2) < 2 && diff(y1, y2) < 2
-  ) || (
-    canCastle && y1 === y2 && y1 === (color === 'white' ? 1 : 8) && (
-      (x1 === 5 && (x2 === 3 || x2 === 7)) || util.containsX(rookFiles, x2)
-    )
-  )
+  return (x1, y1, x2, y2) =>
+    (diff(x1, x2) < 2 && diff(y1, y2) < 2) ||
+    (canCastle &&
+      y1 === y2 &&
+      y1 === (color === 'white' ? 1 : 8) &&
+      ((x1 === 5 && (x2 === 3 || x2 === 7)) || util.containsX(rookFiles, x2)))
 }
 
 function rookFilesOf(pieces: cg.Pieces, color: Color): number[] {
   let piece: Piece
   return Object.keys(pieces)
-  .filter(key => {
-    piece = pieces[key]
-    return piece && piece.color === color && piece.role === 'rook'
-  })
-  .map((key: Key) => util.key2pos(key)[0])
+    .filter(key => {
+      piece = pieces[key]
+      return piece && piece.color === color && piece.role === 'rook'
+    })
+    .map((key: Key) => util.key2pos(key)[0])
 }
 
-export default function premove(pieces: cg.Pieces, key: Key, canCastle: boolean): Key[] {
+export default function premove(
+  pieces: cg.Pieces,
+  key: Key,
+  canCastle: boolean
+): Key[] {
   const piece = pieces[key]
   const pos = util.key2pos(key)
   let mobility: Mobility
@@ -80,9 +81,12 @@ export default function premove(pieces: cg.Pieces, key: Key, canCastle: boolean)
       mobility = king(piece.color, rookFilesOf(pieces, piece.color), canCastle)
       break
   }
-  return util.allKeys.map(util.key2pos)
-  .filter(pos2 =>
-    (pos[0] !== pos2[0] || pos[1] !== pos2[1]) && mobility(pos[0], pos[1], pos2[0], pos2[1])
-  )
-  .map(util.pos2key)
+  return util.allKeys
+    .map(util.key2pos)
+    .filter(
+      pos2 =>
+        (pos[0] !== pos2[0] || pos[1] !== pos2[1]) &&
+        mobility(pos[0], pos[1], pos2[0], pos2[1])
+    )
+    .map(util.pos2key)
 }

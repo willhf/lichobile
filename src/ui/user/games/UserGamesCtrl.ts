@@ -6,7 +6,11 @@ import { toggleGameBookmark } from '../../../xhr'
 import redraw from '../../../utils/redraw'
 import * as debounce from 'lodash/debounce'
 import { Paginator } from '../../../lichess/interfaces'
-import { GameFilter, UserFullProfile, UserGameWithDate } from '../../../lichess/interfaces/user'
+import {
+  GameFilter,
+  UserFullProfile,
+  UserGameWithDate
+} from '../../../lichess/interfaces/user'
 
 export interface IUserGamesCtrl {
   scrollState: ScrollState
@@ -48,12 +52,16 @@ const filters: StringMap = {
 
 let cachedScrollState: ScrollState
 
-export default function UserGamesCtrl(userId: string, filter?: string): IUserGamesCtrl {
+export default function UserGamesCtrl(
+  userId: string,
+  filter?: string
+): IUserGamesCtrl {
   // used to restore scroll position only once from cached state
   let initialized = false
 
   const scrollStateId = window.history.state.scrollStateId
-  const cacheAvailable = cachedScrollState && scrollStateId === cachedScrollState.userId
+  const cacheAvailable =
+    cachedScrollState && scrollStateId === cachedScrollState.userId
 
   const boardTheme = settings.general.theme.board()
 
@@ -80,14 +88,14 @@ export default function UserGamesCtrl(userId: string, filter?: string): IUserGam
   const loadUserAndFilters = (userData: UserFullProfile) => {
     scrollState.user = userData
     const f = Object.keys(userData.count)
-    .filter(k => filters.hasOwnProperty(k) && userData.count[k] > 0)
-    .map(k => {
-      return {
-        key: <GameFilter>k,
-        label: filters[k]!,
-        count: scrollState.user ? scrollState.user.count[k] : 0
-      }
-    })
+      .filter(k => filters.hasOwnProperty(k) && userData.count[k] > 0)
+      .map(k => {
+        return {
+          key: <GameFilter>k,
+          label: filters[k]!,
+          count: scrollState.user ? scrollState.user.count[k] : 0
+        }
+      })
     scrollState.availableFilters = f
   }
 
@@ -107,33 +115,36 @@ export default function UserGamesCtrl(userId: string, filter?: string): IUserGam
 
   const loadNextPage = (page: number) => {
     scrollState.isLoadingNextPage = true
-    xhr.games(scrollState.userId, scrollState.currentFilter, page)
-    .then(prepareData)
-    .then(data => {
-      scrollState.paginator = data.paginator
-      scrollState.isLoadingNextPage = false
-      scrollState.games = scrollState.games.concat(data.paginator.currentPageResults)
-      saveScrollState()
-      redraw()
-    })
+    xhr
+      .games(scrollState.userId, scrollState.currentFilter, page)
+      .then(prepareData)
+      .then(data => {
+        scrollState.paginator = data.paginator
+        scrollState.isLoadingNextPage = false
+        scrollState.games = scrollState.games.concat(
+          data.paginator.currentPageResults
+        )
+        saveScrollState()
+        redraw()
+      })
     redraw()
   }
 
   const onGamesLoaded = ({ dom }: Mithril.DOMNode) => {
     if (cacheAvailable && !initialized) {
       batchRequestAnimationFrame(() => {
-        (dom.parentNode as HTMLElement).scrollTop = cachedScrollState.scrollPos
+        ;(dom.parentNode as HTMLElement).scrollTop = cachedScrollState.scrollPos
         initialized = true
       })
     }
   }
 
   const onScroll = (e: Event) => {
-    const target = (e.target as HTMLElement)
+    const target = e.target as HTMLElement
     const content = target.firstChild as HTMLElement
     const paginator = scrollState.paginator
     const nextPage = paginator && paginator.nextPage
-    if ((target.scrollTop + target.offsetHeight + 50) > content.offsetHeight) {
+    if (target.scrollTop + target.offsetHeight + 50 > content.offsetHeight) {
       // lichess doesn't allow for more than 39 pages
       if (!scrollState.isLoadingNextPage && nextPage && nextPage < 40) {
         loadNextPage(nextPage)
@@ -145,22 +156,24 @@ export default function UserGamesCtrl(userId: string, filter?: string): IUserGam
 
   const onFilterChange = (e: Event) => {
     scrollState.currentFilter = (e.target as HTMLInputElement).value
-    xhr.games(scrollState.userId, scrollState.currentFilter, 1, true)
-    .then(prepareData)
-    .then(loadInitialGames)
+    xhr
+      .games(scrollState.userId, scrollState.currentFilter, 1, true)
+      .then(prepareData)
+      .then(loadInitialGames)
   }
 
   const toggleBookmark = (id: string) => {
-    toggleGameBookmark(id).then(() => {
-      const i = scrollState.games.findIndex(g => g.id === id)
-      const g = scrollState.games[i]
-      if (g) {
-        const ng = Object.assign({}, g, { bookmarked: !g.bookmarked })
-        scrollState.games[i] = ng
-        redraw()
-      }
-    })
-    .catch(handleXhrError)
+    toggleGameBookmark(id)
+      .then(() => {
+        const i = scrollState.games.findIndex(g => g.id === id)
+        const g = scrollState.games[i]
+        if (g) {
+          const ng = Object.assign({}, g, { bookmarked: !g.bookmarked })
+          scrollState.games[i] = ng
+          redraw()
+        }
+      })
+      .catch(handleXhrError)
   }
 
   // load either from cache (restore previous search) or from server
@@ -171,26 +184,31 @@ export default function UserGamesCtrl(userId: string, filter?: string): IUserGam
     }, 300)
   } else {
     Promise.all([
-      xhr.games(scrollState.userId, scrollState.currentFilter, 1, false)
-      .then(prepareData),
+      xhr
+        .games(scrollState.userId, scrollState.currentFilter, 1, false)
+        .then(prepareData),
       xhr.user(scrollState.userId, false)
     ])
-    .then(results => {
-      const [gamesData, userData] = results
-      loadUserAndFilters(userData)
-      setTimeout(() => loadInitialGames(gamesData), 300)
-    })
-    .catch(err => {
-      handleXhrError(err)
-    })
+      .then(results => {
+        const [gamesData, userData] = results
+        loadUserAndFilters(userData)
+        setTimeout(() => loadInitialGames(gamesData), 300)
+      })
+      .catch(err => {
+        handleXhrError(err)
+      })
   }
 
   // assign userId to history state to be able to retrieve cached scroll state
   // later...
   try {
-    const newState = Object.assign({}, window.history.state, { scrollStateId: scrollState.userId })
+    const newState = Object.assign({}, window.history.state, {
+      scrollStateId: scrollState.userId
+    })
     window.history.replaceState(newState, '')
-  } catch (e) { console.error(e) }
+  } catch (e) {
+    console.error(e)
+  }
 
   return {
     scrollState,

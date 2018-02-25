@@ -13,7 +13,10 @@ export default {
     spinner.className = 'spinner globalSpinner'
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     svg.setAttribute('viewBox', '0 0 40 40')
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+    const circle = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'circle'
+    )
     circle.setAttribute('cx', '20')
     circle.setAttribute('cy', '20')
     circle.setAttribute('r', '18')
@@ -39,11 +42,13 @@ export default {
 
   getVdom(classes?: string) {
     return h('div.spinner', { className: classes || '' }, [
-      h('svg', {
-        viewBox: '0 0 40 40'
-      }, [
-        h('circle', { cx: '20', cy: '20', r: '18', fill: 'none' })
-      ])
+      h(
+        'svg',
+        {
+          viewBox: '0 0 40 40'
+        },
+        [h('circle', { cx: '20', cy: '20', r: '18', fill: 'none' })]
+      )
     ])
   },
 

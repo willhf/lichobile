@@ -39,7 +39,16 @@ export interface OfflineGameData extends GameData {
   readonly offlineClock?: ClockState
 }
 
-export type GameSource = 'lobby' | 'pool' | 'friend' | 'ai' | 'api' | 'tournament' | 'position' | 'import' | 'offline'
+export type GameSource =
+  | 'lobby'
+  | 'pool'
+  | 'friend'
+  | 'ai'
+  | 'api'
+  | 'tournament'
+  | 'position'
+  | 'import'
+  | 'offline'
 
 export interface Expiration {
   idleMillis: number
@@ -104,7 +113,7 @@ export interface Player {
   readonly version?: number
   checks?: number
   ratingDiff?: number
-  readonly blurs?: { nb: number, percent: number }
+  readonly blurs?: { nb: number; percent: number }
 }
 
 export interface OnlinePlayer extends Player {

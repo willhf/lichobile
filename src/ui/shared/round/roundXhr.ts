@@ -18,17 +18,23 @@ export function readNote(gameId: string) {
 }
 
 export function syncNote(gameId: string, notes: string) {
-
-  return fetchText(`/${gameId}/note`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      'Accept': 'application/json, text/*'
+  return fetchText(
+    `/${gameId}/note`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        Accept: 'application/json, text/*'
+      },
+      body: serializeQueryParameters({ text: notes })
     },
-    body: serializeQueryParameters({ text: notes })
-  }, false)
-  .catch(err => {
-    window.plugins.toast.show(i18n('notesSynchronizationHasFailed'), 'short', 'center')
+    false
+  ).catch(err => {
+    window.plugins.toast.show(
+      i18n('notesSynchronizationHasFailed'),
+      'short',
+      'center'
+    )
     throw err
   })
 }

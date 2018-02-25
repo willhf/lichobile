@@ -12,7 +12,7 @@ import AnalyseCtrl from '../AnalyseCtrl'
  */
 
 interface Attrs {
-  ctrl: AnalyseCtrl,
+  ctrl: AnalyseCtrl
   selectedIndex: number
   contentRenderers: ReadonlyArray<(ctrl: AnalyseCtrl) => Mithril.BaseNode>
   onTabChange: (i: number) => void
@@ -34,11 +34,13 @@ export default {
     this.mc = new Hammer.Manager(dom, {
       inputClass: Hammer.TouchInput
     })
-    this.mc.add(new Hammer.Swipe({
-      direction: Hammer.DIRECTION_HORIZONTAL,
-      threshold: 10,
-      velocity: 0.4
-    }))
+    this.mc.add(
+      new Hammer.Swipe({
+        direction: Hammer.DIRECTION_HORIZONTAL,
+        threshold: 10,
+        velocity: 0.4
+      })
+    )
 
     this.mc.on('swiperight swipeleft', (e: HammerInput) => {
       if (e.center.x - e.deltaX > EDGE_SLIDE_THRESHOLD) {
@@ -47,10 +49,12 @@ export default {
           const ds = tab.dataset as DOMStringMap
           const index = Number(ds.index)
           if (index !== undefined) {
-            if (e.direction === Hammer.DIRECTION_LEFT && index < this.nbTabs - 1) {
+            if (
+              e.direction === Hammer.DIRECTION_LEFT &&
+              index < this.nbTabs - 1
+            ) {
               attrs.onTabChange(index + 1)
-            }
-            else if (e.direction === Hammer.DIRECTION_RIGHT && index > 0) {
+            } else if (e.direction === Hammer.DIRECTION_RIGHT && index > 0) {
               attrs.onTabChange(index - 1)
             }
           }
@@ -79,13 +83,23 @@ export default {
       transform: `translateX(${shift}px)`
     }
 
-    return h('div.tabs-view', {
-      style,
-      className: attrs.className
-    }, attrs.contentRenderers.map((_: any, index: number) =>
-      h('div.tab-content', {
-        'data-index': index
-      },  attrs.selectedIndex === index ? attrs.contentRenderers[index](attrs.ctrl) : null)
-    ))
+    return h(
+      'div.tabs-view',
+      {
+        style,
+        className: attrs.className
+      },
+      attrs.contentRenderers.map((_: any, index: number) =>
+        h(
+          'div.tab-content',
+          {
+            'data-index': index
+          },
+          attrs.selectedIndex === index
+            ? attrs.contentRenderers[index](attrs.ctrl)
+            : null
+        )
+      )
+    )
   }
 } as Mithril.Component<Attrs, State>

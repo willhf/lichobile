@@ -1,6 +1,6 @@
 import * as isObject from 'lodash/isObject'
 
-const uciRoleMap: {[k: string]: Role } = {
+const uciRoleMap: { [k: string]: Role } = {
   P: 'pawn',
   B: 'bishop',
   N: 'knight',
@@ -10,7 +10,7 @@ const uciRoleMap: {[k: string]: Role } = {
   b: 'bishop',
   n: 'knight',
   r: 'rook',
-  q: 'queen',
+  q: 'queen'
 }
 
 export interface SanToRole {
@@ -71,65 +71,69 @@ export function readDests(lines?: DestsMap | string): DestsMap | null {
   if (lines === undefined) return null
   if (isDestMap(lines)) return lines
   const dests: DestsMap = {}
-  if (lines && isString(lines)) lines.split(' ').forEach(line => {
-    dests[piotr2key[line[0]]] = line.split('').slice(1).map(c => piotr2key[c])
-  })
+  if (lines && isString(lines))
+    lines.split(' ').forEach(line => {
+      dests[piotr2key[line[0]]] = line
+        .split('')
+        .slice(1)
+        .map(c => piotr2key[c])
+    })
   return dests
 }
 
-export const piotr2key: {[i: string]: Key } = {
-  'a': 'a1',
-  'b': 'b1',
-  'c': 'c1',
-  'd': 'd1',
-  'e': 'e1',
-  'f': 'f1',
-  'g': 'g1',
-  'h': 'h1',
-  'i': 'a2',
-  'j': 'b2',
-  'k': 'c2',
-  'l': 'd2',
-  'm': 'e2',
-  'n': 'f2',
-  'o': 'g2',
-  'p': 'h2',
-  'q': 'a3',
-  'r': 'b3',
-  's': 'c3',
-  't': 'd3',
-  'u': 'e3',
-  'v': 'f3',
-  'w': 'g3',
-  'x': 'h3',
-  'y': 'a4',
-  'z': 'b4',
-  'A': 'c4',
-  'B': 'd4',
-  'C': 'e4',
-  'D': 'f4',
-  'E': 'g4',
-  'F': 'h4',
-  'G': 'a5',
-  'H': 'b5',
-  'I': 'c5',
-  'J': 'd5',
-  'K': 'e5',
-  'L': 'f5',
-  'M': 'g5',
-  'N': 'h5',
-  'O': 'a6',
-  'P': 'b6',
-  'Q': 'c6',
-  'R': 'd6',
-  'S': 'e6',
-  'T': 'f6',
-  'U': 'g6',
-  'V': 'h6',
-  'W': 'a7',
-  'X': 'b7',
-  'Y': 'c7',
-  'Z': 'd7',
+export const piotr2key: { [i: string]: Key } = {
+  a: 'a1',
+  b: 'b1',
+  c: 'c1',
+  d: 'd1',
+  e: 'e1',
+  f: 'f1',
+  g: 'g1',
+  h: 'h1',
+  i: 'a2',
+  j: 'b2',
+  k: 'c2',
+  l: 'd2',
+  m: 'e2',
+  n: 'f2',
+  o: 'g2',
+  p: 'h2',
+  q: 'a3',
+  r: 'b3',
+  s: 'c3',
+  t: 'd3',
+  u: 'e3',
+  v: 'f3',
+  w: 'g3',
+  x: 'h3',
+  y: 'a4',
+  z: 'b4',
+  A: 'c4',
+  B: 'd4',
+  C: 'e4',
+  D: 'f4',
+  E: 'g4',
+  F: 'h4',
+  G: 'a5',
+  H: 'b5',
+  I: 'c5',
+  J: 'd5',
+  K: 'e5',
+  L: 'f5',
+  M: 'g5',
+  N: 'h5',
+  O: 'a6',
+  P: 'b6',
+  Q: 'c6',
+  R: 'd6',
+  S: 'e6',
+  T: 'f6',
+  U: 'g6',
+  V: 'h6',
+  W: 'a7',
+  X: 'b7',
+  Y: 'c7',
+  Z: 'd7',
   '0': 'e7',
   '1': 'f7',
   '2': 'g7',

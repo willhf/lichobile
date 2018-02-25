@@ -13,12 +13,13 @@ export function formatClockTime(time: number) {
   const date = new Date(time)
   const minutes = prefixInteger(date.getUTCMinutes(), 2)
   const seconds = prefixInteger(date.getSeconds(), 2)
-  let hours, str = ''
+  let hours,
+    str = ''
   if (time >= 86400 * 1000) {
     // days : hours
     const days = date.getUTCDate() - 1
     hours = date.getUTCHours()
-    str += (days === 1 ? i18n('oneDay') : i18n('nbDays', days))
+    str += days === 1 ? i18n('oneDay') : i18n('nbDays', days)
     if (hours !== 0) str += ' ' + i18n('nbHours', hours)
   } else if (time >= 3600 * 1000) {
     // hours : minutes
@@ -33,12 +34,14 @@ export function formatClockTime(time: number) {
 
 export function view(ctrl: CorresClockCtrl, color: Color, runningColor: Color) {
   const time = ctrl.data[color]
-  const className = 'correspondence clock ' + helper.classSet({
-    'outoftime': !time,
-    'running': runningColor === color,
-    'emerg': time < ctrl.data.emerg,
-    'offline': !hasNetwork()
-  })
+  const className =
+    'correspondence clock ' +
+    helper.classSet({
+      outoftime: !time,
+      running: runningColor === color,
+      emerg: time < ctrl.data.emerg,
+      offline: !hasNetwork()
+    })
   function cOnCreate(vnode: Mithril.DOMNode) {
     const el = vnode.dom as HTMLElement
     el.textContent = formatClockTime(time * 1000)

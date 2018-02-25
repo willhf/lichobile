@@ -33,7 +33,10 @@ export const LangPrefScreen: Mithril.Component<{}, State> = {
     function renderLang(l: Lang) {
       return (
         <li className="list_item">
-          {formWidgets.renderRadio(l[1], 'lang', l[0],
+          {formWidgets.renderRadio(
+            l[1],
+            'lang',
+            l[0],
             settings.general.lang() === l[0],
             e => {
               const lang = (e.target as HTMLInputElement).value

@@ -10,10 +10,7 @@ interface OpenSlideHandlerState {
   canSlide: boolean
 }
 
-export default function OpenSlideHandler(
-  mainEl: HTMLElement
-) {
-
+export default function OpenSlideHandler(mainEl: HTMLElement) {
   const maxSlide = menu.getMenuWidth()
 
   const state: OpenSlideHandlerState = {
@@ -25,17 +22,20 @@ export default function OpenSlideHandler(
   const mc = new Hammer.Manager(mainEl, {
     inputClass: Hammer.TouchInput
   })
-  mc.add(new Hammer.Pan({
-    direction: Hammer.DIRECTION_HORIZONTAL,
-    threshold: 5
-  }))
+  mc.add(
+    new Hammer.Pan({
+      direction: Hammer.DIRECTION_HORIZONTAL,
+      threshold: 5
+    })
+  )
 
   mc.on('panstart', (e: HammerInput) => {
     if (
       e.target.nodeName === 'PIECE' ||
       e.target.nodeName === 'SQUARE' ||
       // svg element className is not a string
-      (e.target.className.startsWith && e.target.className.startsWith('cg-board manipulable')) ||
+      (e.target.className.startsWith &&
+        e.target.className.startsWith('cg-board manipulable')) ||
       e.center.x > EDGE_SLIDE_THRESHOLD
     ) {
       state.canSlide = false
@@ -58,7 +58,10 @@ export default function OpenSlideHandler(
       const delta = e.deltaX
       if (delta <= maxSlide) {
         menu.translateMenu(state.menuElement!, -maxSlide + delta)
-        menu.backdropOpacity(state.backDropElement!, (delta / maxSlide * 100) / 100 / 2)
+        menu.backdropOpacity(
+          state.backDropElement!,
+          delta / maxSlide * 100 / 100 / 2
+        )
       }
     }
   })
@@ -79,4 +82,3 @@ export default function OpenSlideHandler(
     }
   })
 }
-

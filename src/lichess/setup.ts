@@ -1,7 +1,9 @@
 import { HumanSettings } from '../settings'
 import { ModeId, TimeModeId, HumanSeekSetup } from './interfaces'
 
-export function humanSetupFromSettings(settingsObj: HumanSettings): HumanSeekSetup {
+export function humanSetupFromSettings(
+  settingsObj: HumanSettings
+): HumanSeekSetup {
   return {
     mode: Number(settingsObj.mode()) as ModeId,
     variant: Number(settingsObj.variant()),

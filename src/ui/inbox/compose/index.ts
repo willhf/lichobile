@@ -16,7 +16,6 @@ interface State {
 }
 
 export default {
-
   oninit({ attrs }) {
     socket.createDefault()
 
@@ -31,9 +30,8 @@ export default {
   },
 
   view() {
-    const headerCtrl = () => headerWidget(null,
-      backButton(i18n('composeMessage'))
-    )
+    const headerCtrl = () =>
+      headerWidget(null, backButton(i18n('composeMessage')))
     const bodyCtrl = () => composeBody(this.ctrl)
     return layout.free(headerCtrl, bodyCtrl)
   }

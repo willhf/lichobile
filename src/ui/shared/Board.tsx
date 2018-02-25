@@ -26,7 +26,6 @@ interface State {
 
 const Board: Mithril.Component<Attrs, State> = {
   oninit(vnode) {
-
     const { chessground } = vnode.attrs
 
     this.boardOnCreate = ({ dom }: Mithril.DOMNode) => {
@@ -42,7 +41,15 @@ const Board: Mithril.Component<Attrs, State> = {
   },
 
   view(vnode) {
-    const { variant, chessground, bounds, wrapperClasses, customPieceTheme, shapes, alert } = vnode.attrs
+    const {
+      variant,
+      chessground,
+      bounds,
+      wrapperClasses,
+      customPieceTheme,
+      shapes,
+      alert
+    } = vnode.attrs
 
     const boardClass = [
       'display_board',
@@ -59,27 +66,29 @@ const Board: Mithril.Component<Attrs, State> = {
       wrapperClass += wrapperClasses
     }
 
-    const wrapperStyle = bounds ? {
-      height: bounds.height + 'px',
-      width: bounds.width + 'px'
-    } : {}
+    const wrapperStyle = bounds
+      ? {
+          height: bounds.height + 'px',
+          width: bounds.width + 'px'
+        }
+      : {}
 
     return (
       <section className={wrapperClass} style={wrapperStyle}>
-        <div className={boardClass}
+        <div
+          className={boardClass}
           oncreate={this.boardOnCreate}
           onremove={this.boardOnRemove}
         />
-        { alert ? <div className="board_alert">{alert}</div> : null }
-        {
-          !!shapes ?
-            BoardBrush(
+        {alert ? <div className="board_alert">{alert}</div> : null}
+        {!!shapes
+          ? BoardBrush(
               bounds,
               chessground.state.orientation,
               shapes,
               this.pieceTheme
-            ) : null
-        }
+            )
+          : null}
       </section>
     )
   }

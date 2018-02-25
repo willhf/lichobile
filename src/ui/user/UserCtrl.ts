@@ -21,7 +21,6 @@ export interface IUserCtrl {
 export type ProfileUser = Session | UserFullProfile
 
 export default function UserCtrl(userId: string): IUserCtrl {
-
   const user: Mithril.Stream<ProfileUser | undefined> = stream(undefined)
 
   function setNewUserState(newData: Partial<ProfileUser>) {
@@ -35,29 +34,32 @@ export default function UserCtrl(userId: string): IUserCtrl {
     user(sessionUser)
   }
 
-  xhr.user(userId)
-  .then(data => {
-    user(data)
-    redraw()
-  })
-  .then(session.refresh)
-  .catch(err => {
-    if (utils.hasNetwork()) {
-      utils.handleXhrError(err)
-    }
-  })
+  xhr
+    .user(userId)
+    .then(data => {
+      user(data)
+      redraw()
+    })
+    .then(session.refresh)
+    .catch(err => {
+      if (utils.hasNetwork()) {
+        utils.handleXhrError(err)
+      }
+    })
 
   return {
     user,
     isMe: () => session.getUserId() === userId,
     toggleFollowing() {
       const u = user()
-      if (u && isFullUser(u) && u.following) xhr.unfollow(u.id).then(setNewUserState)
+      if (u && isFullUser(u) && u.following)
+        xhr.unfollow(u.id).then(setNewUserState)
       else if (u) xhr.follow(u.id).then(setNewUserState)
     },
     toggleBlocking() {
       const u = user()
-      if (u && isFullUser(u) && u.blocking) xhr.unblock(u.id).then(setNewUserState)
+      if (u && isFullUser(u) && u.blocking)
+        xhr.unblock(u.id).then(setNewUserState)
       else if (u) xhr.block(u.id).then(setNewUserState)
     },
     goToGames() {

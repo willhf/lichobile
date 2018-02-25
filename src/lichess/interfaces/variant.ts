@@ -1,5 +1,14 @@
-
-export type VariantKey = 'standard' | 'chess960' | 'antichess' | 'fromPosition' | 'kingOfTheHill' | 'threeCheck' | 'atomic' | 'horde' | 'racingKings' | 'crazyhouse'
+export type VariantKey =
+  | 'standard'
+  | 'chess960'
+  | 'antichess'
+  | 'fromPosition'
+  | 'kingOfTheHill'
+  | 'threeCheck'
+  | 'atomic'
+  | 'horde'
+  | 'racingKings'
+  | 'crazyhouse'
 
 export interface Variant {
   readonly key: VariantKey

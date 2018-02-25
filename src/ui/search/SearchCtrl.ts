@@ -4,13 +4,13 @@ import { UserGameWithDate } from '../../lichess/interfaces/user'
 import settings from '../../settings'
 import { handleXhrError, serializeQueryParameters } from '../../utils'
 import redraw from '../../utils/redraw'
-import { toggleGameBookmark as toggleBookmarkXhr} from '../../xhr'
+import { toggleGameBookmark as toggleBookmarkXhr } from '../../xhr'
 
 import * as xhr from './searchXhr'
 import { SearchResult, SearchQuery } from './interfaces'
 
 export interface ISearchCtrl {
-  query: SearchQuery,
+  query: SearchQuery
   handleChange: (name: string) => (e: Event) => void
   toggleAnalysis: () => void
   search: () => void
@@ -32,8 +32,9 @@ export interface SearchState {
 
 let cachedSearchState: SearchState
 
-export default function SearchCtrl(initQuery: Partial<SearchQuery>): ISearchCtrl {
-
+export default function SearchCtrl(
+  initQuery: Partial<SearchQuery>
+): ISearchCtrl {
   // used to restore scroll position only once from cached state
   let initialized = false
 
@@ -67,7 +68,8 @@ export default function SearchCtrl(initQuery: Partial<SearchQuery>): ISearchCtrl
   Object.assign(query, initQuery)
 
   const queryString = serializeQueryParameters(query)
-  const cacheAvailable = cachedSearchState && queryString === cachedSearchState.queryString
+  const cacheAvailable =
+    cachedSearchState && queryString === cachedSearchState.queryString
 
   const searchState: SearchState = {
     paginator: undefined,
@@ -94,7 +96,7 @@ export default function SearchCtrl(initQuery: Partial<SearchQuery>): ISearchCtrl
   }
 
   const onScroll = (e: Event) => {
-    const target = (e.target as HTMLElement)
+    const target = e.target as HTMLElement
     searchState.scrollPos = target.scrollTop
     updateSearchStateCache()
   }
@@ -111,28 +113,29 @@ export default function SearchCtrl(initQuery: Partial<SearchQuery>): ISearchCtrl
         }
       }, 250)
 
-      xhr.search(query)
-      .then(prepareData)
-      .then(data => {
-        searchState.queryString = serializeQueryParameters(query)
-        searchState.searching = false
-        searchState.paginator = data.paginator
-        if (data.paginator) {
-          searchState.games = data.paginator.currentPageResults
-        } else {
-          searchState.games = []
-        }
-        updateHref()
-        updateSearchStateCache()
-        // delay display of result to have a little feedback of searching
-        // even when it's super fast
-        setTimeout(redraw, 500)
-      })
-      .catch(err => {
-        searchState.searching = false
-        redraw()
-        handleXhrError(err)
-      })
+      xhr
+        .search(query)
+        .then(prepareData)
+        .then(data => {
+          searchState.queryString = serializeQueryParameters(query)
+          searchState.searching = false
+          searchState.paginator = data.paginator
+          if (data.paginator) {
+            searchState.games = data.paginator.currentPageResults
+          } else {
+            searchState.games = []
+          }
+          updateHref()
+          updateSearchStateCache()
+          // delay display of result to have a little feedback of searching
+          // even when it's super fast
+          setTimeout(redraw, 500)
+        })
+        .catch(err => {
+          searchState.searching = false
+          redraw()
+          handleXhrError(err)
+        })
     }
   }
 
@@ -152,23 +155,28 @@ export default function SearchCtrl(initQuery: Partial<SearchQuery>): ISearchCtrl
     const path = `/search?${searchState.queryString}`
     try {
       window.history.replaceState(window.history.state, '', '?=' + path)
-    } catch (e) { console.error(e) }
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   function more() {
     const curPaginator = searchState.paginator
     if (curPaginator && curPaginator.nextPage) {
-      xhr.search(query, curPaginator.nextPage)
-      .then(prepareData)
-      .then(data => {
-        searchState.paginator = data.paginator
-        if (searchState.paginator) {
-          searchState.games = searchState.games.concat(searchState.paginator.currentPageResults)
-          redraw()
-        }
-        updateSearchStateCache()
-      })
-      .catch(handleXhrError)
+      xhr
+        .search(query, curPaginator.nextPage)
+        .then(prepareData)
+        .then(data => {
+          searchState.paginator = data.paginator
+          if (searchState.paginator) {
+            searchState.games = searchState.games.concat(
+              searchState.paginator.currentPageResults
+            )
+            redraw()
+          }
+          updateSearchStateCache()
+        })
+        .catch(handleXhrError)
     }
   }
 

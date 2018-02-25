@@ -40,7 +40,9 @@ interface AnimPieces {
 }
 
 export function anim<A>(mutation: Mutation<A>, ctrl: Chessground): A {
-  return ctrl.state.animation.enabled ? animate(mutation, ctrl) : skip(mutation, ctrl)
+  return ctrl.state.animation.enabled
+    ? animate(mutation, ctrl)
+    : skip(mutation, ctrl)
 }
 
 export function skip<A>(mutation: Mutation<A>, ctrl: Chessground): A {
@@ -72,7 +74,11 @@ function closer(piece: AnimPiece, pieces: AnimPiece[]) {
   })[0]
 }
 
-function computePlan(prevPieces: cg.Pieces, state: State, dom: cg.DOM): AnimPlan {
+function computePlan(
+  prevPieces: cg.Pieces,
+  state: State,
+  dom: cg.DOM
+): AnimPlan {
   const bounds = dom.bounds,
     width = bounds.width / 8,
     height = bounds.height / 8,
@@ -98,26 +104,30 @@ function computePlan(prevPieces: cg.Pieces, state: State, dom: cg.DOM): AnimPlan
           missings.push(preP)
           news.push(makePiece(key, curP))
         }
-      }
-      else {
+      } else {
         news.push(makePiece(key, curP))
       }
-    }
-    else if (preP) {
+    } else if (preP) {
       missings.push(preP)
     }
   }
-  news.forEach((newP) => {
-    const nPreP = closer(newP, missings.filter((p) => samePiece(newP.piece, p.piece)))
+  news.forEach(newP => {
+    const nPreP = closer(
+      newP,
+      missings.filter(p => samePiece(newP.piece, p.piece))
+    )
     if (nPreP) {
       const orig = white ? nPreP.pos : newP.pos
       const dest = white ? newP.pos : nPreP.pos
-      const pos: NumberPair = [(orig[0] - dest[0]) * width, (dest[1] - orig[1]) * height]
+      const pos: NumberPair = [
+        (orig[0] - dest[0]) * width,
+        (dest[1] - orig[1]) * height
+      ]
       anims[newP.key] = [pos, pos]
       animedOrigs.push(nPreP.key)
     }
   })
-  missings.forEach((p) => {
+  missings.forEach(p => {
     if (!util.containsX(animedOrigs, p.key)) {
       capturedPieces[p.key] = p.piece
     }
@@ -162,11 +172,15 @@ function step(ctrl: Chessground, now: number) {
 
 function animate<A>(mutation: Mutation<A>, ctrl: Chessground) {
   const state = ctrl.state
-  const prevPieces: cg.Pieces = {...state.pieces}
+  const prevPieces: cg.Pieces = { ...state.pieces }
   const result = mutation(state)
   const plan = computePlan(prevPieces, state, ctrl.dom!)
-  if (Object.keys(plan.anims).length > 0 || Object.keys(plan.captured).length > 0) {
-    const alreadyRunning = state.animation.current && state.animation.current.start !== null
+  if (
+    Object.keys(plan.anims).length > 0 ||
+    Object.keys(plan.captured).length > 0
+  ) {
+    const alreadyRunning =
+      state.animation.current && state.animation.current.start !== null
     state.animation.current = {
       start: null,
       duration: state.animation.duration,

@@ -52,7 +52,7 @@ export function formatClockTime(time: Millis, isRunning: boolean = false) {
   const minutes = prefixInteger(date.getUTCMinutes(), 2)
   const seconds = prefixInteger(date.getUTCSeconds(), 2)
   const tenths = Math.floor(date.getUTCMilliseconds() / 100)
-  let pulse = (isRunning && tenths < 5) ? sepLow : sepHigh
+  let pulse = isRunning && tenths < 5 ? sepLow : sepHigh
 
   if (time < 10000) {
     return seconds + '.' + tenths

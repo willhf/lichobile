@@ -21,9 +21,6 @@ export default {
     this.ctrl = FollowingCtrl(vnode.attrs.id)
   },
   view() {
-    return layout.free(
-      () => header('Following'),
-      () => renderBody(this.ctrl)
-    )
+    return layout.free(() => header('Following'), () => renderBody(this.ctrl))
   }
 } as Mithril.Component<Attrs, State>

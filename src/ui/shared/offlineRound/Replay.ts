@@ -19,13 +19,17 @@ export default class Replay {
     onReplayAdded: (sit: chess.GameSituation) => void,
     onThreefoldRepetition: (newStatus: GameStatus) => void
   ) {
-
     this.init(variant, initialFen, initSituations, initPly)
     this.onReplayAdded = onReplayAdded
     this.onThreefoldRepetition = onThreefoldRepetition
   }
 
-  public init(variant: VariantKey, initialFen: string, situations: Array<chess.GameSituation>, ply: number) {
+  public init(
+    variant: VariantKey,
+    initialFen: string,
+    situations: Array<chess.GameSituation>,
+    ply: number
+  ) {
     this.variant = variant
     this.initialFen = initialFen
     this.situations = situations
@@ -38,48 +42,55 @@ export default class Replay {
 
   public addMove = (orig: Key, dest: Key, promotion?: Role) => {
     const sit = this.situation()
-    chess.move({
-      variant: this.variant,
-      fen: sit.fen,
-      pgnMoves: sit.pgnMoves,
-      uciMoves: sit.uciMoves,
-      promotion,
-      orig,
-      dest
-    })
-    .then(this.addMoveOrDrop)
-    .catch(console.error.bind(console))
+    chess
+      .move({
+        variant: this.variant,
+        fen: sit.fen,
+        pgnMoves: sit.pgnMoves,
+        uciMoves: sit.uciMoves,
+        promotion,
+        orig,
+        dest
+      })
+      .then(this.addMoveOrDrop)
+      .catch(console.error.bind(console))
   }
 
   public addDrop = (role: Role, key: Key) => {
     const sit = this.situation()
-    chess.drop({
-      variant: this.variant,
-      fen: sit.fen,
-      pgnMoves: sit.pgnMoves,
-      uciMoves: sit.uciMoves,
-      role,
-      pos: key
-    })
-    .then(this.addMoveOrDrop)
-    .catch(console.error.bind(console))
+    chess
+      .drop({
+        variant: this.variant,
+        fen: sit.fen,
+        pgnMoves: sit.pgnMoves,
+        uciMoves: sit.uciMoves,
+        role,
+        pos: key
+      })
+      .then(this.addMoveOrDrop)
+      .catch(console.error.bind(console))
   }
 
   public claimDraw = () => {
     const sit = this.situation()
-    chess.threefoldTest({
-      variant: this.variant,
-      initialFen: this.initialFen,
-      pgnMoves: sit.pgnMoves
-    })
-    .then(resp => {
-      if (resp.threefoldRepetition) {
-        this.onThreefoldRepetition(resp.status)
-      } else {
-        window.plugins.toast.show(i18n('incorrectThreefoldClaim'), 'short', 'center')
-      }
-    })
-    .catch(console.error.bind(console))
+    chess
+      .threefoldTest({
+        variant: this.variant,
+        initialFen: this.initialFen,
+        pgnMoves: sit.pgnMoves
+      })
+      .then(resp => {
+        if (resp.threefoldRepetition) {
+          this.onThreefoldRepetition(resp.status)
+        } else {
+          window.plugins.toast.show(
+            i18n('incorrectThreefoldClaim'),
+            'short',
+            'center'
+          )
+        }
+      })
+      .catch(console.error.bind(console))
   }
 
   public pgn = (white: string, black: string) => {

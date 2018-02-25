@@ -24,13 +24,23 @@ const GameItem: Mithril.Component<Attrs, {}> = {
     const { g, index, userId, boardTheme } = attrs
     const time = gameApi.time(g)
     const mode = g.rated ? i18n('rated') : i18n('casual')
-    const title = g.source === 'import' ?
-    `Import • ${g.variant.name}` :
-    `${time} • ${g.variant.name} • ${mode}`
-    const status = gameStatus.toLabel(g.status.name, g.winner, g.variant.key) +
-      (g.winner ? '. ' + i18n(g.winner === 'white' ? 'whiteIsVictorious' : 'blackIsVictorious') + '.' : '')
+    const title =
+      g.source === 'import'
+        ? `Import • ${g.variant.name}`
+        : `${time} • ${g.variant.name} • ${mode}`
+    const status =
+      gameStatus.toLabel(g.status.name, g.winner, g.variant.key) +
+      (g.winner
+        ? '. ' +
+          i18n(
+            g.winner === 'white' ? 'whiteIsVictorious' : 'blackIsVictorious'
+          ) +
+          '.'
+        : '')
     const icon = g.source === 'import' ? '/' : utils.gameIcon(g.perf) || ''
-    const perspectiveColor: Color = userId ? g.players.white.userId === userId ? 'white' : 'black' : 'white'
+    const perspectiveColor: Color = userId
+      ? g.players.white.userId === userId ? 'white' : 'black'
+      : 'white'
     const evenOrOdd = index % 2 === 0 ? 'even' : 'odd'
     const star = g.bookmarked ? 't' : 's'
     const withStar = session.isConnected() ? ' withStar' : ''
@@ -47,33 +57,33 @@ const GameItem: Mithril.Component<Attrs, {}> = {
                 <div className="swords" data-icon="U" />
                 {renderPlayer(g.players, 'black')}
               </div>
-              <div className={helper.classSet({
-                'userGame-status': true,
-                win: !!(g.winner && perspectiveColor === g.winner),
-                loose: !!(g.winner && perspectiveColor !== g.winner)
-              })}>
+              <div
+                className={helper.classSet({
+                  'userGame-status': true,
+                  win: !!(g.winner && perspectiveColor === g.winner),
+                  loose: !!(g.winner && perspectiveColor !== g.winner)
+                })}
+              >
                 {status}
               </div>
             </div>
           </div>
           <div className="userGame-meta">
             <p className="game-infos">
-            {g.date} • {title}
+              {g.date} • {title}
             </p>
-            {g.opening ?
-              <p className="opening">{g.opening.name}</p> : null
-            }
-            {g.analysed ?
+            {g.opening ? <p className="opening">{g.opening.name}</p> : null}
+            {g.analysed ? (
               <p className="analysis">
-              <span className="fa fa-bar-chart" />
-              Computer analysis available
-              </p> : null
-            }
+                <span className="fa fa-bar-chart" />
+                Computer analysis available
+              </p>
+            ) : null}
           </div>
         </div>
-        { session.isConnected() ?
-          <button className="iconStar" data-icon={star} /> : null
-        }
+        {session.isConnected() ? (
+          <button className="iconStar" data-icon={star} />
+        ) : null}
       </li>
     )
   }
@@ -82,14 +92,12 @@ const GameItem: Mithril.Component<Attrs, {}> = {
 export default GameItem
 
 function renderBoard(fen: string, orientation: Color, boardTheme: string) {
-
-  const boardClass = [
-    'display_board',
-    boardTheme
-  ].join(' ')
+  const boardClass = ['display_board', boardTheme].join(' ')
 
   return (
-    <div className={boardClass} key={fen}
+    <div
+      className={boardClass}
+      key={fen}
       oncreate={({ dom }: Mithril.DOMNode) => {
         const img = document.createElement('img')
         img.className = 'cg-board'
@@ -105,7 +113,10 @@ function renderBoard(fen: string, orientation: Color, boardTheme: string) {
   )
 }
 
-function renderPlayer(players: { white: UserGamePlayer, black: UserGamePlayer}, color: Color) {
+function renderPlayer(
+  players: { white: UserGamePlayer; black: UserGamePlayer },
+  color: Color
+) {
   let player = players[color]
   let playerName: string
   // TODO fetch title info from server; refactor
@@ -113,19 +124,16 @@ function renderPlayer(players: { white: UserGamePlayer, black: UserGamePlayer}, 
   else if (!player.aiLevel) playerName = playerApi.playerName(player)
   else if (player.aiLevel) {
     playerName = playerApi.aiName({ ai: player.aiLevel })
-  }
-  else playerName = 'Anonymous'
+  } else playerName = 'Anonymous'
 
   return (
     <div className={'player ' + color}>
       <span className="playerName">{playerName}</span>
-      <br/>
-      {player.rating ?
-      <small className="playerRating">{player.rating}</small> : null
-      }
-      {player.ratingDiff ?
-        helper.renderRatingDiff(player) : null
-      }
+      <br />
+      {player.rating ? (
+        <small className="playerRating">{player.rating}</small>
+      ) : null}
+      {player.ratingDiff ? helper.renderRatingDiff(player) : null}
     </div>
   )
 }

@@ -6,7 +6,8 @@ import TrainingCtrl from './TrainingCtrl'
 
 export default function makeConfig(
   ctrl: TrainingCtrl,
-  userMove: (orig: Key, dest: Key) => void): cg.InitConfig {
+  userMove: (orig: Key, dest: Key) => void
+): cg.InitConfig {
   return {
     batchRAF: batchRequestAnimationFrame,
     fen: ctrl.data.puzzle.fen,

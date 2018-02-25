@@ -29,7 +29,6 @@ interface OfflineUser {
 }
 
 export default {
-
   controller(root: TrainingCtrl): IMenuCtrl {
     let isOpen = false
     let puzzleUser: OfflineUser | null = null
@@ -40,12 +39,11 @@ export default {
 
       const user = session.get()
       if (user) {
-        root.database.fetch(user.id)
-        .then(data => {
+        root.database.fetch(user.id).then(data => {
           if (data) {
             puzzleUser = {
               username: user.username,
-              data: data.user,
+              data: data.user
             }
             redraw()
           }
@@ -63,7 +61,7 @@ export default {
       close,
       isOpen: () => isOpen,
       user: () => puzzleUser,
-      root,
+      root
     }
   },
 
@@ -83,14 +81,11 @@ function renderTrainingMenu(ctrl: IMenuCtrl) {
 
   if (ctrl.root.data && ctrl.root.data.online && ctrl.root.data.user) {
     return renderUserInfosOnline(ctrl.root.data.user)
-  }
-  else if (puzzleUser !== null && hasNetwork()) {
+  } else if (puzzleUser !== null && hasNetwork()) {
     return renderUserInfosOnline(puzzleUser.data)
-  }
-  else if (puzzleUser !== null) {
+  } else if (puzzleUser !== null) {
     return renderUserInfosOffline(puzzleUser, ctrl)
-  }
-  else {
+  } else {
     return renderSigninBox()
   }
 }
@@ -98,10 +93,15 @@ function renderTrainingMenu(ctrl: IMenuCtrl) {
 function renderSigninBox() {
   return h('div.trainingMenuContent', [
     h('p', i18n('toTrackYourProgress')),
-    h('p',
-      h('button', {
-        oncreate: helper.ontap(loginModal.open)
-      }, [h('span.fa.fa-user'), i18n('signIn')])
+    h(
+      'p',
+      h(
+        'button',
+        {
+          oncreate: helper.ontap(loginModal.open)
+        },
+        [h('span.fa.fa-user'), i18n('signIn')]
+      )
     ),
     h('p', i18n('trainingSignupExplanation'))
   ])
@@ -109,10 +109,27 @@ function renderSigninBox() {
 
 function renderUserInfosOffline(user: OfflineUser, ctrl: IMenuCtrl) {
   return h('div.training-offlineInfos', [
-    h('p', ['You are currently offline. Your last recorded rating as ', h('strong', user.username), ' is ', h('strong', user.data.rating), '.']),
-    h('p', 'You still have ', h('strong', ctrl.root.nbUnsolved), ' saved puzzles to solve.'),
-    h('p', 'Puzzles are automatically downloaded by batches so you can solve them seamlessly while having bad network conditions or when you are offline.'),
-    h('p', 'Your puzzle history and rating will be updated as soon as you are back online.'),
+    h('p', [
+      'You are currently offline. Your last recorded rating as ',
+      h('strong', user.username),
+      ' is ',
+      h('strong', user.data.rating),
+      '.'
+    ]),
+    h(
+      'p',
+      'You still have ',
+      h('strong', ctrl.root.nbUnsolved),
+      ' saved puzzles to solve.'
+    ),
+    h(
+      'p',
+      'Puzzles are automatically downloaded by batches so you can solve them seamlessly while having bad network conditions or when you are offline.'
+    ),
+    h(
+      'p',
+      'Your puzzle history and rating will be updated as soon as you are back online.'
+    )
   ])
 }
 
@@ -128,15 +145,20 @@ function renderUserInfosOnline(user: PuzzleUserData) {
   else width = vw * 0.85
   const height = 200
   return [
-    h('p.trainingRatingHeader', h.trust(i18n('yourPuzzleRatingX', `<strong>${user.rating}</strong>`))),
-    user.recent ? h('svg#training-graph', {
-      width,
-      height,
-      oncreate() {
-        drawChart(user)
-      }
-    }) : null,
-    renderRecent(user),
+    h(
+      'p.trainingRatingHeader',
+      h.trust(i18n('yourPuzzleRatingX', `<strong>${user.rating}</strong>`))
+    ),
+    user.recent
+      ? h('svg#training-graph', {
+          width,
+          height,
+          oncreate() {
+            drawChart(user)
+          }
+        })
+      : null,
+    renderRecent(user)
   ]
 }
 
@@ -147,12 +169,21 @@ function onRecentTap(e: TouchEvent) {
 }
 
 function renderRecent(user: PuzzleUserData) {
-  return h('div.puzzle-recents', {
-    oncreate: helper.ontapY(onRecentTap, undefined, helper.getButton)
-  }, user.recent.map(([id, diff]) => h('button', {
-      'data-id': id,
-      className: diff > 0 ? 'up' : 'down'
-    }, (diff > 0 ? '+' : '') + diff))
+  return h(
+    'div.puzzle-recents',
+    {
+      oncreate: helper.ontapY(onRecentTap, undefined, helper.getButton)
+    },
+    user.recent.map(([id, diff]) =>
+      h(
+        'button',
+        {
+          'data-id': id,
+          className: diff > 0 ? 'up' : 'down'
+        },
+        (diff > 0 ? '+' : '') + diff
+      )
+    )
   )
 }
 
@@ -161,55 +192,62 @@ function drawChart(user: PuzzleUserData) {
   history.push(user.rating)
   const data = history.map((x, i) => [i + 1, x])
   const graph = select('#training-graph')
-  const margin = {top: 5, right: 20, bottom: 5, left: 35}
+  const margin = { top: 5, right: 20, bottom: 5, left: 35 }
   const width = +graph.attr('width') - margin.left - margin.right
   const height = +graph.attr('height') - margin.top - margin.bottom
-  const g = graph.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+  const g = graph
+    .append('g')
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
   const xvalues = data.map(d => d[0])
   const scaleX = scaleLinear()
-  .domain([Math.min.apply(null, xvalues), Math.max.apply(null, xvalues)])
-  .rangeRound([0, width])
+    .domain([Math.min.apply(null, xvalues), Math.max.apply(null, xvalues)])
+    .rangeRound([0, width])
 
   const yvalues = data.map(d => d[1])
   const scaleY = scaleLinear()
-  .domain([Math.min.apply(null, yvalues) - 10, Math.max.apply(null, yvalues) + 10])
-  .rangeRound([height, 0])
+    .domain([
+      Math.min.apply(null, yvalues) - 10,
+      Math.max.apply(null, yvalues) + 10
+    ])
+    .rangeRound([height, 0])
 
   const area = d3Area()
-  .x(d => scaleX(d[0]))
-  .y0(height)
-  .y1(d => scaleY(d[1]))
+    .x(d => scaleX(d[0]))
+    .y0(height)
+    .y1(d => scaleY(d[1]))
 
   const line = d3Area()
-  .x(d => scaleX(d[0]))
-  .y(d => scaleY(d[1]))
+    .x(d => scaleX(d[0]))
+    .y(d => scaleY(d[1]))
 
-  const yAxis = axisLeft(scaleY)
-  .tickFormat(d => String(d))
+  const yAxis = axisLeft(scaleY).tickFormat(d => String(d))
 
   g.datum(data)
 
-  g.append('g')
-  .call(yAxis)
-  .append('text')
-  .attr('class', 'legend')
-  .attr('transform', 'rotate(-90)')
-  .attr('y', 6)
-  .attr('dy', '0.71em')
-  .attr('text-anchor', 'end')
-  .text(i18n('rating'))
+  g
+    .append('g')
+    .call(yAxis)
+    .append('text')
+    .attr('class', 'legend')
+    .attr('transform', 'rotate(-90)')
+    .attr('y', 6)
+    .attr('dy', '0.71em')
+    .attr('text-anchor', 'end')
+    .text(i18n('rating'))
 
-  g.append('path')
-  .attr('class', 'path')
-  .attr('fill', 'steelblue')
-  .attr('stroke', 'steelblue')
-  .attr('stroke-linejoin', 'round')
-  .attr('stroke-linecap', 'round')
-  .attr('stroke-width', 0)
-  .attr('d', area)
+  g
+    .append('path')
+    .attr('class', 'path')
+    .attr('fill', 'steelblue')
+    .attr('stroke', 'steelblue')
+    .attr('stroke-linejoin', 'round')
+    .attr('stroke-linecap', 'round')
+    .attr('stroke-width', 0)
+    .attr('d', area)
 
-  g.append('path')
-  .attr('class', 'line')
-  .attr('d', line)
+  g
+    .append('path')
+    .attr('class', 'line')
+    .attr('d', line)
 }

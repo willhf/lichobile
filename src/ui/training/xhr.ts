@@ -1,5 +1,10 @@
 import { fetchJSON } from '../../http'
-import { PuzzleData, PuzzleSyncData, RoundData, PuzzleOutcome } from '../../lichess/interfaces/training'
+import {
+  PuzzleData,
+  PuzzleSyncData,
+  RoundData,
+  PuzzleOutcome
+} from '../../lichess/interfaces/training'
 
 export function round(outcome: PuzzleOutcome): Promise<RoundData> {
   return fetchJSON(`/training/${outcome.id}/round2`, {
@@ -20,16 +25,14 @@ export function vote(id: number, v: number): Promise<any> {
 }
 
 export function loadPuzzle(id: number): Promise<PuzzleData> {
-  return fetchJSON<PuzzleData>(`/training/${id}/load`)
-  .then(cfg => {
+  return fetchJSON<PuzzleData>(`/training/${id}/load`).then(cfg => {
     cfg.online = true
     return cfg
   })
 }
 
 export function newPuzzle(): Promise<PuzzleData> {
-  return fetchJSON<PuzzleData>('/training/new')
-  .then(cfg => {
+  return fetchJSON<PuzzleData>('/training/new').then(cfg => {
     cfg.online = true
     return cfg
   })

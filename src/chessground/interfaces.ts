@@ -4,9 +4,9 @@ export type Rank = Coord
 
 export type Pos = [Coord, Coord]
 
-export type Pieces = {[index: string]: Piece}
+export type Pieces = { [index: string]: Piece }
 
-export type PiecesDiff = {[index: string]: Piece | null}
+export type PiecesDiff = { [index: string]: Piece | null }
 
 export interface InitConfig {
   batchRAF: (callback: () => void) => void
@@ -131,7 +131,7 @@ export interface PieceNode extends KeyedNode {
   cgCaptured?: boolean
   cgDragging?: boolean
 }
-export interface SquareNode extends KeyedNode { }
+export interface SquareNode extends KeyedNode {}
 
 export interface PrevData {
   orientation: Color | null

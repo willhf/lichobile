@@ -20,14 +20,17 @@ export interface Controller {
 }
 
 export default {
-
   controller() {
     let isOpen = false
     const fen: Mithril.Stream<string | undefined> = stream(undefined)
     const variant: Mithril.Stream<VariantKey> = stream('standard' as VariantKey)
     const color: Mithril.Stream<Color> = stream('white' as Color)
 
-    function open(fentoSet: string, variantToSet: VariantKey, colorToSet: Color = 'white') {
+    function open(
+      fentoSet: string,
+      variantToSet: VariantKey,
+      colorToSet: Color = 'white'
+    ) {
       router.backbutton.stack.push(close)
       fen(fentoSet)
       variant(variantToSet)
@@ -58,51 +61,75 @@ export default {
       () => h('h2', i18n('continueFromHere')),
       () => {
         return [
-          !specialFenVariants.has(ctrl.variant()) && hasNetwork() ? h('p.sep', i18n('playOnline')) : null,
-          !specialFenVariants.has(ctrl.variant()) && hasNetwork() ? h('button', {
-            oncreate: helper.ontap(() => {
-              ctrl.close()
-              const f = ctrl.fen()
-              if (f) playMachineForm.openAIFromPosition(f)
-            })
-          }, i18n('playWithTheMachine')) : null,
-          !specialFenVariants.has(ctrl.variant()) && hasNetwork() ? h('button', {
-            oncreate: helper.ontap(() => {
-              ctrl.close()
-              const f = ctrl.fen()
-              if (f) challengeForm.openFromPosition(f)
-            })
-          }, i18n('playWithAFriend')) : null,
+          !specialFenVariants.has(ctrl.variant()) && hasNetwork()
+            ? h('p.sep', i18n('playOnline'))
+            : null,
+          !specialFenVariants.has(ctrl.variant()) && hasNetwork()
+            ? h(
+                'button',
+                {
+                  oncreate: helper.ontap(() => {
+                    ctrl.close()
+                    const f = ctrl.fen()
+                    if (f) playMachineForm.openAIFromPosition(f)
+                  })
+                },
+                i18n('playWithTheMachine')
+              )
+            : null,
+          !specialFenVariants.has(ctrl.variant()) && hasNetwork()
+            ? h(
+                'button',
+                {
+                  oncreate: helper.ontap(() => {
+                    ctrl.close()
+                    const f = ctrl.fen()
+                    if (f) challengeForm.openFromPosition(f)
+                  })
+                },
+                i18n('playWithAFriend')
+              )
+            : null,
           h('p.sep', i18n('playOffline')),
-          h('button', {
-            oncreate: helper.ontap(() => {
-              ctrl.close()
-              const f = ctrl.fen()
-              const v = ctrl.variant()
-              const c = ctrl.color()
-              if (f) {
-                if (validateFen(f, v) && positionLooksLegit(f)) {
-                  router.set(`/ai/variant/${v}/fen/${encodeURIComponent(f)}/color/${c}`)
-                } else {
-                  window.plugins.toast.show('Invalid FEN', 'short', 'center')
+          h(
+            'button',
+            {
+              oncreate: helper.ontap(() => {
+                ctrl.close()
+                const f = ctrl.fen()
+                const v = ctrl.variant()
+                const c = ctrl.color()
+                if (f) {
+                  if (validateFen(f, v) && positionLooksLegit(f)) {
+                    router.set(
+                      `/ai/variant/${v}/fen/${encodeURIComponent(f)}/color/${c}`
+                    )
+                  } else {
+                    window.plugins.toast.show('Invalid FEN', 'short', 'center')
+                  }
                 }
-              }
-            })
-          }, i18n('playOfflineComputer')),
-          h('button', {
-            oncreate: helper.ontap(() => {
-              ctrl.close()
-              const f = ctrl.fen()
-              const v = ctrl.variant()
-              if (f) {
-                if (validateFen(f, v) && positionLooksLegit(f)) {
-                  router.set(`/otb/variant/${v}/fen/${encodeURIComponent(f)}`)
-                } else {
-                  window.plugins.toast.show('Invalid FEN', 'short', 'center')
+              })
+            },
+            i18n('playOfflineComputer')
+          ),
+          h(
+            'button',
+            {
+              oncreate: helper.ontap(() => {
+                ctrl.close()
+                const f = ctrl.fen()
+                const v = ctrl.variant()
+                if (f) {
+                  if (validateFen(f, v) && positionLooksLegit(f)) {
+                    router.set(`/otb/variant/${v}/fen/${encodeURIComponent(f)}`)
+                  } else {
+                    window.plugins.toast.show('Invalid FEN', 'short', 'center')
+                  }
                 }
-              }
-            })
-          }, i18n('playOnTheBoardOffline'))
+              })
+            },
+            i18n('playOnTheBoardOffline')
+          )
         ]
       },
       ctrl.isOpen(),

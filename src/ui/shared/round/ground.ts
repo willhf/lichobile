@@ -9,17 +9,19 @@ import settings from '../../../settings'
 import { boardOrientation } from '../../../utils'
 import * as chessFormat from '../../../utils/chessFormat'
 
-function makeConfig(data: OnlineGameData, fen: string, flip: boolean = false): cg.InitConfig {
+function makeConfig(
+  data: OnlineGameData,
+  fen: string,
+  flip: boolean = false
+): cg.InitConfig {
   const lastStep = data.steps[data.steps.length - 1]
-  const lastMove = data.game.lastMove ?
-    chessFormat.uciToMove(data.game.lastMove) :
-    (
-      data.game.variant.key === 'crazyhouse' &&
+  const lastMove = data.game.lastMove
+    ? chessFormat.uciToMove(data.game.lastMove)
+    : data.game.variant.key === 'crazyhouse' &&
       lastStep &&
       lastStep.uci !== null
-    ) ?
-      chessFormat.uciTolastDrop(lastStep.uci) :
-      null
+      ? chessFormat.uciTolastDrop(lastStep.uci)
+      : null
 
   return {
     fen: fen,
@@ -37,7 +39,9 @@ function makeConfig(data: OnlineGameData, fen: string, flip: boolean = false): c
     movable: {
       free: false,
       color: gameApi.isPlayerPlaying(data) ? data.player.color : null,
-      dests: gameApi.isPlayerPlaying(data) ? gameApi.parsePossibleMoves(data.possibleMoves) : {},
+      dests: gameApi.isPlayerPlaying(data)
+        ? gameApi.parsePossibleMoves(data.possibleMoves)
+        : {},
       showDests: settings.game.pieceDestinations()
     },
     animation: {
@@ -54,7 +58,8 @@ function makeConfig(data: OnlineGameData, fen: string, flip: boolean = false): c
       }
     },
     predroppable: {
-      enabled: data.pref.enablePremove && data.game.variant.key === 'crazyhouse',
+      enabled:
+        data.pref.enablePremove && data.game.variant.key === 'crazyhouse',
       events: {
         set: () => redraw(),
         unset: redraw
@@ -89,7 +94,12 @@ function make(
   return new Chessground(config)
 }
 
-function reload(ground: Chessground, data: OnlineGameData, fen: string, flip: boolean) {
+function reload(
+  ground: Chessground,
+  data: OnlineGameData,
+  fen: string,
+  flip: boolean
+) {
   ground.reconfigure(makeConfig(data, fen, flip))
 }
 

@@ -35,5 +35,4 @@ export default {
 
     return layout.free(() => header(i18n('tournaments')), body, footer, overlay)
   }
-
 } as Mithril.Component<Attrs, State>

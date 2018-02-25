@@ -9,5 +9,5 @@ export default {
   afterLogin: new Signal(),
 
   // signal sent after successful restored session from offline database
-  sessionRestored: new Signal(),
+  sessionRestored: new Signal()
 }

@@ -20,7 +20,6 @@ export interface NewOtbGameCtrl {
 }
 
 export default {
-
   controller(root: OtbRoundInterface) {
     const isOpen = stream(false)
 
@@ -30,7 +29,8 @@ export default {
     }
 
     function close(fromBB?: string) {
-      if (fromBB !== 'backbutton' && isOpen() === true) router.backbutton.stack.pop()
+      if (fromBB !== 'backbutton' && isOpen() === true)
+        router.backbutton.stack.pop()
       isOpen(false)
     }
 
@@ -49,17 +49,18 @@ export default {
         undefined,
         function() {
           const availVariants = settings.otb.availableVariants
-          const variants = ctrl.root.vm.setupFen ?
-            availVariants.filter(i => !specialFenVariants.has(i[1])) :
-            availVariants
+          const variants = ctrl.root.vm.setupFen
+            ? availVariants.filter(i => !specialFenVariants.has(i[1]))
+            : availVariants
 
           const setupVariant = settings.otb.variant()
-          const hasSpecialSetup = ctrl.root.vm.setupFen && specialFenVariants.has(setupVariant)
+          const hasSpecialSetup =
+            ctrl.root.vm.setupFen && specialFenVariants.has(setupVariant)
 
           return (
             <div>
               <div className="action">
-                {hasSpecialSetup ?
+                {hasSpecialSetup ? (
                   <div className="select_input disabled">
                     <label for="variant">{i18n('variant')}</label>
                     <select disabled id="variant">
@@ -67,12 +68,18 @@ export default {
                         {getVariant(setupVariant).name}
                       </option>
                     </select>
-                  </div> :
-                  <div className="select_input">
-                    {formWidgets.renderSelect('variant', 'variant', variants, settings.otb.variant)}
                   </div>
-                }
-                { ctrl.root.vm.setupFen ?
+                ) : (
+                  <div className="select_input">
+                    {formWidgets.renderSelect(
+                      'variant',
+                      'variant',
+                      variants,
+                      settings.otb.variant
+                    )}
+                  </div>
+                )}
+                {ctrl.root.vm.setupFen ? (
                   <div className="from_position_wrapper">
                     <p>{i18n('fromPosition')}</p>
                     <div className="from_position">
@@ -83,25 +90,47 @@ export default {
                         }}
                         oncreate={helper.ontap(() => {
                           if (ctrl.root.vm.setupFen)
-                            router.set(`/editor/${encodeURIComponent(ctrl.root.vm.setupFen)}`)
+                            router.set(
+                              `/editor/${encodeURIComponent(
+                                ctrl.root.vm.setupFen
+                              )}`
+                            )
                         })}
                       >
-                        {h(ViewOnlyBoard, { fen: ctrl.root.vm.setupFen, orientation: 'white', bounds: { width: 130, height: 130 }})}
+                        {h(ViewOnlyBoard, {
+                          fen: ctrl.root.vm.setupFen,
+                          orientation: 'white',
+                          bounds: { width: 130, height: 130 }
+                        })}
                       </div>
                     </div>
-                  </div> : null
-                }
+                  </div>
+                ) : null}
                 <div className="select_input">
-                  {formWidgets.renderSelect('Clock', 'clock', settings.otb.clock.availableClocks, settings.otb.clock.clockType, false, onChange)}
+                  {formWidgets.renderSelect(
+                    'Clock',
+                    'clock',
+                    settings.otb.clock.availableClocks,
+                    settings.otb.clock.clockType,
+                    false,
+                    onChange
+                  )}
                 </div>
                 {clockSettingsView(settings.otb.clock, onChange)}
               </div>
               <div className="popupActionWrapper">
-                <button className="popupAction" data-icon="E"
+                <button
+                  className="popupAction"
+                  data-icon="E"
                   oncreate={helper.ontap(() => {
                     ctrl.close()
-                    ctrl.root.startNewGame(settings.otb.variant() as VariantKey, ctrl.root.vm.setupFen, settings.otb.clock.clockType())
-                  })}>
+                    ctrl.root.startNewGame(
+                      settings.otb.variant() as VariantKey,
+                      ctrl.root.vm.setupFen,
+                      settings.otb.clock.clockType()
+                    )
+                  })}
+                >
                   {i18n('play')}
                 </button>
               </div>
@@ -122,6 +151,6 @@ export default {
   }
 }
 
-function onChange () {
+function onChange() {
   redraw()
 }

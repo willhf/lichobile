@@ -5,12 +5,18 @@ function mainlineChild(node: Tree.Node): Tree.Node | undefined {
   return node.children[0]
 }
 
-export function withMainlineChild<T>(node: Tree.Node, f: (node: Tree.Node) => T): T | undefined {
+export function withMainlineChild<T>(
+  node: Tree.Node,
+  f: (node: Tree.Node) => T
+): T | undefined {
   const next = mainlineChild(node)
   return next ? f(next) : undefined
 }
 
-export function findInMainline(fromNode: Tree.Node, predicate: (node: Tree.Node) => boolean): Tree.Node | undefined {
+export function findInMainline(
+  fromNode: Tree.Node,
+  predicate: (node: Tree.Node) => boolean
+): Tree.Node | undefined {
   const findFrom = (node: Tree.Node): Tree.Node | undefined => {
     if (predicate(node)) return node
     return withMainlineChild(node, findFrom)
@@ -19,9 +25,14 @@ export function findInMainline(fromNode: Tree.Node, predicate: (node: Tree.Node)
 }
 
 // returns a list of nodes collected from the original one
-export function collect(fromNode: Tree.Node, pickChild: (node: Tree.Node) => Tree.Node | undefined): Tree.Node[] {
-  let nodes = [fromNode], n = fromNode, c
-  while (c = pickChild(n)) {
+export function collect(
+  fromNode: Tree.Node,
+  pickChild: (node: Tree.Node) => Tree.Node | undefined
+): Tree.Node[] {
+  let nodes = [fromNode],
+    n = fromNode,
+    c
+  while ((c = pickChild(n))) {
     nodes.push(c)
     n = c
   }
@@ -40,11 +51,17 @@ export function last(nodeList: Tree.Node[]): Tree.Node | undefined {
   return nodeList[nodeList.length - 1]
 }
 
-export function nodeAtPly(nodeList: Tree.Node[], ply: number): Tree.Node | undefined {
+export function nodeAtPly(
+  nodeList: Tree.Node[],
+  ply: number
+): Tree.Node | undefined {
   return nodeList.find(node => node.ply === ply)
 }
 
-export function takePathWhile(nodeList: Tree.Node[], predicate: (node: Tree.Node) => boolean): Tree.Path {
+export function takePathWhile(
+  nodeList: Tree.Node[],
+  predicate: (node: Tree.Node) => boolean
+): Tree.Path {
   let path = ''
   for (let i in nodeList) {
     if (predicate(nodeList[i])) path += nodeList[i].id
@@ -78,7 +95,9 @@ interface Crazy {
   }
 }
 
-export function reconstruct(parts: Array<Partial<Tree.Node & Crazy>>): Tree.Node {
+export function reconstruct(
+  parts: Array<Partial<Tree.Node & Crazy>>
+): Tree.Node {
   const proot = parts[0]
   // adapt to offline format which use crazyhouse field name
   if (proot.crazy !== undefined) {
@@ -107,10 +126,12 @@ export function reconstruct(parts: Array<Partial<Tree.Node & Crazy>>): Tree.Node
 export function merge(n1: Tree.Node, n2: Tree.Node): void {
   n1.eval = n2.eval
   if (n2.glyphs) n1.glyphs = n2.glyphs
-  n2.comments && n2.comments.forEach(c => {
-    if (!n1.comments) n1.comments = [c]
-    else if (!n1.comments.filter(d => d.text === c.text).length) n1.comments.push(c)
-  })
+  n2.comments &&
+    n2.comments.forEach(c => {
+      if (!n1.comments) n1.comments = [c]
+      else if (!n1.comments.filter(d => d.text === c.text).length)
+        n1.comments.push(c)
+    })
   n2.children.forEach(c => {
     const existing = childById(n1, c.id)
     if (existing) merge(existing, c)
@@ -119,9 +140,9 @@ export function merge(n1: Tree.Node, n2: Tree.Node): void {
 }
 
 export function hasBranching(node: Tree.Node, maxDepth: number): boolean {
-  return maxDepth <= 0 || node.children[1] ? true : (
-    node.children[0] ? hasBranching(node.children[0], maxDepth - 1) : false
-  )
+  return maxDepth <= 0 || node.children[1]
+    ? true
+    : node.children[0] ? hasBranching(node.children[0], maxDepth - 1) : false
 }
 
 export function mainlineNodeList(fromNode: Tree.Node): Tree.Node[] {
@@ -136,4 +157,3 @@ export function updateAll(root: Tree.Node, f: (node: Tree.Node) => void): void {
   }
   update(root)
 }
-

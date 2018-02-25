@@ -18,7 +18,8 @@ import * as menu from '.'
 import CloseSlideHandler from './CloseSlideHandler'
 import CloseSwipeHandler from './CloseSwipeHandler'
 
-const pingHelp = 'PING: Network lag between you and lichess; SERVER: Time to process a move on lichess server'
+const pingHelp =
+  'PING: Network lag between you and lichess; SERVER: Time to process a move on lichess server'
 
 export default {
   onbeforeupdate() {
@@ -28,7 +29,8 @@ export default {
     const user = session.get()
 
     return (
-      <aside id="side_menu"
+      <aside
+        id="side_menu"
         oncreate={({ dom }: Mithril.DOMNode) => {
           if (window.cordova.platformId === 'ios') {
             CloseSwipeHandler(dom as HTMLElement)
@@ -39,8 +41,10 @@ export default {
       >
         <div className="native_scroller">
           {renderHeader(user)}
-          { hasNetwork() && user ? profileActionsToggle() : null }
-          {user && menu.profileMenuOpen() ? renderProfileActions(user) : renderLinks(user)}
+          {hasNetwork() && user ? profileActionsToggle() : null}
+          {user && menu.profileMenuOpen()
+            ? renderProfileActions(user)
+            : renderLinks(user)}
         </div>
       </aside>
     )
@@ -52,21 +56,26 @@ function renderHeader(user?: Session) {
 
   return (
     <header className="side_menu_header">
-      { session.isKidMode() ? <div key="kiddo" className="kiddo">😊</div> : null }
-      { hasNetwork() && !user ?
-        <button className="signInButton" oncreate={helper.ontapXY(loginModal.open)}>
+      {session.isKidMode() ? (
+        <div key="kiddo" className="kiddo">
+          😊
+        </div>
+      ) : null}
+      {hasNetwork() && !user ? (
+        <button
+          className="signInButton"
+          oncreate={helper.ontapXY(loginModal.open)}
+        >
           {i18n('signIn')}
-        </button> : null
-      }
-      { user ?
+        </button>
+      ) : null}
+      {user ? (
         <h2 className="username" oncreate={helper.ontapXY(profileLink)}>
-          { user.patron ?
-            <div className="patron" data-icon="" /> : null
-          }
+          {user.patron ? <div className="patron" data-icon="" /> : null}
           {user.username}
-        </h2> : null
-      }
-      { networkStatus(user) }
+        </h2>
+      ) : null}
+      {networkStatus(user)}
     </header>
   )
 }
@@ -74,32 +83,60 @@ function renderHeader(user?: Session) {
 function renderProfileActions(user: Session) {
   return (
     <ul className="side_links profileActions">
-      <li className="side_link" key="profile" oncreate={helper.ontapXY(menu.route('/@/' + user.id))}>
-        <span className="fa fa-user" />{i18n('profile')}
+      <li
+        className="side_link"
+        key="profile"
+        oncreate={helper.ontapXY(menu.route('/@/' + user.id))}
+      >
+        <span className="fa fa-user" />
+        {i18n('profile')}
       </li>
-      <li className="side_link" key="message" oncreate={helper.ontapXY(menu.route('/inbox'))}>
-        <span className="fa fa-envelope"/>{i18n('inbox') + ((menu.inboxUnreadCount() !== null && menu.inboxUnreadCount() > 0) ? (' (' + menu.inboxUnreadCount() + ')') : '')}
+      <li
+        className="side_link"
+        key="message"
+        oncreate={helper.ontapXY(menu.route('/inbox'))}
+      >
+        <span className="fa fa-envelope" />
+        {i18n('inbox') +
+          (menu.inboxUnreadCount() !== null && menu.inboxUnreadCount() > 0
+            ? ' (' + menu.inboxUnreadCount() + ')'
+            : '')}
       </li>
-      <li className="side_link" oncreate={helper.ontapXY(menu.popup(friendsPopup.open))}>
+      <li
+        className="side_link"
+        oncreate={helper.ontapXY(menu.popup(friendsPopup.open))}
+      >
         <span data-icon="f" />
         {i18n('onlineFriends') + ` (${friendsApi.count()})`}
       </li>
-      <li className="side_link" oncreate={helper.ontapXY(menu.route(`/@/${user.id}/following`))}>
+      <li
+        className="side_link"
+        oncreate={helper.ontapXY(menu.route(`/@/${user.id}/following`))}
+      >
         <span className="fa fa-arrow-circle-right" />
         {i18n('nbFollowing', user.nbFollowing || 0)}
       </li>
-      <li className="side_link" oncreate={helper.ontapXY(menu.route(`/@/${user.id}/followers`))}>
+      <li
+        className="side_link"
+        oncreate={helper.ontapXY(menu.route(`/@/${user.id}/followers`))}
+      >
         <span className="fa fa-arrow-circle-left" />
         {i18n('nbFollowers', user.nbFollowers || 0)}
       </li>
-      <li className="side_link" oncreate={helper.ontapXY(menu.route('/settings/preferences'))}>
+      <li
+        className="side_link"
+        oncreate={helper.ontapXY(menu.route('/settings/preferences'))}
+      >
         <span data-icon="%" />
         {i18n('preferences')}
       </li>
-      <li className="side_link" oncreate={helper.ontapXY(() => {
-        session.logout()
-        menu.profileMenuOpen(false)
-      })}>
+      <li
+        className="side_link"
+        oncreate={helper.ontapXY(() => {
+          session.logout()
+          menu.profileMenuOpen(false)
+        })}
+      >
         <span data-icon="w" />
         {i18n('logOut')}
       </li>
@@ -132,119 +169,151 @@ function renderLinks(user?: Session) {
   const offlineGames = getOfflineGames()
 
   return (
-    <ul className="side_links" oncreate={helper.ontapXY(onLinkTap, undefined, helper.getLI)}>
+    <ul
+      className="side_links"
+      oncreate={helper.ontapXY(onLinkTap, undefined, helper.getLI)}
+    >
       <li className="side_link" key="home" data-route="/">
         <span className="fa fa-home" />Home
       </li>
-      {hasNetwork() ?
-      <li className="sep_link" key="sep_link_online">{i18n('playOnline')}</li> : null
-      }
-      {hasNetwork() && session.nowPlaying().length ?
-      <li className="side_link" key="current_games" data-popup="gamesMenu">
-        <span className="menu_icon_game" />{i18n('nbGamesInPlay', session.nowPlaying().length)}
-      </li> : null
-      }
-      {!hasNetwork() && offlineGames.length ?
-      <li className="side_link" key="current_games" data-popup="gamesMenu">
-        <span className="menu_icon_game" />{i18n('nbGamesInPlay', offlineGames.length)}
-      </li> : null
-      }
-      {hasNetwork() ?
-      <li className="side_link" key="play_real_time" data-popup="createGame">
-        <span className="fa fa-plus-circle"/>{i18n('createAGame')}
-      </li> : null
-      }
-      {hasNetwork() ?
-      <li className="side_link" key="invite_friend" data-popup="challenge">
-        <span className="fa fa-share-alt"/>{i18n('playWithAFriend')}
-      </li> : null
-      }
-      {hasNetwork() ?
-      <li className="side_link" key="play_online_ai" data-popup="machine">
-        <span className="fa fa-cogs"/>{i18n('playWithTheMachine')}
-      </li> : null
-      }
-      {hasNetwork() && user ?
-      <li className="side_link" key="correspondence" data-route="/correspondence">
-        <span className="fa fa-paper-plane" />{i18n('correspondence')}
-      </li> : null
-      }
-      {hasNetwork() ?
-      <li className="side_link" key="tournament" data-route="/tournament">
-        <span className="fa fa-trophy"/>{i18n('tournament')}
-      </li> : null
-      }
-      {hasNetwork() ?
-      <li className="side_link" key="training" data-route="/training">
-        <span data-icon="-"/>{i18n('training')}
-      </li> : null
-      }
-      {hasNetwork() ?
-      <li className="sep_link" key="sep_link_community">
-        {i18n('community')}
-      </li> : null
-      }
-      {hasNetwork() ?
-      <li className="side_link" key="tv" data-route="/tv">
-        <span data-icon="1"/>{i18n('watchLichessTV')}
-      </li> : null
-      }
-      {hasNetwork() ?
-      <li className="side_link" key="players" data-route="/players">
-        <span className="fa fa-at"/>{i18n('players')}
-      </li> : null
-      }
-      {hasNetwork() ?
-      <li className="side_link" key="ranking" data-route="/ranking">
-        <span className="fa fa-cubes"/>{i18n('leaderboard')}
-      </li> : null
-      }
+      {hasNetwork() ? (
+        <li className="sep_link" key="sep_link_online">
+          {i18n('playOnline')}
+        </li>
+      ) : null}
+      {hasNetwork() && session.nowPlaying().length ? (
+        <li className="side_link" key="current_games" data-popup="gamesMenu">
+          <span className="menu_icon_game" />
+          {i18n('nbGamesInPlay', session.nowPlaying().length)}
+        </li>
+      ) : null}
+      {!hasNetwork() && offlineGames.length ? (
+        <li className="side_link" key="current_games" data-popup="gamesMenu">
+          <span className="menu_icon_game" />
+          {i18n('nbGamesInPlay', offlineGames.length)}
+        </li>
+      ) : null}
+      {hasNetwork() ? (
+        <li className="side_link" key="play_real_time" data-popup="createGame">
+          <span className="fa fa-plus-circle" />
+          {i18n('createAGame')}
+        </li>
+      ) : null}
+      {hasNetwork() ? (
+        <li className="side_link" key="invite_friend" data-popup="challenge">
+          <span className="fa fa-share-alt" />
+          {i18n('playWithAFriend')}
+        </li>
+      ) : null}
+      {hasNetwork() ? (
+        <li className="side_link" key="play_online_ai" data-popup="machine">
+          <span className="fa fa-cogs" />
+          {i18n('playWithTheMachine')}
+        </li>
+      ) : null}
+      {hasNetwork() && user ? (
+        <li
+          className="side_link"
+          key="correspondence"
+          data-route="/correspondence"
+        >
+          <span className="fa fa-paper-plane" />
+          {i18n('correspondence')}
+        </li>
+      ) : null}
+      {hasNetwork() ? (
+        <li className="side_link" key="tournament" data-route="/tournament">
+          <span className="fa fa-trophy" />
+          {i18n('tournament')}
+        </li>
+      ) : null}
+      {hasNetwork() ? (
+        <li className="side_link" key="training" data-route="/training">
+          <span data-icon="-" />
+          {i18n('training')}
+        </li>
+      ) : null}
+      {hasNetwork() ? (
+        <li className="sep_link" key="sep_link_community">
+          {i18n('community')}
+        </li>
+      ) : null}
+      {hasNetwork() ? (
+        <li className="side_link" key="tv" data-route="/tv">
+          <span data-icon="1" />
+          {i18n('watchLichessTV')}
+        </li>
+      ) : null}
+      {hasNetwork() ? (
+        <li className="side_link" key="players" data-route="/players">
+          <span className="fa fa-at" />
+          {i18n('players')}
+        </li>
+      ) : null}
+      {hasNetwork() ? (
+        <li className="side_link" key="ranking" data-route="/ranking">
+          <span className="fa fa-cubes" />
+          {i18n('leaderboard')}
+        </li>
+      ) : null}
       <li className="sep_link" key="sep_link_offline">
         {i18n('playOffline')}
       </li>
-      {!hasNetwork() && user ?
+      {!hasNetwork() && user ? (
         <li className="side_link" key="training" data-route="/training">
-          <span data-icon="-" />{i18n('training')}
-        </li> : null
-      }
+          <span data-icon="-" />
+          {i18n('training')}
+        </li>
+      ) : null}
       <li className="side_link" key="play_ai" data-route="/ai">
-        <span className="fa fa-cogs"/>{i18n('playOfflineComputer')}
+        <span className="fa fa-cogs" />
+        {i18n('playOfflineComputer')}
       </li>
       <li className="side_link" key="play_otb" data-route="/otb">
-        <span className="fa fa-beer"/>{i18n('playOnTheBoardOffline')}
+        <span className="fa fa-beer" />
+        {i18n('playOnTheBoardOffline')}
       </li>
       <li className="side_link" key="standalone_clock" data-route="/clock">
-        <span className="fa fa-clock-o"/>{i18n('clock')}
+        <span className="fa fa-clock-o" />
+        {i18n('clock')}
       </li>
-      <li className="sep_link" key="sep_link_tools">{i18n('tools')}</li>
+      <li className="sep_link" key="sep_link_tools">
+        {i18n('tools')}
+      </li>
       <li className="side_link" key="analyse" data-route="/analyse">
-        <span data-icon="A" />{i18n('analysis')}
+        <span data-icon="A" />
+        {i18n('analysis')}
       </li>
       <li className="side_link" key="editor" data-route="/editor">
-        <span className="fa fa-pencil" />{i18n('boardEditor')}
+        <span className="fa fa-pencil" />
+        {i18n('boardEditor')}
       </li>
-      {hasNetwork() ?
-      <li className="side_link" key="importer" data-route="/importer">
-        <span className="fa fa-cloud-upload" />{i18n('importGame')}
-      </li> : null
-      }
-      {hasNetwork() ?
-      <li className="side_link" key="search" data-route="/search">
-        <span className="fa fa-search" />{i18n('advancedSearch')}
-      </li> : null
-      }
-      <li className="hr" key="sep_link_settings"></li>
+      {hasNetwork() ? (
+        <li className="side_link" key="importer" data-route="/importer">
+          <span className="fa fa-cloud-upload" />
+          {i18n('importGame')}
+        </li>
+      ) : null}
+      {hasNetwork() ? (
+        <li className="side_link" key="search" data-route="/search">
+          <span className="fa fa-search" />
+          {i18n('advancedSearch')}
+        </li>
+      ) : null}
+      <li className="hr" key="sep_link_settings" />
       <li className="side_link" key="settings" data-route="/settings">
-        <span className="fa fa-cog"/>{i18n('settings')}
+        <span className="fa fa-cog" />
+        {i18n('settings')}
       </li>
     </ul>
   )
 }
 
 function profileActionsToggle() {
-
   return (
-    <div key="user-button" className="menu-toggleButton side_link"
+    <div
+      key="user-button"
+      className="menu-toggleButton side_link"
       oncreate={helper.ontapXY(menu.toggleHeader)}
     >
       <span className="fa fa-exchange" />
@@ -257,30 +326,37 @@ function networkStatus(user?: Session) {
   const ping = menu.ping()
   const server = menu.mlat()
   return (
-    <div key="server-lag" className="pingServerLed"
-      oncreate={helper.ontapXY(() => window.plugins.toast.show(pingHelp, 'long', 'top'))}
+    <div
+      key="server-lag"
+      className="pingServerLed"
+      oncreate={helper.ontapXY(() =>
+        window.plugins.toast.show(pingHelp, 'long', 'top')
+      )}
     >
       <div className="pingServer">
-        { signalBars(hasNetwork() ? ping : undefined)}
-        { hasNetwork() ? (
+        {signalBars(hasNetwork() ? ping : undefined)}
+        {hasNetwork() ? (
+          <div>
             <div>
+              <span className="pingKey">Ping&nbsp;&nbsp;&nbsp;</span>
+              <strong className="pingValue">
+                {socket.isConnected() && ping ? ping : '?'}
+              </strong>{' '}
+              ms
+            </div>
+            {user ? (
               <div>
-                <span className="pingKey">Ping&nbsp;&nbsp;&nbsp;</span>
-                <strong className="pingValue">{socket.isConnected() && ping ? ping : '?'}</strong> ms
+                <span className="pingKey">Server&nbsp;</span>
+                <strong className="pingValue">
+                  {socket.isConnected() && server ? server : '?'}
+                </strong>{' '}
+                ms
               </div>
-              { user ?
-                <div>
-                  <span className="pingKey">Server&nbsp;</span>
-                  <strong className="pingValue">{socket.isConnected() && server ? server : '?'}</strong> ms
-                </div> : null
-              }
-            </div>
-          ) : (
-            <div>
-              Offline
-            </div>
-          )
-        }
+            ) : null}
+          </div>
+        ) : (
+          <div>Offline</div>
+        )}
       </div>
     </div>
   )
@@ -288,10 +364,9 @@ function networkStatus(user?: Session) {
 
 function signalBars(ping?: number) {
   const lagRating =
-    ping === undefined ? 0 :
-    (ping < 150) ? 4 :
-    (ping < 300) ? 3 :
-    (ping < 500) ? 2 : 1
+    ping === undefined
+      ? 0
+      : ping < 150 ? 4 : ping < 300 ? 3 : ping < 500 ? 2 : 1
   const bars = []
   for (let i = 1; i <= 4; i++) bars.push(h(i <= lagRating ? 'i' : 'i.off'))
   return h('signal.q' + lagRating, bars)

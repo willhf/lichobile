@@ -5,21 +5,33 @@ const imagePrefix = 'bg-'
 let styleEl: HTMLStyleElement
 
 // either download it from server of get it from filesystem
-export function loadImage(fileName: string, onProgress: (e: ProgressEvent) => void): Promise<void> {
-  return filesystem.getLocalFileOrDowload(baseUrl + '/' + fileName, fileName, imagePrefix, onProgress)
-  .then(createStylesheetRule)
+export function loadImage(
+  fileName: string,
+  onProgress: (e: ProgressEvent) => void
+): Promise<void> {
+  return filesystem
+    .getLocalFileOrDowload(
+      baseUrl + '/' + fileName,
+      fileName,
+      imagePrefix,
+      onProgress
+    )
+    .then(createStylesheetRule)
 }
 
 export function loadCachedImages() {
-  filesystem.getFiles(imagePrefix)
-  .then((files: FileEntry[]) => {
+  filesystem.getFiles(imagePrefix).then((files: FileEntry[]) => {
     files.forEach(createStylesheetRule)
   })
 }
 
 export function handleError(err: FileError | FileTransferError) {
   if (filesystem.isFileTransfertError(err)) {
-    window.plugins.toast.show('Error while downloading file from server. Please try later.', 'long', 'center')
+    window.plugins.toast.show(
+      'Error while downloading file from server. Please try later.',
+      'long',
+      'center'
+    )
   } else {
     window.plugins.toast.show('Cannot load theme file', 'long', 'center')
   }

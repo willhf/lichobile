@@ -6,7 +6,7 @@ export type MaybeNode = Tree.Node | undefined
 
 export interface TreeWrapper {
   root: Tree.Node
-  lastNode: () => Tree.Node,
+  lastNode: () => Tree.Node
   firstPly(): number
   lastPly(): number
   nodeAtPath(path: Tree.Path): Tree.Node
@@ -27,7 +27,11 @@ export interface TreeWrapper {
   pathExists(path: Tree.Path): boolean
   deleteNodeAt(path: Tree.Path): void
   promoteAt(path: Tree.Path, toMainline: boolean): void
-  getCurrentNodesAfterPly(nodeList: Tree.Node[], mainline: Tree.Node[], ply: number): Tree.Node[]
+  getCurrentNodesAfterPly(
+    nodeList: Tree.Node[],
+    mainline: Tree.Node[],
+    ply: number
+  ): Tree.Node[]
   merge(tree: Tree.Node): void
   removeCeval(): void
   removeComputerVariations(): void
@@ -35,7 +39,6 @@ export interface TreeWrapper {
 }
 
 export function build(root: Tree.Node): TreeWrapper {
-
   function lastNode(): Tree.Node {
     return ops.findInMainline(root, (node: Tree.Node) => {
       return !node.children.length
@@ -68,8 +71,13 @@ export function build(root: Tree.Node): TreeWrapper {
     return child ? id + longestValidPathFrom(child, treePath.tail(path)) : ''
   }
 
-  function getCurrentNodesAfterPly(nodeList: Tree.Node[], mainline: Tree.Node[], ply: number): Tree.Node[] {
-    let node, nodes = []
+  function getCurrentNodesAfterPly(
+    nodeList: Tree.Node[],
+    mainline: Tree.Node[],
+    ply: number
+  ): Tree.Node[] {
+    let node,
+      nodes = []
     for (let i in nodeList) {
       node = nodeList[i]
       if (node.ply <= ply && mainline[i].id !== node.id) break
@@ -89,7 +97,7 @@ export function build(root: Tree.Node): TreeWrapper {
   function pathIsMainlineFrom(node: Tree.Node, path: Tree.Path): boolean {
     if (path === '') return true
     const pathId = treePath.head(path),
-    child = node.children[0]
+      child = node.children[0]
     if (!child || child.id !== pathId) return false
     return pathIsMainlineFrom(child, treePath.tail(path))
   }
@@ -119,7 +127,10 @@ export function build(root: Tree.Node): TreeWrapper {
     return opening
   }
 
-  function updateAt(path: Tree.Path, update: (node: Tree.Node) => void): MaybeNode {
+  function updateAt(
+    path: Tree.Path,
+    update: (node: Tree.Node) => void
+  ): MaybeNode {
     const node = nodeAtPathOrNull(path)
     if (node) {
       update(node)
@@ -133,16 +144,21 @@ export function build(root: Tree.Node): TreeWrapper {
     const newPath = path + node.id
     const existing = nodeAtPathOrNull(newPath)
     if (existing) {
-      if (node.dests !== undefined && existing.dests === undefined) existing.dests = node.dests
-      if (node.drops !== undefined && existing.drops === undefined) existing.drops = node.drops
+      if (node.dests !== undefined && existing.dests === undefined)
+        existing.dests = node.dests
+      if (node.drops !== undefined && existing.drops === undefined)
+        existing.drops = node.drops
       return newPath
     }
-    return updateAt(path, (parent: Tree.Node) =>
-      parent.children.push(node)
-    ) ? newPath : undefined
+    return updateAt(path, (parent: Tree.Node) => parent.children.push(node))
+      ? newPath
+      : undefined
   }
 
-  function addNodes(nodes: Tree.Node[], path: Tree.Path): Tree.Path | undefined {
+  function addNodes(
+    nodes: Tree.Node[],
+    path: Tree.Path
+  ): Tree.Path | undefined {
     const node = nodes[0]
     if (!node) return path
     const newPath = addNode(node, path)
@@ -169,19 +185,21 @@ export function build(root: Tree.Node): TreeWrapper {
   }
 
   function setCommentAt(comment: Tree.Comment, path: Tree.Path) {
-    return !comment.text ? deleteCommentAt(comment.id, path) : updateAt(path, (node) => {
-      node.comments = node.comments || []
-      const existing = node.comments.find((c) => {
-        return c.id === comment.id
-      })
-      if (existing) existing.text = comment.text
-      else node.comments.push(comment)
-    })
+    return !comment.text
+      ? deleteCommentAt(comment.id, path)
+      : updateAt(path, node => {
+          node.comments = node.comments || []
+          const existing = node.comments.find(c => {
+            return c.id === comment.id
+          })
+          if (existing) existing.text = comment.text
+          else node.comments.push(comment)
+        })
   }
 
   function deleteCommentAt(id: string, path: Tree.Path) {
-    return updateAt(path, (node) => {
-      const comments = (node.comments || []).filter((c) => {
+    return updateAt(path, node => {
+      const comments = (node.comments || []).filter(c => {
         return c.id !== id
       })
       node.comments = comments.length ? comments : undefined
@@ -189,18 +207,21 @@ export function build(root: Tree.Node): TreeWrapper {
   }
 
   function setGlyphsAt(glyphs: Tree.Glyph[], path: Tree.Path) {
-    return updateAt(path, (node) => {
+    return updateAt(path, node => {
       node.glyphs = glyphs
     })
   }
 
   function setClockAt(clock: Tree.Clock | undefined, path: Tree.Path) {
-    return updateAt(path, (node) => {
+    return updateAt(path, node => {
       node.clock = clock
     })
   }
 
-  function getParentClock(node: Tree.Node, path: Tree.Path): Tree.Clock | undefined {
+  function getParentClock(
+    node: Tree.Node,
+    path: Tree.Path
+  ): Tree.Clock | undefined {
     if (!('parentClock' in node)) {
       const parent = path && nodeAtPath(treePath.init(path))
       if (!parent) node.parentClock = node.clock
@@ -226,7 +247,11 @@ export function build(root: Tree.Node): TreeWrapper {
     updateAt,
     addNode,
     addNodes,
-    addDests(dests: string, path: Tree.Path, opening?: Tree.Opening): MaybeNode {
+    addDests(
+      dests: string,
+      path: Tree.Path,
+      opening?: Tree.Opening
+    ): MaybeNode {
       return updateAt(path, (node: Tree.Node) => {
         node.dests = dests
         if (opening) node.opening = opening
@@ -253,7 +278,7 @@ export function build(root: Tree.Node): TreeWrapper {
       ops.merge(root, tree)
     },
     removeCeval() {
-      ops.updateAll(root, (n) => {
+      ops.updateAll(root, n => {
         delete n.ceval
         delete n.threat
       })

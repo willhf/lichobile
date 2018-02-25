@@ -4,7 +4,6 @@ import settings from '../../settings'
 import { batchRequestAnimationFrame } from '../../utils/batchRAF'
 import { AnalyseData } from '../../lichess/interfaces/analyse'
 
-
 function makeConfig(
   data: AnalyseData,
   config: cg.SetConfig,
@@ -55,11 +54,13 @@ export default {
     onMove: (orig: Key, dest: Key, capturedPiece?: Piece) => void,
     onNewPiece: (piece: Piece, pos: Key) => void
   ) {
-    return new Chessground(makeConfig(data, config, orientation, onMove, onNewPiece))
+    return new Chessground(
+      makeConfig(data, config, orientation, onMove, onNewPiece)
+    )
   },
 
   promote(ground: Chessground, key: Key, role: Role) {
-    const pieces: {[i: string]: Piece } = {}
+    const pieces: { [i: string]: Piece } = {}
     const piece = ground.state.pieces[key]
     if (piece && piece.role === 'pawn') {
       pieces[key] = {
@@ -69,5 +70,4 @@ export default {
       ground.setPieces(pieces)
     }
   }
-
 }

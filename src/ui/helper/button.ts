@@ -1,5 +1,8 @@
 import { redrawSync } from '../../utils/redraw'
-import { batchRequestAnimationFrame, removeFromBatchAnimationFrame } from '../../utils/batchRAF'
+import {
+  batchRequestAnimationFrame,
+  removeFromBatchAnimationFrame
+} from '../../utils/batchRAF'
 
 const HOLD_DURATION = 600
 const SCROLL_TOLERANCE_X = 4
@@ -20,8 +23,8 @@ export default function ButtonHandler(
   repeatHandler?: () => boolean,
   scrollX?: boolean,
   scrollY?: boolean,
-  getElement?: (e: TouchEvent) => HTMLElement) {
-
+  getElement?: (e: TouchEvent) => HTMLElement
+) {
   let activeElement = el
 
   let startX: number,
@@ -50,7 +53,7 @@ export default function ButtonHandler(
 
   function onTouchStart(e: TouchEvent) {
     let touch = e.changedTouches[0]
-    activeElement  = getElement ? getElement(e) : el
+    activeElement = getElement ? getElement(e) : el
     if (!activeElement) return
     if ((activeElement as HTMLButtonElement).disabled === true) return
     let boundingRect = activeElement.getBoundingClientRect()
@@ -67,9 +70,10 @@ export default function ButtonHandler(
     // for ios: need to set it bc/ :active doesn't reset when moving away
     activeElement.classList.add(ACTIVE_CLASS)
     holdTimeoutID = setTimeout(() => onHold(e), HOLD_DURATION)
-    if (repeatHandler) repeatTimeoutId = setTimeout(() => {
-      batchRequestAnimationFrame(onRepeat)
-    }, 150)
+    if (repeatHandler)
+      repeatTimeoutId = setTimeout(() => {
+        batchRequestAnimationFrame(onRepeat)
+      }, 150)
   }
 
   function onTouchMove(e: TouchEvent) {
@@ -92,7 +96,10 @@ export default function ButtonHandler(
     removeFromBatchAnimationFrame(onRepeat)
     if (active && activeElement) {
       clearTimeout(holdTimeoutID)
-      activeTimeoutId = setTimeout(() => activeElement && activeElement.classList.remove(ACTIVE_CLASS), 80)
+      activeTimeoutId = setTimeout(
+        () => activeElement && activeElement.classList.remove(ACTIVE_CLASS),
+        80
+      )
       tapHandler(e)
       active = false
     }
@@ -152,4 +159,3 @@ export default function ButtonHandler(
   el.addEventListener('touchcancel', onTouchCancel, false)
   el.addEventListener('contextmenu', onContextMenu, false)
 }
-

@@ -3,7 +3,6 @@ import { EDGE_SLIDE_THRESHOLD } from '../menu/OpenSlideHandler'
 import * as Hammer from 'hammerjs'
 import { viewportDim, findParentBySelector } from '../helper'
 
-
 type TabsContent = Array<any>
 type Renderer = (c: any, index: number) => Mithril.Children
 
@@ -26,11 +25,13 @@ export default {
     this.mc = new Hammer.Manager(dom, {
       inputClass: Hammer.TouchInput
     })
-    this.mc.add(new Hammer.Swipe({
-      direction: Hammer.DIRECTION_HORIZONTAL,
-      threshold: 10,
-      velocity: 0.4
-    }))
+    this.mc.add(
+      new Hammer.Swipe({
+        direction: Hammer.DIRECTION_HORIZONTAL,
+        threshold: 10,
+        velocity: 0.4
+      })
+    )
 
     this.mc.on('swiperight swipeleft', (e: HammerInput) => {
       if (e.center.x - e.deltaX > EDGE_SLIDE_THRESHOLD) {
@@ -40,8 +41,7 @@ export default {
         if (index !== undefined) {
           if (e.direction === Hammer.DIRECTION_LEFT && index < nbTabs - 1) {
             attrs.onTabChange(index + 1)
-          }
-          else if (e.direction === Hammer.DIRECTION_RIGHT && index > 0) {
+          } else if (e.direction === Hammer.DIRECTION_RIGHT && index > 0) {
             attrs.onTabChange(index - 1)
           }
         }
@@ -64,17 +64,24 @@ export default {
       transform: `translateX(${shift}px)`
     }
 
-    return h('div.tabs-view', {
-      style,
-      className: attrs.className
-    }, attrs.content.map((_: any, index: number) =>
-      h('div.tab-content', {
-        'data-index': index
-      }, h(Tab, { index, ...attrs }))
-    ))
+    return h(
+      'div.tabs-view',
+      {
+        style,
+        className: attrs.className
+      },
+      attrs.content.map((_: any, index: number) =>
+        h(
+          'div.tab-content',
+          {
+            'data-index': index
+          },
+          h(Tab, { index, ...attrs })
+        )
+      )
+    )
   }
 } as Mithril.Component<Attrs, State>
-
 
 // --
 

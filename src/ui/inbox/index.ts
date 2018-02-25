@@ -32,24 +32,26 @@ export default {
 
     const throttledReload = throttle((p: number) => {
       isLoading(true)
-      xhr.reload(p)
-      .then(data => {
-        threads(data)
-        isLoading(false)
-        redraw()
-      })
-      .catch(() => {
-        isLoading(false)
-        redraw()
-      })
+      xhr
+        .reload(p)
+        .then(data => {
+          threads(data)
+          isLoading(false)
+          redraw()
+        })
+        .catch(() => {
+          isLoading(false)
+          redraw()
+        })
     }, 1000)
 
-    xhr.inbox()
-    .then(data => {
-      threads(data)
-      redraw()
-    })
-    .catch(handleXhrError)
+    xhr
+      .inbox()
+      .then(data => {
+        threads(data)
+        redraw()
+      })
+      .catch(handleXhrError)
 
     this.ctrl = {
       threads,

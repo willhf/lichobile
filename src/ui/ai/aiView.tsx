@@ -13,7 +13,6 @@ import newGameMenu from './newAiGame'
 import AiRound from './AiRound'
 
 export function renderContent(ctrl: AiRound) {
-
   const material = ctrl.chessground.getMaterialDiff()
   const isPortrait = helper.isPortrait()
   const bounds = getBoardBounds(helper.viewportDim(), isPortrait)
@@ -22,10 +21,9 @@ export function renderContent(ctrl: AiRound) {
   const aiName = (
     <h2>
       {ctrl.getOpponent().name}
-      { ctrl.vm.engineSearching ?
-        <span className="engineSpinner fa fa-hourglass-half" /> :
-        null
-      }
+      {ctrl.vm.engineSearching ? (
+        <span className="engineSpinner fa fa-hourglass-half" />
+      ) : null}
     </h2>
   )
 
@@ -39,9 +37,21 @@ export function renderContent(ctrl: AiRound) {
 
   if (isPortrait) {
     return h.fragment({ key: orientationKey }, [
-      renderAntagonist(ctrl, aiName, material[ctrl.data.opponent.color], 'opponent', isPortrait),
+      renderAntagonist(
+        ctrl,
+        aiName,
+        material[ctrl.data.opponent.color],
+        'opponent',
+        isPortrait
+      ),
       board,
-      renderAntagonist(ctrl, ctrl.playerName(), material[ctrl.data.player.color], 'player', isPortrait),
+      renderAntagonist(
+        ctrl,
+        ctrl.playerName(),
+        material[ctrl.data.player.color],
+        'player',
+        isPortrait
+      ),
       renderGameActionsBar(ctrl)
     ])
   } else {
@@ -49,9 +59,21 @@ export function renderContent(ctrl: AiRound) {
       board,
       <section key="table" className="table">
         <section className="playersTable offline">
-          {renderAntagonist(ctrl, aiName, material[ctrl.data.opponent.color], 'opponent', isPortrait)}
+          {renderAntagonist(
+            ctrl,
+            aiName,
+            material[ctrl.data.opponent.color],
+            'opponent',
+            isPortrait
+          )}
           {replayTable}
-          {renderAntagonist(ctrl, '', material[ctrl.data.player.color], 'player', isPortrait)}
+          {renderAntagonist(
+            ctrl,
+            '',
+            material[ctrl.data.player.color],
+            'player',
+            isPortrait
+          )}
         </section>
         {renderGameActionsBar(ctrl)}
       </section>
@@ -66,4 +88,3 @@ export function overlay(ctrl: AiRound) {
     renderPromotion(ctrl)
   ]
 }
-

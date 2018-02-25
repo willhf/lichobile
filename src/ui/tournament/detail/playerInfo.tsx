@@ -3,7 +3,10 @@ import router from '../../../router'
 import * as utils from '../../../utils'
 import redraw from '../../../utils/redraw'
 import * as helper from '../../helper'
-import { PlayerInfo, PlayerInfoPairing } from '../../../lichess/interfaces/tournament'
+import {
+  PlayerInfo,
+  PlayerInfoPairing
+} from '../../../lichess/interfaces/tournament'
 import i18n from '../../../i18n'
 import { closeIcon } from '../../shared/icons'
 
@@ -24,14 +27,17 @@ export default {
     const playerData = stream<PlayerInfo>()
 
     function open(playerId: string) {
-      xhr.playerInfo(root.tournament.id, playerId)
-      .then(data => {
-        playerData(data)
-        router.backbutton.stack.push(helper.slidesOutRight(close, 'tournamentPlayerInfoModal'))
-        isOpen = true
-        redraw()
-      })
-      .catch(utils.handleXhrError)
+      xhr
+        .playerInfo(root.tournament.id, playerId)
+        .then(data => {
+          playerData(data)
+          router.backbutton.stack.push(
+            helper.slidesOutRight(close, 'tournamentPlayerInfoModal')
+          )
+          isOpen = true
+          redraw()
+        })
+        .catch(utils.handleXhrError)
     }
 
     function close(fromBB?: string) {
@@ -61,43 +67,62 @@ export default {
 
     const player = playerData.player
     const pairings = playerData.pairings
-    const avgOpRating = pairings.length ? (pairings.reduce((prev, x) => prev + x.op.rating, 0) / pairings.length).toFixed(0) : '0'
+    const avgOpRating = pairings.length
+      ? (
+          pairings.reduce((prev, x) => prev + x.op.rating, 0) / pairings.length
+        ).toFixed(0)
+      : '0'
 
-
-    function renderPlayerGame (game: PlayerInfoPairing, index: number, gameArray: Array<PlayerInfoPairing>) {
+    function renderPlayerGame(
+      game: PlayerInfoPairing,
+      index: number,
+      gameArray: Array<PlayerInfoPairing>
+    ) {
       let outcome: string | number
       let outcomeClass = 'oppOutcome'
       if (game.score === undefined || game.score === null) {
         outcome = '*'
-      }
-      else if (Array.isArray(game.score)) {
+      } else if (Array.isArray(game.score)) {
         outcome = game.score[0]
-        if (game.score[1] === 2)
-          outcomeClass += ' streak'
-        else if (game.score[1] === 3)
-          outcomeClass += ' double'
-      }
-      else {
+        if (game.score[1] === 2) outcomeClass += ' streak'
+        else if (game.score[1] === 3) outcomeClass += ' double'
+      } else {
         outcome = game.score
       }
       return (
-        <tr className="list_item bglight" key={game.id} oncreate={helper.ontap(() => router.set('/game/' + game.id + '/' + game.color + '?goingBack=1'))}>
+        <tr
+          className="list_item bglight"
+          key={game.id}
+          oncreate={helper.ontap(() =>
+            router.set('/game/' + game.id + '/' + game.color + '?goingBack=1')
+          )}
+        >
           <td className="oppRank"> {gameArray.length - index} </td>
           <td className="oppName"> {game.op.name} </td>
           <td className="oppRating"> {game.op.rating} </td>
-          <td className="oppColor"> <span className={'color-icon ' + game.color}> </span> </td>
+          <td className="oppColor">
+            {' '}
+            <span className={'color-icon ' + game.color}> </span>{' '}
+          </td>
           <td className={outcomeClass}> {outcome} </td>
         </tr>
       )
     }
 
     return (
-      <div className="modal" id="tournamentPlayerInfoModal" oncreate={helper.slidesInLeft}>
+      <div
+        className="modal"
+        id="tournamentPlayerInfoModal"
+        oncreate={helper.slidesInLeft}
+      >
         <header>
-          <button className="modal_close"
-            oncreate={helper.ontap(helper.slidesOutRight(ctrl.close, 'tournamentPlayerInfoModal'))}
+          <button
+            className="modal_close"
+            oncreate={helper.ontap(
+              helper.slidesOutRight(ctrl.close, 'tournamentPlayerInfoModal')
+            )}
           >
-            { closeIcon }
+            {closeIcon}
           </button>
           <h2 className="playerModalHeader">
             {player.rank + '. ' + player.name + ' (' + player.rating + ') '}
@@ -107,52 +132,44 @@ export default {
           <div className="tournamentPlayerInfo">
             <table className="playerStats">
               <tr>
-                <td className="statName">
-                  Score
-                </td>
+                <td className="statName">Score</td>
                 <td className="statData">
-                  <span className={player.fire ? 'on-fire' : 'off-fire'} data-icon="Q">{player.score}</span>
+                  <span
+                    className={player.fire ? 'on-fire' : 'off-fire'}
+                    data-icon="Q"
+                  >
+                    {player.score}
+                  </span>
                 </td>
               </tr>
               <tr>
-                <td className="statName">
-                  {i18n('gamesPlayed')}
-                </td>
+                <td className="statName">{i18n('gamesPlayed')}</td>
+                <td className="statData">{player.nb.game}</td>
+              </tr>
+              <tr>
+                <td className="statName">Win Rate</td>
                 <td className="statData">
-                  {player.nb.game}
+                  {player.nb.game
+                    ? (player.nb.win / player.nb.game * 100).toFixed(0) + '%'
+                    : '0%'}
                 </td>
               </tr>
               <tr>
-                <td className="statName">
-                  Win Rate
-                </td>
+                <td className="statName">Berserk Rate</td>
                 <td className="statData">
-                  {player.nb.game ? ((player.nb.win / player.nb.game) * 100).toFixed(0) + '%' : '0%'}
+                  {player.nb.game
+                    ? (player.nb.berserk / player.nb.game * 100).toFixed(0) +
+                      '%'
+                    : '0%'}
                 </td>
               </tr>
               <tr>
-                <td className="statName">
-                  Berserk Rate
-                </td>
-                <td className="statData">
-                  {player.nb.game ? ((player.nb.berserk / player.nb.game) * 100).toFixed(0) + '%' : '0%'}
-                </td>
-              </tr>
-              <tr>
-                <td className="statName">
-                  Average Opponent
-                </td>
-                <td className="statData">
-                  {avgOpRating}
-                </td>
+                <td className="statName">Average Opponent</td>
+                <td className="statData">{avgOpRating}</td>
               </tr>
               <tr className={player.performance ? '' : 'invisible'}>
-                <td className="statName">
-                  Performance
-                </td>
-                <td className="statData">
-                  {player.performance}
-                </td>
+                <td className="statName">Performance</td>
+                <td className="statData">{player.performance}</td>
               </tr>
             </table>
           </div>

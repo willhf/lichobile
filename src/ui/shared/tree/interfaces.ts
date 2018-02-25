@@ -57,7 +57,7 @@ export namespace Tree {
     fail?: boolean
     puzzle?: string
     // added dynamically during analysis from chess worker
-    checkCount?: { white: number, black: number }
+    checkCount?: { white: number; black: number }
     pgnMoves?: string[]
     player?: Color
     end?: boolean
@@ -68,10 +68,12 @@ export namespace Tree {
 
   export interface Comment {
     id: string
-    by: string | {
-      id: string
-      name: string
-    }
+    by:
+      | string
+      | {
+          id: string
+          name: string
+        }
     text: string
   }
 
@@ -87,10 +89,11 @@ export namespace Tree {
 
   export type Clock = number
 
-  export interface Shape {
-  }
+  export interface Shape {}
 }
 
-export function isClientEval(ev: Tree.ServerEval | Tree.ClientEval): ev is Tree.ClientEval {
+export function isClientEval(
+  ev: Tree.ServerEval | Tree.ClientEval
+): ev is Tree.ClientEval {
   return (ev as Tree.ClientEval).depth !== undefined
 }

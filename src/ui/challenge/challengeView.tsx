@@ -19,46 +19,73 @@ function gameInfos(challenge: Challenge) {
   const time = challengesApi.challengeTime(challenge)
   return (
     <div className="gameInfos">
-      <span data-icon="p">{time}</span> • <span>{challenge.variant.name}</span> • <span>{mode}</span>
+      <span data-icon="p">{time}</span> • <span>{challenge.variant.name}</span>{' '}
+      • <span>{mode}</span>
     </div>
   )
 }
 
-export function joinPopup(ctrl: ChallengeState, challenge: Challenge): () => Mithril.Children {
+export function joinPopup(
+  ctrl: ChallengeState,
+  challenge: Challenge
+): () => Mithril.Children {
   let joinDom: Mithril.BaseNode
   if (challenge.rated && !session.isConnected()) {
     joinDom = h('div.error', [
-      i18n('thisGameIsRated'), h('br'), h('br'), i18n('mustSignInToJoin'),
+      i18n('thisGameIsRated'),
+      h('br'),
+      h('br'),
+      i18n('mustSignInToJoin'),
       h('div.go_or_cancel', [
-        h('button.binary_choice[data-icon=E].withIcon', {
-          oncreate: helper.ontap(loginModal.open)
-        }, i18n('signIn')),
-        h('button.binary_choice[data-icon=L].withIcon', {
-          oncreate: helper.ontap(router.backHistory)
-        }, i18n('cancel'))
+        h(
+          'button.binary_choice[data-icon=E].withIcon',
+          {
+            oncreate: helper.ontap(loginModal.open)
+          },
+          i18n('signIn')
+        ),
+        h(
+          'button.binary_choice[data-icon=L].withIcon',
+          {
+            oncreate: helper.ontap(router.backHistory)
+          },
+          i18n('cancel')
+        )
       ])
     ])
   } else if (session.isConnected()) {
     joinDom = h('div.go_or_cancel', [
-      h('button.binary_choice[data-icon=E].withIcon', {
+      h(
+        'button.binary_choice[data-icon=E].withIcon',
+        {
           oncreate: helper.ontap(ctrl.joinChallenge)
-      }, i18n('join')),
-      h('button.binary_choice[data-icon=L].withIcon', {
-        oncreate: helper.ontap(ctrl.declineChallenge)
-      }, i18n('decline'))
+        },
+        i18n('join')
+      ),
+      h(
+        'button.binary_choice[data-icon=L].withIcon',
+        {
+          oncreate: helper.ontap(ctrl.declineChallenge)
+        },
+        i18n('decline')
+      )
     ])
   } else {
     joinDom = h('div', [
-      h('button[data-icon=E].withIcon', {
+      h(
+        'button[data-icon=E].withIcon',
+        {
           oncreate: helper.ontap(ctrl.joinChallenge)
-      }, i18n('join'))
+        },
+        i18n('join')
+      )
     ])
   }
 
   return function() {
-    const challenger = challenge.challenger ?
-      i18n('playerisInvitingYou', challengeUserFormat(challenge.challenger)) :
-      i18n('playerisInvitingYou', 'Anonymous')
+    const challenger = challenge.challenger
+      ? i18n('playerisInvitingYou', challengeUserFormat(challenge.challenger))
+      : i18n('playerisInvitingYou', 'Anonymous')
 
     return popupWidget(
       'join_url_challenge',
@@ -78,7 +105,6 @@ export function joinPopup(ctrl: ChallengeState, challenge: Challenge): () => Mit
 }
 
 export function awaitInvitePopup(ctrl: ChallengeState, challenge: Challenge) {
-
   const isPersistent = challengesApi.isPersistent(challenge)
 
   return function() {
@@ -94,23 +120,45 @@ export function awaitInvitePopup(ctrl: ChallengeState, challenge: Challenge) {
             value: publicUrl(challenge),
             readonly: true
           }),
-          h('p.explanation.small', i18n('theFirstPersonToComeOnThisUrlWillPlayWithYou')),
+          h(
+            'p.explanation.small',
+            i18n('theFirstPersonToComeOnThisUrlWillPlayWithYou')
+          ),
           h('div.go_or_cancel.clearfix', [
-            h('button.binary_choice[data-icon=E].withIcon', {
-              oncreate: helper.ontap(function() {
-                window.plugins.socialsharing.share(null, null, null, publicUrl(challenge))
-              })
-            }, i18n('shareGameURL')),
-            h('button.binary_choice[data-icon=L].withIcon', {
-              oncreate: helper.ontap(ctrl.cancelChallenge)
-            }, i18n('cancel'))
+            h(
+              'button.binary_choice[data-icon=E].withIcon',
+              {
+                oncreate: helper.ontap(function() {
+                  window.plugins.socialsharing.share(
+                    null,
+                    null,
+                    null,
+                    publicUrl(challenge)
+                  )
+                })
+              },
+              i18n('shareGameURL')
+            ),
+            h(
+              'button.binary_choice[data-icon=L].withIcon',
+              {
+                oncreate: helper.ontap(ctrl.cancelChallenge)
+              },
+              i18n('cancel')
+            )
           ]),
-          isPersistent ? h('div', [
-            h('br'),
-            h('button', {
-              oncreate: helper.ontap(() => router.set('/'))
-            }, [h('span.fa.fa-home'), i18n('returnToHome')])
-          ]) : null
+          isPersistent
+            ? h('div', [
+                h('br'),
+                h(
+                  'button',
+                  {
+                    oncreate: helper.ontap(() => router.set('/'))
+                  },
+                  [h('span.fa.fa-home'), i18n('returnToHome')]
+                )
+              ])
+            : null
         ])
       },
       true
@@ -123,8 +171,10 @@ function challengeUserFormat(user: ChallengeUser) {
   return `${user.name} (${ratingString})`
 }
 
-export function awaitChallengePopup(ctrl: ChallengeState, challenge: Challenge) {
-
+export function awaitChallengePopup(
+  ctrl: ChallengeState,
+  challenge: Challenge
+) {
   // destUser is there in await challenge
   // todo: discriminate in types
   function popupContent() {
@@ -138,7 +188,11 @@ export function awaitChallengePopup(ctrl: ChallengeState, challenge: Challenge) 
         {spinner.getVdom()}
         <br />
         <br />
-        <button className="withIcon" data-icon="L" oncreate={helper.ontap(ctrl.cancelChallenge)}>
+        <button
+          className="withIcon"
+          data-icon="L"
+          oncreate={helper.ontap(ctrl.cancelChallenge)}
+        >
           {i18n('cancel')}
         </button>
       </div>

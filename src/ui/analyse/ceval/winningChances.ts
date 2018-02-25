@@ -36,5 +36,7 @@ function mateWinningChances(mate: number): number {
 }
 
 function evalWinningChances(ev: Eval): number {
-  return ev.mate !== undefined ? mateWinningChances(ev.mate) : cpWinningChances(ev.cp!)
+  return ev.mate !== undefined
+    ? mateWinningChances(ev.mate)
+    : cpWinningChances(ev.cp!)
 }

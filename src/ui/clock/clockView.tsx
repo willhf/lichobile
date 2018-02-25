@@ -5,9 +5,7 @@ import { formatTime, isStageClock } from '../shared/clock/utils'
 import { IChessClockCtrl } from './ChessClockCtrl'
 
 export function renderClockSettingsOverlay(ctrl: IChessClockCtrl) {
-  return [
-    clockSettings.view(ctrl.clockSettingsCtrl)
-  ]
+  return [clockSettings.view(ctrl.clockSettingsCtrl)]
 }
 
 export function clockBody(ctrl: IChessClockCtrl) {
@@ -49,27 +47,65 @@ export function clockBody(ctrl: IChessClockCtrl) {
 
   return (
     <div className="clockContainer">
-      <div key="whiteClockTapArea" className={whiteClockClass} oncreate={helper.ontouch(() => onClockTouch(ctrl, 'white'))}>
-        { isStageClock(clock) ? renderMoves(clock.whiteMoves()) : null }
+      <div
+        key="whiteClockTapArea"
+        className={whiteClockClass}
+        oncreate={helper.ontouch(() => onClockTouch(ctrl, 'white'))}
+      >
+        {isStageClock(clock) ? renderMoves(clock.whiteMoves()) : null}
         <div className="clockTapAreaContent">
           <span className={whiteClockTimeClass}>
-            { whiteFlagged ? 'b' : formatTime(ctrl.clockType(), clock.whiteTime() / 1000) }
+            {whiteFlagged
+              ? 'b'
+              : formatTime(ctrl.clockType(), clock.whiteTime() / 1000)}
           </span>
         </div>
       </div>
       <div className="clockControls">
-        { !flagged && clock.activeSide() ? <span key="running-play-pause" className={'fa' + (clock.isRunning() ? ' fa-pause' : ' fa-play')} oncreate={helper.ontap(() => ctrl.startStop())} /> : <span key="disabled-pause" className="fa fa-pause disabled" /> }
-        <span key="refresh" className={'fa fa-refresh' + ((clock.isRunning() && !flagged) ? ' disabled' : '')} oncreate={helper.ontap(ctrl.reload)} />
-        <span key="settings" className={'fa fa-cog' + ((clock.isRunning() && !flagged) ? ' disabled' : '')} oncreate={helper.ontap(ctrl.clockSettingsCtrl.open)} />
-        <span hey="home" className={'fa fa-home' + ((clock.isRunning() && !flagged) ? ' disabled' : '')} oncreate={helper.ontap(ctrl.goHome)} />
+        {!flagged && clock.activeSide() ? (
+          <span
+            key="running-play-pause"
+            className={'fa' + (clock.isRunning() ? ' fa-pause' : ' fa-play')}
+            oncreate={helper.ontap(() => ctrl.startStop())}
+          />
+        ) : (
+          <span key="disabled-pause" className="fa fa-pause disabled" />
+        )}
+        <span
+          key="refresh"
+          className={
+            'fa fa-refresh' + (clock.isRunning() && !flagged ? ' disabled' : '')
+          }
+          oncreate={helper.ontap(ctrl.reload)}
+        />
+        <span
+          key="settings"
+          className={
+            'fa fa-cog' + (clock.isRunning() && !flagged ? ' disabled' : '')
+          }
+          oncreate={helper.ontap(ctrl.clockSettingsCtrl.open)}
+        />
+        <span
+          hey="home"
+          className={
+            'fa fa-home' + (clock.isRunning() && !flagged ? ' disabled' : '')
+          }
+          oncreate={helper.ontap(ctrl.goHome)}
+        />
       </div>
-      <div key="blackClockTapArea" className={blackClockClass} oncreate={helper.ontouch(() => onClockTouch(ctrl, 'black'))}>
+      <div
+        key="blackClockTapArea"
+        className={blackClockClass}
+        oncreate={helper.ontouch(() => onClockTouch(ctrl, 'black'))}
+      >
         <div className="clockTapAreaContent">
           <span className={blackClockTimeClass}>
-            { blackFlagged ? 'b' : formatTime(ctrl.clockType(), clock.blackTime() / 1000) }
+            {blackFlagged
+              ? 'b'
+              : formatTime(ctrl.clockType(), clock.blackTime() / 1000)}
           </span>
         </div>
-        { isStageClock(clock) ? renderMoves(clock.blackMoves()) : null }
+        {isStageClock(clock) ? renderMoves(clock.blackMoves()) : null}
       </div>
     </div>
   )
@@ -88,7 +124,10 @@ function renderMoves(moves: number | null) {
 }
 
 function onClockTouch(ctrl: IChessClockCtrl, side: Color) {
-  if (((ctrl.clockObj().activeSide() !== 'white') && (side === 'black')) || ((ctrl.clockObj().activeSide() !== 'black') && (side === 'white'))) {
+  if (
+    (ctrl.clockObj().activeSide() !== 'white' && side === 'black') ||
+    (ctrl.clockObj().activeSide() !== 'black' && side === 'white')
+  ) {
     ctrl.clockTap(side)
   }
 }

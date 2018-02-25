@@ -34,16 +34,27 @@ function close(fromBB?: string) {
 
 function renderForm() {
   return (
-    <form id="tournamentPasswordForm"
-    onsubmit={function(e: Event) {
-      e.preventDefault()
-      return join(e.target as HTMLFormElement)
-    }}>
+    <form
+      id="tournamentPasswordForm"
+      onsubmit={function(e: Event) {
+        e.preventDefault()
+        return join(e.target as HTMLFormElement)
+      }}
+    >
       <fieldset>
-        <div className={'select_input no_arrow_after' + (settings.tournament.private() ? '' : ' notVisible')}>
+        <div
+          className={
+            'select_input no_arrow_after' +
+            (settings.tournament.private() ? '' : ' notVisible')
+          }
+        >
           <div className="text_input_container">
             <label>Password: </label>
-            <input type="text" id="tournamentPassword" className="passwordField" />
+            <input
+              type="text"
+              id="tournamentPassword"
+              className="passwordField"
+            />
           </div>
         </div>
       </fieldset>

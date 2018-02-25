@@ -38,7 +38,6 @@ export interface IRetroCtrl {
 }
 
 export default function RetroCtrl(root: AnalyseCtrl): IRetroCtrl {
-
   const game = root.data.game
   let candidateNodes: Tree.Node[] = []
   const explorerCancelPlies: number[] = []
@@ -90,16 +89,22 @@ export default function RetroCtrl(root: AnalyseCtrl): IRetroCtrl {
       openingUcis: []
     }
     // fetch opening explorer moves
-    if (game.variant.key === 'standard' && game.division && (!game.division.middle || fault.node.ply < game.division.middle)) {
-      root.explorer.fetchMasterOpening(prev.node.fen).then((res) => {
+    if (
+      game.variant.key === 'standard' &&
+      game.division &&
+      (!game.division.middle || fault.node.ply < game.division.middle)
+    ) {
+      root.explorer.fetchMasterOpening(prev.node.fen).then(res => {
         const cur = vm.current
         const ucis: Uci[] = []
-        res!.moves.forEach((m) => {
+        res!.moves.forEach(m => {
           if (m.white + m.draws + m.black > 1) ucis.push(m.uci)
         })
-        if (ucis.find((uci) => {
-          return fault.node.uci === uci
-        })) {
+        if (
+          ucis.find(uci => {
+            return fault.node.uci === uci
+          })
+        ) {
           explorerCancelPlies.push(fault.node.ply)
           setTimeout(jumpToNext, 100)
         } else {
@@ -113,19 +118,29 @@ export default function RetroCtrl(root: AnalyseCtrl): IRetroCtrl {
   }
 
   function onJump(): void {
-    const node = root.node, fb = vm.feedback, cur = vm.current
+    const node = root.node,
+      fb = vm.feedback,
+      cur = vm.current
     if (!cur) return
     if (fb === 'eval' && cur.fault.node.ply !== node.ply) {
       vm.feedback = 'find'
       return
     }
     if (isSolving() && cur.fault.node.ply === node.ply) {
-      if (cur.openingUcis.find((uci: Uci) => {
-        return node.uci === uci
-      })) onWin() // found in opening explorer
-      else if (node.comp) onWin() // the computer solution line
-      else if (node.eval) onFail() // the move that was played in the game
+      if (
+        cur.openingUcis.find((uci: Uci) => {
+          return node.uci === uci
+        })
+      )
+        onWin()
+      else if (node.comp)
+        // found in opening explorer
+        onWin()
+      else if (node.eval)
+        // the computer solution line
+        onFail()
       else {
+        // the move that was played in the game
         vm.feedback = 'eval'
         if (!root.ceval.enabled()) {
           root.ceval.toggle()
@@ -139,19 +154,24 @@ export default function RetroCtrl(root: AnalyseCtrl): IRetroCtrl {
   }
 
   function isCevalReady(node: Tree.Node): boolean {
-    return node.ceval ? (
-      node.ceval.depth >= 18 ||
-      (node.ceval.depth >= 14 && node.ceval.millis > 7000)
-    ) : false
+    return node.ceval
+      ? node.ceval.depth >= 18 ||
+          (node.ceval.depth >= 14 && node.ceval.millis > 7000)
+      : false
   }
 
   function checkCeval(): void {
     const node = root.node,
       cur = vm.current
-    if (!cur || vm.feedback !== 'eval' || cur.fault.node.ply !== node.ply) return
+    if (!cur || vm.feedback !== 'eval' || cur.fault.node.ply !== node.ply)
+      return
     if (isCevalReady(node)) {
       root.stopCevalImmediately()
-      const diff = winningChances.povDiff(vm.color, node.ceval!, cur.prev.node.eval)
+      const diff = winningChances.povDiff(
+        vm.color,
+        node.ceval!,
+        cur.prev.node.eval
+      )
       if (diff > -0.035) onWin()
       else onFail()
     }
@@ -191,7 +211,9 @@ export default function RetroCtrl(root: AnalyseCtrl): IRetroCtrl {
   }
 
   function hideComputerLine(node: Tree.Node): boolean {
-    return (node.ply % 2 === 0) !== (vm.color === 'white') && !isPlySolved(node.ply)
+    return (
+      (node.ply % 2 === 0) !== (vm.color === 'white') && !isPlySolved(node.ply)
+    )
   }
 
   function showBadNode(): Tree.Node | undefined {

@@ -9,7 +9,13 @@ import router from '../router'
 import * as xhr from '../xhr'
 import i18n from '../i18n'
 import socket, { SEEKING_SOCKET_NAME, RedirectObj } from '../socket'
-import { PongMessage, PoolMember, HumanSeekSetup, isPoolMember, isSeekSetup } from '../lichess/interfaces'
+import {
+  PongMessage,
+  PoolMember,
+  HumanSeekSetup,
+  isPoolMember,
+  isSeekSetup
+} from '../lichess/interfaces'
 import { humanSetupFromSettings } from '../lichess/setup'
 import * as helper from './helper'
 import { loader } from './shared/common'
@@ -51,8 +57,7 @@ export default {
     // anon. can't enter pool: we'll just create a similar hook
     if (isPoolMember(conf) && !session.isConnected()) {
       doStartAnonPoolSeek(conf)
-    }
-    else {
+    } else {
       doStartSeeking(conf)
     }
   },
@@ -65,8 +70,8 @@ export default {
 
   onNewOpponent() {
     if (currentSetup) doStartSeeking(currentSetup)
-    // if no setup get it from localstorage
     else {
+      // if no setup get it from localstorage
       const conf = settings.gameSetup.human
       const poolId = conf.pool()
       if (poolId && conf.preset() === 'quick') {
@@ -80,50 +85,60 @@ export default {
   },
 
   view() {
-
     function content() {
       const nbPlayersStr = i18n('nbConnectedPlayers', nbPlayers || '?')
       const nbGamesStr = i18n('nbGamesInPlay', nbGames || '?')
 
       if (currentSetup === null) {
-        return h('div.lobby-waitingPopup', 'Something went wrong. Please try again')
+        return h(
+          'div.lobby-waitingPopup',
+          'Something went wrong. Please try again'
+        )
       }
 
       return h('div.lobby-waitingPopup', [
         h('div.lobby-waitingForOpponent', i18n('waitingForOpponent')),
         h('br'),
-        isPoolMember(currentSetup) ?
-          renderPoolSetup(currentSetup) :
-          renderCustomSetup(currentSetup),
+        isPoolMember(currentSetup)
+          ? renderPoolSetup(currentSetup)
+          : renderCustomSetup(currentSetup),
         h('br'),
         spinner.getVdom(),
-        h('div.lobby-nbPlayers', socket.isConnected() ? [
-          h('div',
-            h.trust(nbPlayersStr.replace(/(\d+)/, '<strong>$1</strong>'))
-          ),
-          h('div',
-            h.trust(nbGamesStr.replace(/(\d+)/, '<strong>$1</strong>'))
-          ),
-        ] : h('div', [i18n('reconnecting'), loader])),
-        h('button[data-icon=L]', {
-          oncreate: helper.ontap(() => userCancelSeeking())
-        }, i18n('cancel'))
+        h(
+          'div.lobby-nbPlayers',
+          socket.isConnected()
+            ? [
+                h(
+                  'div',
+                  h.trust(nbPlayersStr.replace(/(\d+)/, '<strong>$1</strong>'))
+                ),
+                h(
+                  'div',
+                  h.trust(nbGamesStr.replace(/(\d+)/, '<strong>$1</strong>'))
+                )
+              ]
+            : h('div', [i18n('reconnecting'), loader])
+        ),
+        h(
+          'button[data-icon=L]',
+          {
+            oncreate: helper.ontap(() => userCancelSeeking())
+          },
+          i18n('cancel')
+        )
       ])
     }
 
-    return popupWidget(
-      '',
-      undefined,
-      content,
-      isOpenAndSeeking
-    )
+    return popupWidget('', undefined, content, isOpenAndSeeking)
   }
 }
 
 function renderCustomSetup(setup: HumanSeekSetup) {
   const availableVariants = settings.gameSetup.human.availableVariants
-  const variantConf = availableVariants.find(v => v[1] === String(setup.variant))
-  const variant = variantConf && variantConf[0] || 'Standard'
+  const variantConf = availableVariants.find(
+    v => v[1] === String(setup.variant)
+  )
+  const variant = (variantConf && variantConf[0]) || 'Standard'
   const timeMode = setup.timeMode
   const mode = setup.mode === 0 ? i18n('casual') : i18n('rated')
   const minutes = setup.time
@@ -137,16 +152,12 @@ function renderCustomSetup(setup: HumanSeekSetup) {
   }
   const variantMode = ` • ${variant} • ${mode}`
 
-  return h('div.gameInfos', [
-    h('span[data-icon=p]', time), variantMode
-  ])
+  return h('div.gameInfos', [h('span[data-icon=p]', time), variantMode])
 }
 
 function renderPoolSetup(member: PoolMember) {
   const variantMode = ` • Standard • ${i18n('rated')}`
-  return h('div.gameInfos', [
-    h('span[data-icon=p]', member.id), variantMode
-  ])
+  return h('div.gameInfos', [h('span[data-icon=p]', member.id), variantMode])
 }
 
 function doStartSeeking(conf: PoolMember | HumanSeekSetup) {
@@ -160,7 +171,7 @@ function doStartSeeking(conf: PoolMember | HumanSeekSetup) {
 }
 
 function doStartAnonPoolSeek(poolMember: PoolMember) {
-  const pool = xhr.cachedPools.find(p => p.id  === poolMember.id)
+  const pool = xhr.cachedPools.find(p => p.id === poolMember.id)
   if (pool) {
     doStartSeeking({
       mode: 0,
@@ -194,42 +205,50 @@ function sendHook(setup: HumanSeekSetup) {
     // normally can't create hook if already have a hook
     cancelHook()
   }
-  socket.createLobby(SEEKING_SOCKET_NAME, () => {
-    // socket on open handler
-    // we do want to be sure we don't do anything in background here
-    if (!isOpenAndSeeking) return
-    // hook already created!
-    if (hookId) return
+  socket.createLobby(
+    SEEKING_SOCKET_NAME,
+    () => {
+      // socket on open handler
+      // we do want to be sure we don't do anything in background here
+      if (!isOpenAndSeeking) return
+      // hook already created!
+      if (hookId) return
 
-    xhr.seekGame(setup)
-    .then(data => {
-      hookId = data.hook.id
-    })
-    .catch(utils.handleXhrError)
-  }, socketHandlers)
+      xhr
+        .seekGame(setup)
+        .then(data => {
+          hookId = data.hook.id
+        })
+        .catch(utils.handleXhrError)
+    },
+    socketHandlers
+  )
 }
 
 function enterPool(member: PoolMember) {
   currentSetup = member
-  socket.createLobby(SEEKING_SOCKET_NAME, () => {
-    // socket on open handler
-    // we do want to be sure we don't do anything in background here
-    if (isOpenAndSeeking) {
-      socket.send('poolIn', member)
-      clearInterval(poolInIntervalId)
-      poolInIntervalId = setInterval(() => {
+  socket.createLobby(
+    SEEKING_SOCKET_NAME,
+    () => {
+      // socket on open handler
+      // we do want to be sure we don't do anything in background here
+      if (isOpenAndSeeking) {
         socket.send('poolIn', member)
-      }, 10 * 1000)
-    }
-  }, socketHandlers)
+        clearInterval(poolInIntervalId)
+        poolInIntervalId = setInterval(() => {
+          socket.send('poolIn', member)
+        }, 10 * 1000)
+      }
+    },
+    socketHandlers
+  )
 }
 
 function leavePoolOrCancelHook() {
   if (currentSetup === null) return
   if (isPoolMember(currentSetup)) {
     leavePool(currentSetup)
-  }
-  else if (hookId) {
+  } else if (hookId) {
     cancelHook()
   }
 }

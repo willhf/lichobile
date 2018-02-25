@@ -11,7 +11,10 @@ const emptyPocket = {
   pawn: 0
 }
 
-export function makeDefaultData(variantKey: VariantKey, fen?: string): AnalyseData {
+export function makeDefaultData(
+  variantKey: VariantKey,
+  fen?: string
+): AnalyseData {
   const player = playerFromFen(fen)
   const ply = plyFromFen(fen)
   const variant = getLichessVariant(variantKey)
@@ -50,9 +53,12 @@ export function makeDefaultData(variantKey: VariantKey, fen?: string): AnalyseDa
       {
         fen: initialFen,
         ply,
-        crazyhouse: variant.key === 'crazyhouse' ? {
-          pockets: [emptyPocket, emptyPocket]
-        } : undefined,
+        crazyhouse:
+          variant.key === 'crazyhouse'
+            ? {
+                pockets: [emptyPocket, emptyPocket]
+              }
+            : undefined,
         pgnMoves: []
       }
     ],

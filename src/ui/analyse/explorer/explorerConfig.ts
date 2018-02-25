@@ -9,11 +9,11 @@ interface Data {
   db: {
     available: string[]
     selected: StoredProp<string>
-  },
+  }
   rating: {
     available: number[]
     selected: StoredProp<number[]>
-  },
+  }
   speed: {
     available: string[]
     selected: StoredProp<string[]>
@@ -32,7 +32,6 @@ interface Controller {
 }
 
 export default {
-
   controller(variant: Variant, onClose: (changed: boolean) => void) {
     const available = ['lichess']
     if (variant.key === 'standard' || variant.key === 'fromPosition') {
@@ -44,9 +43,12 @@ export default {
     const data = {
       db: {
         available: available,
-        selected: available.length > 1 ? settings.analyse.explorer.db : function() {
-          return available[0]
-        }
+        selected:
+          available.length > 1
+            ? settings.analyse.explorer.db
+            : function() {
+                return available[0]
+              }
       },
       rating: {
         available: settings.analyse.explorer.availableRatings,
@@ -82,9 +84,12 @@ export default {
 
     function toggleMany(c: StoredProp<any>, value: any) {
       if (c().indexOf(value) === -1) c(c().concat([value]))
-      else if (c().length > 1) c(c().filter((v: any) => {
-        return v !== value
-      }))
+      else if (c().length > 1)
+        c(
+          c().filter((v: any) => {
+            return v !== value
+          })
+        )
     }
 
     return {
@@ -100,9 +105,10 @@ export default {
       toggleRating: (v: number) => toggleMany(data.rating.selected, v),
       toggleSpeed: (v: string) => toggleMany(data.speed.selected, v),
       fullHouse() {
-        return data.db.selected() === 'masters' || (
-          data.rating.selected().length === data.rating.available.length &&
-          data.speed.selected().length === data.speed.available.length
+        return (
+          data.db.selected() === 'masters' ||
+          (data.rating.selected().length === data.rating.available.length &&
+            data.speed.selected().length === data.speed.available.length)
         )
       },
       serialize
@@ -114,46 +120,72 @@ export default {
     return [
       h('section.db', [
         h('label', 'Database'),
-        h('div.form-multipleChoice', d.db.available.map(s => {
-          return h('span', {
-            className: d.db.selected() === s ? 'selected' : '',
-            oncreate: helper.ontapY(() => ctrl.toggleDb(s))
-          }, s)
-        }))
+        h(
+          'div.form-multipleChoice',
+          d.db.available.map(s => {
+            return h(
+              'span',
+              {
+                className: d.db.selected() === s ? 'selected' : '',
+                oncreate: helper.ontapY(() => ctrl.toggleDb(s))
+              },
+              s
+            )
+          })
+        )
       ]),
-      d.db.selected() === 'masters' ? h('div.masters.message', [
-        h('i[data-icon=C]'),
-        h('p', 'Two million OTB games'),
-        h('p', 'of 2200+ FIDE rated players'),
-        h('p', 'from 1952 to 2016')
-      ]) : h('div', [
-        h('section.rating', [
-          h('label', 'Players Average rating'),
-          h('div.form-multipleChoice',
-            d.rating.available.map(r => {
-              return h('span', {
-                className: d.rating.selected().indexOf(r) > -1 ? 'selected' : '',
-                oncreate: helper.ontapY(() => ctrl.toggleRating(r))
-              }, r)
-            })
-          )
-        ]),
-        h('section.speed', [
-          h('label', 'Game speed'),
-          h('div.form-multipleChoice',
-            d.speed.available.map(s => {
-              return h('span', {
-                className: d.speed.selected().indexOf(s) > -1 ? 'selected' : '',
-                oncreate: helper.ontapY(() => ctrl.toggleSpeed(s))
-              }, s)
-            })
-          )
-        ])
-      ]),
-      h('section.save',
-        h('button.text[data-icon=E]', {
-          oncreate: helper.ontapY(ctrl.toggleOpen)
-        }, 'All set!')
+      d.db.selected() === 'masters'
+        ? h('div.masters.message', [
+            h('i[data-icon=C]'),
+            h('p', 'Two million OTB games'),
+            h('p', 'of 2200+ FIDE rated players'),
+            h('p', 'from 1952 to 2016')
+          ])
+        : h('div', [
+            h('section.rating', [
+              h('label', 'Players Average rating'),
+              h(
+                'div.form-multipleChoice',
+                d.rating.available.map(r => {
+                  return h(
+                    'span',
+                    {
+                      className:
+                        d.rating.selected().indexOf(r) > -1 ? 'selected' : '',
+                      oncreate: helper.ontapY(() => ctrl.toggleRating(r))
+                    },
+                    r
+                  )
+                })
+              )
+            ]),
+            h('section.speed', [
+              h('label', 'Game speed'),
+              h(
+                'div.form-multipleChoice',
+                d.speed.available.map(s => {
+                  return h(
+                    'span',
+                    {
+                      className:
+                        d.speed.selected().indexOf(s) > -1 ? 'selected' : '',
+                      oncreate: helper.ontapY(() => ctrl.toggleSpeed(s))
+                    },
+                    s
+                  )
+                })
+              )
+            ])
+          ]),
+      h(
+        'section.save',
+        h(
+          'button.text[data-icon=E]',
+          {
+            oncreate: helper.ontapY(ctrl.toggleOpen)
+          },
+          'All set!'
+        )
       )
     ]
   }
