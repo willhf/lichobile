@@ -58,7 +58,7 @@ export default function OpenSlideHandler(
       const delta = e.deltaX
       if (delta <= maxSlide) {
         menu.translateMenu(state.menuElement!, -maxSlide + delta)
-        menu.backdropOpacity(state.backDropElement!, (delta / maxSlide * 100) / 100 / 2)
+        menu.backdropOpacity(state.backDropElement!, (delta / maxSlide * 100) / 100 * menu.BACKDROP_OPACITY)
       }
     }
   })

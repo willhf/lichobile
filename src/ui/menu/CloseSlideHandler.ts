@@ -46,7 +46,7 @@ export default function CloseSlideHandler(el: HTMLElement) {
 
       if (e.deltaX < 0 && e.deltaX >= -maxSlide) {
         menu.translateMenu(el, e.deltaX)
-        menu.backdropOpacity(state.backDropElement!, ((maxSlide + e.deltaX) / maxSlide * 100) / 100 / 2)
+        menu.backdropOpacity(state.backDropElement!, ((maxSlide + e.deltaX) / maxSlide * 100) / 100 * menu.BACKDROP_OPACITY)
       }
     }
   })

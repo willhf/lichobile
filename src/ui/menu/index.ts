@@ -8,6 +8,7 @@ import * as inboxXhr from '../inbox/inboxXhr'
 import { viewportDim, ontap } from '../helper'
 
 export const OPEN_AFTER_SLIDE_RATIO = 0.6
+export const BACKDROP_OPACITY = 0.6
 
 let pingsTimeoutID: number
 
@@ -36,7 +37,7 @@ export function open() {
   const bd = document.getElementById('menu-close-overlay')
   return Promise.all([
     Zanimo(bd, 'visibility', 'visible', 0),
-    Zanimo(bd, 'opacity', 0.5, 250, 'linear'),
+    Zanimo(bd, 'opacity', BACKDROP_OPACITY, 250, 'linear'),
     Zanimo(el, 'visibility', 'visible', 0),
     Zanimo(
       el,

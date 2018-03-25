@@ -39,7 +39,6 @@ export default {
       >
         <div className="native_scroller">
           {renderHeader(user)}
-          { hasNetwork() && user ? profileActionsToggle() : null }
           {user && menu.profileMenuOpen() ? renderProfileActions(user) : renderLinks(user)}
         </div>
       </aside>
@@ -67,6 +66,7 @@ function renderHeader(user?: Session) {
         </h2> : null
       }
       { networkStatus(user) }
+      { hasNetwork() && user ? profileActionsToggle() : null }
     </header>
   )
 }
@@ -242,7 +242,6 @@ function renderLinks(user?: Session) {
 }
 
 function profileActionsToggle() {
-
   return (
     <div key="user-button" className="menu-toggleButton side_link"
       oncreate={helper.ontapXY(menu.toggleHeader)}
