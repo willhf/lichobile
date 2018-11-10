@@ -70,11 +70,14 @@ export function arrow(brush: Brush, orig: BoardPos, dest: BoardPos, current: boo
   )
 }
 
-export function piece(theme: string, pos: BoardPos, piece: Piece, bounds: Bounds) {
+export function piece(theme: string, pos: BoardPos, piece: Piece, bounds: Bounds, orientation: Color) {
   const o = pos2px(pos, bounds)
   const size = bounds.width / 8
   let name = piece.color === 'white' ? 'w' : 'b'
   name += (piece.role === 'knight' ? 'n' : piece.role[0]).toUpperCase()
+  if (theme === 'minimalist' && piece.role === 'pawn') {
+    name += (orientation === piece.color) ? 'up' : 'down';
+  }
   const href = `images/pieces/${theme}/${name}.svg`
   return {
     tag: 'image',
@@ -125,7 +128,8 @@ export function renderShape(
       pieceTheme,
       orient(key2pos(shape.orig), orientation),
       shape.piece,
-      bounds)
+      bounds,
+      orientation)
     if (shape.orig && shape.dest) return arrow(
       brushes[shape.brush],
       orient(key2pos(shape.orig), orientation),

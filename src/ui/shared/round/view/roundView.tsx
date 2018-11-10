@@ -75,10 +75,10 @@ function overlay(ctrl: OnlineRound) {
   ]
 }
 
-export function renderMaterial(material: Material) {
+export function renderMaterial(material: Material, orientation: Color) {
   const tomb = Object.keys(material.pieces).map((role: Role) =>
     h('div.tomb', { key: role }, range(material.pieces[role])
-      .map(_ => h('piece', { className: role }))
+      .map(_ => h('piece', { className: [role, 'orientation-' + orientation] }))
     )
   )
 
@@ -292,7 +292,7 @@ function renderAntagonistInfo(ctrl: OnlineRound, player: Player, material: Mater
         {checksNb !== undefined ?
           <div className="checkCount">+{checksNb}</div> : null
         }
-        {ctrl.data.game.variant.key === 'horde' ? null : renderMaterial(material)}
+        {ctrl.data.game.variant.key === 'horde' ? null : renderMaterial(material, player.color)}
       </div> : null
       }
       {isCrazy && ctrl.clock ?

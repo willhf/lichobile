@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px">
+	<polygon
+		points="269,229 299,299 229,269 200,340 171,269 101,299 131,229 60,200 131,171 101,101 171,131 200,60 229,131 299,101 269,171 340,200"
+		stroke="black" stroke-linejoin="round" stroke-width="20px"
+		fill="black"/>
+</svg>

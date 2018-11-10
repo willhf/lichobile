@@ -48,7 +48,7 @@ export function renderAntagonist(ctrl: OfflineRoundInterface, content: Mithril.C
           {isCrazy && clock ? renderClock(clock, antagonistColor) : ''}
         </div>
         { !isCrazy ? <div className="ratingAndMaterial">
-          {ctrl.data.game.variant.key === 'horde' ? null : renderMaterial(material)}
+          {ctrl.data.game.variant.key === 'horde' ? null : renderMaterial(material, ctrl.data.player.color)}
           { ctrl.data.game.variant.key === 'threeCheck' ?
             <div className="checkCount">&nbsp;+{getChecksCount(ctrl, antagonistColor)}</div> : null
           }

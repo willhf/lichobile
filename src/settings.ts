@@ -87,6 +87,7 @@ export default {
         'chess7',
         'riohacha',
         'symmetric',
+        'minimalist',
       ],
       board: store.prop('settings.theme.board', 'brown'),
       piece: store.prop('settings.theme.piece', 'cburnett')

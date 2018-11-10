@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px">
+	<polygon points="270,250 200,130 130,250" transform="rotate(180, 200, 200)" 
+		stroke="black" stroke-linejoin="round" stroke-width="20px"
+		fill="black"/>
+</svg>

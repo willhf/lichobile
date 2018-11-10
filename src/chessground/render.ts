@@ -172,7 +172,7 @@ export function renderBoard(d: State, dom: cg.DOM) {
       else {
         const pe = document.createElement('piece') as cg.PieceNode
         const pName = pieceNameOf(p)
-        pe.className = pName
+        pe.className = pName + ' orientation-'+d.orientation
         pe.cgPiece = pName
         pe.cgColor = p.color
         pe.cgKey = k

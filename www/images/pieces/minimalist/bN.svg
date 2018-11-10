@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+	<polygon points="
+		 80,120
+		 80,200
+		160,200
+		160,280
+		320,280
+		320,200
+		240,200
+		240,120" transform="rotate(0, 200, 200)"
+		stroke="black" stroke-linejoin="round" stroke-width="20px"
+		fill="black"/>
+</svg>

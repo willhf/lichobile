@@ -54,7 +54,7 @@ function sparePieces(color: Color, orientation: Color, position: 'top' | 'bottom
     className: ['sparePieces', position, 'orientation-' + orientation, color].join(' ')
   }, h('div.sparePiecesInner', ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn'].map((role) => {
     return h('div.sparePiece', h('piece', {
-      className: color + ' ' + role,
+      className: [color, role, 'orientation-' + orientation],
       'data-color': color,
       'data-role': role
     }))
